@@ -1,0 +1,11 @@
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const c=JSON.parse(await readFile('.neon-dev-secrets.json','utf8'));
+Object.assign(process.env,{LITE_DATABASE_URL:c.NEON_DATABASE_URL,LITE_DATABASE_HOST:c.NEON_DEV_DB_HOST,LITE_PREVIEW_KEY:c.LITE_PREVIEW_KEY,NEON_AUTH_BASE_URL:c.NEON_AUTH_BASE_URL,NEON_AUTH_JWKS_URL:c.NEON_AUTH_JWKS_URL});
+const app=(await import('../remote/private-api-function.js')).default;
+const req=(headers={})=>new Request('https://preview.invalid/api/games',{headers});
+assert.equal((await app.fetch(req())).status,401);
+assert.equal((await app.fetch(req({'x-side-preview':'invalid'}))).status,401);
+assert.equal((await app.fetch(req({'x-side-preview':c.LITE_PREVIEW_KEY}))).status,401);
+assert.equal((await app.fetch(new Request('https://preview.invalid/nope',{headers:{'x-side-preview':c.LITE_PREVIEW_KEY}}))).status,404);
+console.log('PASS: API de vista previa exige clave privada y token de Neon');

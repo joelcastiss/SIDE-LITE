@@ -1,0 +1,26 @@
+name: Build SIDE-LITE preview artifacts
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Build isolated preview components
+        run: |
+          node scripts/build-bff.mjs
+          node remote/build-private-api.js
+          node remote/build-closing.js
+          node --check tests/output/bff/index.mjs
+          node --check tests/output/private-api/index.mjs
+          node --check tests/output/neon-function/index.mjs

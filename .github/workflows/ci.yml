@@ -1,0 +1,65 @@
+name: SIDE-LITE CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: node --check e2e/full-two-students-local.spec.js
+  multiplayer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: lite
+          POSTGRES_PASSWORD: lite_ci_only
+          POSTGRES_DB: side_lite
+        ports:
+          - 57432:5432
+        options: >-
+          --health-cmd "pg_isready -U lite -d side_lite"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite
+      TEACHER_REGISTRATION_KEY: side-lite-local-testing-key-2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Create isolated databases for permission and closing tests
+        run: |
+          node --input-type=module -e "import pg from 'pg'; const c=new pg.Client({connectionString:process.env.DATABASE_URL}); await c.connect(); await c.query('CREATE DATABASE side_lite_auth_test'); await c.query('CREATE DATABASE side_lite_closing_test'); await c.end();"
+      - name: Test teacher privileges
+        env:
+          SIDE_LITE_AUTH_TEST_DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite_auth_test
+        run: node e2e/teacher-permissions-isolated.js
+      - name: Test closing and concurrency
+        env:
+          SIDE_LITE_CLOSING_TEST_DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite_closing_test
+        run: node e2e/remote-closing-isolated.js
+      - run: npm run migrate
+      - run: |
+          npm start > /tmp/side-lite-ci.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4178/ >/dev/null && break; sleep 1; done
+          curl -fsS http://127.0.0.1:4178/ >/dev/null || { cat /tmp/side-lite-ci.log; exit 1; }
+          npx playwright test e2e/full-two-students-local.spec.js --workers=1
