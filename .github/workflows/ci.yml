@@ -20,7 +20,7 @@ jobs:
       - run: node --check e2e/full-two-students-local.spec.js
   multiplayer:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     services:
       postgres:
         image: postgres:17
@@ -48,7 +48,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Create isolated databases for permission and closing tests
         run: |
-          node --input-type=module -e "import pg from 'pg'; const c=new pg.Client({connectionString:process.env.DATABASE_URL}); await c.connect(); await c.query('CREATE DATABASE side_lite_auth_test'); await c.query('CREATE DATABASE side_lite_closing_test'); await c.end();"
+          node --input-type=module -e "import pg from 'pg'; const c=new pg.Client({connectionString:process.env.DATABASE_URL}); await c.connect(); await c.query('CREATE DATABASE side_lite_auth_test'); await c.query('CREATE DATABASE side_lite_closing_test'); await c.query('CREATE DATABASE side_lite_api_test'); await c.end();"
       - name: Test teacher privileges
         env:
           SIDE_LITE_AUTH_TEST_DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite_auth_test
@@ -57,6 +57,10 @@ jobs:
         env:
           SIDE_LITE_CLOSING_TEST_DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite_closing_test
         run: node e2e/remote-closing-isolated.js
+      - name: Test remote API authorization and role separation
+        env:
+          SIDE_LITE_API_TEST_DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite_api_test
+        run: node e2e/remote-api-authorization-isolated.js
       - run: npm run migrate
       - run: |
           node server/index.js > /tmp/side-lite-ci.log 2>&1 &
@@ -64,6 +68,6 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true' EXIT
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4178/ >/dev/null && break; sleep 1; done
           curl -fsS http://127.0.0.1:4178/ >/dev/null || { cat /tmp/side-lite-ci.log; exit 1; }
-          npx playwright test e2e/full-two-students-local.spec.js e2e/multiplayer.spec.js e2e/official-cycle.spec.js --workers=1
+          npx playwright test e2e/full-two-students-local.spec.js e2e/multiplayer.spec.js e2e/official-cycle.spec.js e2e/ui-two-students.spec.js --workers=1
       - name: Test recovery after backend restart
         run: npm run test:restart

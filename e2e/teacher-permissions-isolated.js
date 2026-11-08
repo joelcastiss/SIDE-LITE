@@ -18,15 +18,24 @@ try{
  }
  await c.query(`CREATE SCHEMA lite; CREATE SCHEMA neon_auth;
  CREATE TABLE neon_auth."user" (id uuid PRIMARY KEY,email text,"emailVerified" boolean,banned boolean);
- CREATE TABLE lite.lite_profiles(id uuid PRIMARY KEY,role text NOT NULL);
+ CREATE TABLE lite.lite_profiles(id uuid PRIMARY KEY,display_name text NOT NULL,role text NOT NULL);
+ GRANT SELECT, INSERT ON lite.lite_profiles TO lite_dev_api;
  GRANT USAGE ON SCHEMA lite TO lite_dev_api,lite_dev_unprivileged_test`);
- for(const file of ['202611040004_teacher_self_activation_dev.sql','202611040005_identity_state_dev.sql','202611070001_teacher_function_privileges_dev.sql','202611070002_teacher_grants_dev.sql']){
+ for(const file of ['202611040004_teacher_self_activation_dev.sql','202611040005_identity_state_dev.sql','202611070001_teacher_function_privileges_dev.sql','202611070002_teacher_grants_dev.sql','202611080001_profile_insert_privileges_dev.sql']){
   await c.query(await readFile(new URL('../remote/migrations/'+file,import.meta.url),'utf8'));
  }
  const id='00000000-0000-4000-8000-000000000001';
  await c.query('INSERT INTO neon_auth."user" VALUES ($1,$2,true,false)',[id,'docente@upch.pe']);
- await c.query("INSERT INTO lite.lite_profiles VALUES ($1,'student')",[id]);
+ await c.query("INSERT INTO lite.lite_profiles VALUES ($1,'Estudiante','student')",[id]);
  await c.query('SET LOCAL ROLE lite_dev_api');
+ const privilegeInsert=await c.query("SELECT has_column_privilege(current_user,'lite.lite_profiles','role','INSERT') AS role_insert,has_column_privilege(current_user,'lite.lite_profiles','id','INSERT') AS id_insert");
+ assert.equal(privilegeInsert.rows[0].role_insert,false);assert.equal(privilegeInsert.rows[0].id_insert,true);
+ const second='00000000-0000-4000-8000-000000000002';
+ await c.query("INSERT INTO lite.lite_profiles(id,display_name) VALUES ($1,'Alumno')",[second]);
+ let created=await c.query('SELECT role FROM lite.lite_profiles WHERE id=$1',[second]);assert.equal(created.rows[0].role,'student');
+ await c.query('SAVEPOINT denied_insert');
+ await assert.rejects(c.query("INSERT INTO lite.lite_profiles(id,display_name,role) VALUES ($1,'Malicioso','teacher')",['00000000-0000-4000-8000-000000000003']),e=>e.code==='42501');
+ await c.query('ROLLBACK TO SAVEPOINT denied_insert');
  let result=await c.query('SELECT lite.activate_teacher($1) AS value',[id]);assert.equal(result.rows[0].value,false);
  let privilege=await c.query("SELECT has_table_privilege(current_user,'lite.teacher_grants','SELECT') AS allowed");assert.equal(privilege.rows[0].allowed,false);
  await c.query('RESET ROLE');

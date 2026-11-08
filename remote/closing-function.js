@@ -1,11 +1,10 @@
+import {assertLiteDevDatabase} from './dev-database.js';
 import pg from 'pg';
 import {attachDatabasePool} from '@neon/functions';
 import {createClosingHandler} from './closing-handler.js';
 import {closeDue} from './close-cycle.js';
-const url=new URL(process.env.LITE_DATABASE_URL);
-if(url.protocol!=='postgresql:'||url.hostname!==process.env.LITE_DATABASE_HOST||!url.hostname.endsWith('.neon.tech'))throw Error('Base Neon no autorizada');
-url.searchParams.set('sslmode','verify-full');
-const pool=new pg.Pool({connectionString:url.toString(),max:2});
+const connectionString=assertLiteDevDatabase(process.env.LITE_DATABASE_URL,process.env.LITE_DATABASE_HOST);
+const pool=new pg.Pool({connectionString,max:2});
 pool.on('error',()=>console.error('Conexión interrumpida'));
 attachDatabasePool(pool);
 export default {fetch:createClosingHandler(()=>closeDue(pool))};

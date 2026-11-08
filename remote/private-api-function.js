@@ -1,3 +1,4 @@
+import {assertLiteDevDatabase} from './dev-database.js';
 // Private development preview only. A shared preview key AND a verified Neon Auth JWT are required.
 // Do not deploy as a public production API; there is no edge abuse protection here.
 import pg from 'pg';
@@ -7,10 +8,8 @@ import {createApi} from './api-app.js';
 import {createIdentityVerifier} from './identity.js';
 const secret=process.env.LITE_PREVIEW_KEY;
 if(!secret||secret.length<43)throw Error('Vista previa privada no configurada');
-const url=new URL(process.env.LITE_DATABASE_URL);
-if(url.protocol!=='postgresql:'||url.hostname!==process.env.LITE_DATABASE_HOST||!url.hostname.endsWith('.neon.tech'))throw Error('Base Neon no autorizada');
-url.searchParams.set('sslmode','verify-full');
-const pool=new pg.Pool({connectionString:url.toString(),max:3});attachDatabasePool(pool);
+const connectionString=assertLiteDevDatabase(process.env.LITE_DATABASE_URL,process.env.LITE_DATABASE_HOST);
+const pool=new pg.Pool({connectionString,max:3});attachDatabasePool(pool);
 const verify=createIdentityVerifier({authBaseUrl:process.env.NEON_AUTH_BASE_URL,jwksUrl:process.env.NEON_AUTH_JWKS_URL});
 const app=createApi({pool,verify});
 const listening=new Promise((resolve,reject)=>{const server=app.listen(0,'127.0.0.1',()=>{server.unref();resolve(server.address().port)});server.once('error',reject)});
