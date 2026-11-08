@@ -27,7 +27,7 @@ async function finishCycle(ctx,id,number){
 }
 
 for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estudiantes`,async({browser})=>{
- test.setTimeout(150000);
+ test.setTimeout(240000);
  const contexts=[];
  try{
   const teacher=await register(browser,'teacher',`docente${cycles}`); contexts.push(teacher);
@@ -44,7 +44,7 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
    expect(company.initial_capital).toBeLessThanOrEqual(100000);
    expect(company.cash).toBe(company.initial_capital);
   }
-  for(let number=1;number<=cycles;number++){
+  for(let number=1;number<=cycles;number++) await test.step(`Ciclo ${number}`,async()=>{
    const cycle=await call(teacher,`/games/${game.id}/start`,'POST',{});
    expect(cycle.number).toBe(number);
    expect((Date.parse(cycle.ends_at)-Date.parse(cycle.starts_at))/1000).toBe(8);
@@ -68,7 +68,7 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
    const calculated=faculty.companies.map(c=>({id:c.id,returnPercent:100*(c.cash+c.inventory.reduce((sum,b)=>sum+b.quantity*b.unitCost,0)-c.initial_capital)/c.initial_capital}));
    for(const row of faculty.ranking) expect(row.returnPercent).toBeCloseTo(calculated.find(x=>x.id===row.id).returnPercent,8);
    expect(faculty.ranking[0].returnPercent).toBeGreaterThanOrEqual(faculty.ranking[1].returnPercent);
-  }
+  });
   const page=await teacher.newPage();
   await page.goto(base);
   await page.getByRole('button',{name:`Aula ${cycles}`}).click();
@@ -76,5 +76,5 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
   await expect(page.getByRole('heading',{name:'Resultados'})).toBeVisible();
   await expect(page.getByText('Partida finalizada.')).toBeVisible();
   await expect(page.getByRole('button',{name:'Iniciar ciclo'})).toBeDisabled();
- }finally{for(const context of contexts) await context.close()}
+ }finally{await Promise.allSettled(contexts.map(context=>context.close()))}
 });

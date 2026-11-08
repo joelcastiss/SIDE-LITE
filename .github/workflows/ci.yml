@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 15
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_USER: lite
           POSTGRES_PASSWORD: lite_ci_only
@@ -59,7 +59,11 @@ jobs:
         run: node e2e/remote-closing-isolated.js
       - run: npm run migrate
       - run: |
-          npm start > /tmp/side-lite-ci.log 2>&1 &
+          node server/index.js > /tmp/side-lite-ci.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true' EXIT
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4178/ >/dev/null && break; sleep 1; done
           curl -fsS http://127.0.0.1:4178/ >/dev/null || { cat /tmp/side-lite-ci.log; exit 1; }
-          npx playwright test e2e/full-two-students-local.spec.js --workers=1
+          npx playwright test e2e/full-two-students-local.spec.js e2e/multiplayer.spec.js e2e/official-cycle.spec.js --workers=1
+      - name: Test recovery after backend restart
+        run: npm run test:restart
