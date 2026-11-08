@@ -70,3 +70,9 @@ Pasaron 34 pruebas unitarias y `npm audit` no reportó vulnerabilidades conocida
 Se revisaron patrones comunes de secretos y cuatro valores privados de desarrollo contra el índice sin coincidencias. Se excluyeron bases locales, secretos y artefactos generados; las contraseñas incluidas son ejemplos para localhost o CI. La revisión automática no garantiza ausencia total de secretos. Se añadió la licencia de Poppins; falta confirmar derechos del logotipo. No se creó ni modificó ningún recurso remoto, ni se aplicaron migraciones a Neon. GitHub Actions aún no se ha ejecutado.
 
 La prueba de reinicio del backend pasó con PostgreSQL real: el ciclo vencido se cerró al reiniciar y persistieron la sesión y la partida. PostgreSQL permaneció encendido.
+
+## Revalidación del 8 de noviembre de 2026
+
+El repositorio local permaneció limpio en el commit 72b1130; no tiene remoto. Se comprobó mediante acceso de solo lectura la cuenta GitHub joelcastiss y el proyecto Neon SIDE-LITE (odd-dust-54712578). La rama side-lite-dev tiene el trigger de cierre desactivado y un proveedor de correo compartido. No se han creado recursos remotos ni se han aplicado migraciones a Neon.
+
+Pasaron nuevamente 34 pruebas unitarias. Con PostgreSQL 17 efímero local se aplicaron las migraciones locales y pasó la partida de tres ciclos. La partida de seis ciclos no pasó: excedió el tiempo de prueba durante pausas prolongadas del equipo; el ciclo de 120 segundos tampoco pasó, al recibir ECONNRESET. No hay evidencia suficiente para atribuir esos fallos a la aplicación o a la infraestructura. No se completó la prueba integral de los formularios de estudiantes. Se detuvieron y retiraron los recursos temporales creados para la prueba. Sigue pendiente validar seis ciclos, 120 segundos y concurrencia bajo condiciones estables, así como Neon Auth y correo real.
