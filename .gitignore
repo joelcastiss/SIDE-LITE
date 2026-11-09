@@ -26,3 +26,7 @@ tests/output/
 .pgpass
 credentials*.json
 *token*.json
+
+# Supabase CLI local state (never commit linked-project metadata).
+supabase/.temp/
+supabase-side-lite/supabase/.temp/

@@ -1,4 +1,4 @@
-export const staticPreview=location.hostname.toLowerCase().endsWith('.github.io')||new URLSearchParams(location.search).get('static')==='1';
+export const staticPreview=new URLSearchParams(location.search).get('static')==='1';
 const blocked=()=>Object.assign(new Error('Vista previa: esta acción requiere el backend y no guarda cambios.'),{status:403});
 const now=()=>new Date().toISOString();
 const game={id:'vista-previa',name:'Partida de demostración',code:'DEMO2026',cycle_count:3,duration_seconds:120,costs:{basic:50,standard:80,premium:120},enabled_events:[]};

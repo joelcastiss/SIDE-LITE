@@ -2,23 +2,27 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.js tests/*.test.mjs",
+    "test": "node --test tests/*.test.js tests/*.test.mjs supabase-side-lite/functions/close-cycle/worker.test.js",
     "start": "node server/index.js",
     "migrate": "node server/migrate.js",
     "test:e2e": "playwright test e2e --workers=1 --timeout=120000",
     "test:restart": "node e2e/restart.js",
     "test:abuse": "node e2e/abuse.js",
-    "build:closing": "node remote/build-closing.js"
+    "build:closing": "node remote/build-closing.js",
+    "build:supabase-client": "node public/build-supabase-client.mjs"
   },
   "dependencies": {
     "@neon/functions": "^0.11.0",
+    "@supabase/supabase-js": "2.119.0",
     "express": "^5.3.0",
+    "fetch-to-node": "2.1.0",
     "jose": "^6.2.15",
     "jspdf": "4.2.1",
     "pg": "^8.23.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "postgres": "3.4.7"
   }
 }

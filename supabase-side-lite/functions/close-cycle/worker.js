@@ -7,7 +7,7 @@ export async function closeOne(sql, excluded = []) {
     const cycles = await tx`
       select c.id, c.game_id, c.event_id, s.seed
       from public.lite_cycles c
-      join side_lite_private.lite_cycle_secrets s on s.cycle_id = c.id
+      left join side_lite_private.lite_cycle_secrets s on s.cycle_id = c.id
       where c.status = 'open' and c.paused_at is null
         and (c.ends_at <= clock_timestamp() or c.close_requested_at is not null)
         and not (c.id = any(${excluded}::uuid[]))
@@ -16,6 +16,7 @@ export async function closeOne(sql, excluded = []) {
     const cycle = cycles[0];
     if (!cycle) return null;
     try {
+      if (cycle.seed == null) throw new Error('Missing cycle secret');
       const [game] = await tx`select id, costs from public.lite_games where id = ${cycle.game_id}`;
       if (!game) throw new Error('Missing game');
       const companies = await tx`select id, cash, inventory from public.lite_companies where game_id = ${game.id} order by id for update`;

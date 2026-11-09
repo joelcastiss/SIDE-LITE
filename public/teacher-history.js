@@ -3,13 +3,13 @@ import './teacher-history-original.js';
 
 export function completedHistorySnapshot(data){
  if(!data?.isTeacher)throw new Error('Solo el docente propietario puede consultar el historial.');
- const game=data.game,cycles=data.cycles||[],last=cycles.at(-1);
- if(!last||last.status!=='closed'||last.number!==game.cycle_count)return null;
+ const game=data.game,cycles=data.cycles||[],last=cycles.find(c=>Number(c.number)===Number(game.cycle_count));
+ if(!last||last.status!=='closed')return null;
  const closed=new Set(cycles.filter(c=>c.status==='closed').map(c=>c.id));
  const results=(data.results||[]).filter(r=>closed.has(r.cycle_id));
  return {partida:{codigo:game.code,nombre:game.name,ciclos_jugados:last.number,finalizada_at:last.ends_at,fecha_aproximada:true},empresas:(data.companies||[]).map(company=>({
   id:company.id,nombre_comercial:company.name,caja_actual:company.cash,
-  reportes:results.filter(r=>r.company_id===company.id).map(r=>({ciclo:r.number,ingresos:r.result.revenue,costos:r.result.costOfSales,utilidad:r.result.profit,caja_final:r.result.cashEnd,capital:r.result.cashStart,estado_resultados:{ingresos:r.result.revenue,costos:r.result.costOfSales,utilidad:r.result.profit},balance_caja:{cajaInicial:r.result.cashStart,cajaFinal:r.result.cashEnd}})),decisiones:[]
+  reportes:results.filter(r=>r.company_id===company.id).sort((a,b)=>Number(a.number)-Number(b.number)).map(r=>({ciclo:r.number,ingresos:r.result.revenue,costos:r.result.costOfSales,utilidad:r.result.profit,caja_final:r.result.cashEnd,capital:r.result.cashStart,estado_resultados:{ingresos:r.result.revenue,costos:r.result.costOfSales,utilidad:r.result.profit},balance_caja:{cajaInicial:r.result.cashStart,cajaFinal:r.result.cashEnd}})),decisiones:[]
  }))};
 }
 

@@ -25,3 +25,16 @@ test('fallo del limitador cierra acceso y no abre transacción',async()=>{
  let connects=0;const pool={query:async sql=>{if(/lite_join_attempt_windows/i.test(sql))throw new Error('db unavailable');return {rows:[student]}},connect:async()=>{connects++;throw new Error('should not connect')}};
  await serve(pool,async base=>{const r=await fetch(base+'/api/join',{method:'POST',headers,body:JSON.stringify({code:'12345678',name:'Empresa'})});assert.ok(r.status>=500);assert.equal(connects,0)});
 });
+
+test('la composición conecta los controles docentes y rechaza cuentas sin sesión vigente',async()=>{
+ let connects=0;
+ const c={query:async sql=>({rows:[],rowCount:0}),release(){}};
+ const pool={query:async()=>({rows:[student]}),connect:async()=>{connects++;return c}};
+ await serve(pool,async base=>{
+   for(const action of ['pause','resume','finish']) {
+     const r=await fetch(`${base}/api/games/${user}/${action}`,{method:'POST',headers,body:'{}'});
+     assert.equal(r.status,403);
+   }
+ });
+ assert.equal(connects,3);
+});

@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "express": "npm:express@5.3.0",
+    "jose": "npm:jose@6.2.15",
+    "fetch-to-node": "npm:fetch-to-node@2.1.0"
+  }
+}

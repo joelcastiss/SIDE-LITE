@@ -1,5 +1,5 @@
 // The static Pages entry has no server. Never present local-only authentication as working.
-if (location.hostname.toLowerCase().endsWith('.github.io') || new URLSearchParams(location.search).get('static') === '1') {
+if (new URLSearchParams(location.search).get('static') === '1') {
  const showNotice = () => {
   const badge = document.querySelector('.badge');
   if (badge) badge.textContent = 'Vista previa';
@@ -18,4 +18,17 @@ if (location.hostname.toLowerCase().endsWith('.github.io') || new URLSearchParam
   const message = document.querySelector('#modalRoot:not(.hidden) #access-message') || document.querySelector('#error');
   if (message) message.textContent = 'El acceso y las partidas aún no están conectados en este enlace.';
  }, true);
+}
+
+// Keep the integration warning visible until end-to-end production verification.
+if (location.hostname.toLowerCase() === 'joelcastiss.github.io' && new URLSearchParams(location.search).get('static') !== '1') {
+ const showIntegrationNotice = () => {
+  const banner = document.createElement('div');
+  banner.id = 'integration-preview-notice';
+  banner.setAttribute('role', 'status');
+  banner.style.cssText = 'padding:12px 18px;background:#fff4ce;color:#3c2900;text-align:center;font:600 14px Poppins,Arial,sans-serif';
+  banner.textContent = 'Integración en pruebas: el funcionamiento de las partidas reales todavía no se ha verificado.';
+  document.body.prepend(banner);
+ };
+ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showIntegrationNotice, {once:true}); else showIntegrationNotice();
 }

@@ -13,6 +13,24 @@ create table public.lite_profiles (
   created_at timestamptz not null default now()
 );
 
+-- Registration metadata is untrusted: it is used only as a display name,
+-- never as an authorization claim. Invalid names receive a safe fallback.
+create function side_lite_private.create_student_profile() returns trigger
+language plpgsql security definer set search_path = '' as $$
+declare profile_name text;
+begin
+  profile_name := btrim(coalesce(new.raw_user_meta_data ->> 'display_name', ''));
+  if char_length(profile_name) < 2 or char_length(profile_name) > 80 then
+    profile_name := 'Estudiante';
+  end if;
+  insert into public.lite_profiles (id, display_name) values (new.id, profile_name)
+  on conflict (id) do nothing;
+  return new;
+end $$;
+revoke all on function side_lite_private.create_student_profile() from public, anon, authenticated, service_role;
+create trigger lite_create_student_profile after insert on auth.users
+for each row execute function side_lite_private.create_student_profile();
+
 -- Only administrators with direct database access can manage these approvals.
 -- The email is bound to the verified identity; a changed address loses access.
 create table side_lite_private.lite_teacher_grants (

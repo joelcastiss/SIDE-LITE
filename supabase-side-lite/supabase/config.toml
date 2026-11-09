@@ -1,0 +1,9 @@
+# This file is deployment preparation only; it does not activate a function.
+[functions.side-lite-api]
+# Access tokens are checked by the API against the project's JWKS on every call.
+# The gateway must let OPTIONS reach the restrictive CORS preflight handler.
+verify_jwt = false
+
+[functions.close-cycle]
+# The worker validates the independent server-only scheduler secret itself.
+verify_jwt = false

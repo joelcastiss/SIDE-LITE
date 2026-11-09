@@ -19,14 +19,8 @@ async function transaction(pool, fn) {
 // Recheck the actual session and verified email in the same transaction as the
 // mutation; never accept roles, email, user IDs, or authorization from request JSON.
 async function requireCurrentUser(c, identity, teacher = false) {
-  const {rows:[user]} = await c.query(`select u.id
-    from auth.users u join auth.sessions s on s.user_id=u.id and s.id=$2
-    join public.lite_profiles p on p.id=u.id
-    where u.id=$1 and u.email_confirmed_at is not null
-      and (s.not_after is null or s.not_after > clock_timestamp())
-      and (u.banned_until is null or u.banned_until <= clock_timestamp())
-    for share of u,s,p`, [identity.id,identity.sessionId]);
-  if (!user) throw fail(403,'Cuenta o sesión no autorizada.');
+  const {rows:[user]} = await c.query('select side_lite_private.lock_active_identity($1,$2) as active', [identity.id,identity.sessionId]);
+  if (!user?.active) throw fail(403,'Cuenta o sesión no autorizada.');
   if (teacher) {
     // Lock the authoritative grant so revocation cannot race a game creation.
     const {rows:[grant]} = await c.query(`select g.user_id from side_lite_private.lite_teacher_grants g
@@ -81,7 +75,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         await requireCurrentUser(c,req.identity);
         const teacher=await hasTeacherGrant(c,req.identity);
         const {rows}=await c.query(`select g.id,g.teacher_id,g.name,g.code,g.cycle_count,g.duration_seconds,
-          g.capital_min,g.capital_max,g.costs,g.enabled_events,g.created_at from public.lite_games g
+          g.capital_min,g.capital_max,g.costs,g.enabled_events,g.created_at,g.ended_at from public.lite_games g
           where (g.teacher_id=$1 and $2::boolean) or exists (
             select 1 from public.lite_companies co where co.game_id=g.id and co.student_id=$1)
           order by g.created_at desc`,[req.identity.id,teacher]);
@@ -99,7 +93,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         await requireCurrentUser(c,req.identity);
         const teacher=await hasTeacherGrant(c,req.identity);
         const {rows:[game]}=await c.query(`select id,teacher_id,name,code,cycle_count,duration_seconds,
-          capital_min,capital_max,costs,enabled_events,created_at from public.lite_games where id=$1`,[req.params.id]);
+          capital_min,capital_max,costs,enabled_events,created_at,ended_at from public.lite_games where id=$1`,[req.params.id]);
         if (!game) throw fail(404,'Partida no encontrada.');
         const {rows:[ownCompany]}=await c.query('select id from public.lite_companies where game_id=$1 and student_id=$2',[game.id,req.identity.id]);
         const isTeacher=teacher && game.teacher_id===req.identity.id;
@@ -160,8 +154,9 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
       const company=await transaction(pool,async c=>{
         await requireCurrentUser(c,req.identity);
         // Serialize with cycle start, which must also lock this game row first.
-        const {rows:[game]}=await c.query('select id,capital_min,capital_max from public.lite_games where code=$1 for update',[code.toUpperCase()]);
+        const {rows:[game]}=await c.query('select id,capital_min,capital_max,ended_at from public.lite_games where code=$1 for update',[code.toUpperCase()]);
         if (!game) throw fail(404,'Código no encontrado.');
+        if (game.ended_at) throw fail(409,'La partida ha finalizado.');
         if ((await c.query('select 1 from public.lite_cycles where game_id=$1 limit 1',[game.id])).rowCount) throw fail(409,'La partida ya comenzó.');
         const {rows:stores}=await c.query('select id from public.lite_stores order by name');
         if (!stores.length) throw fail(503,'Catálogo no disponible.');
@@ -183,8 +178,9 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
       const cycle=await transaction(pool,async c=>{
         await requireCurrentUser(c,req.identity,true);
         // The same game-row lock is used by join to prohibit late enrollment.
-        const {rows:[game]}=await c.query('select id,teacher_id,cycle_count,enabled_events from public.lite_games where id=$1 for update',[req.params.id]);
+        const {rows:[game]}=await c.query('select id,teacher_id,cycle_count,enabled_events,ended_at from public.lite_games where id=$1 for update',[req.params.id]);
         if (!game || game.teacher_id !== req.identity.id) throw fail(403,'Sin acceso a esta partida.');
+        if (game.ended_at) throw fail(409,'La partida ha finalizado.');
         const {rows:[previous]}=await c.query('select number,status from public.lite_cycles where game_id=$1 order by number desc limit 1',[game.id]);
         if(previous?.status === 'open') throw fail(409,'Ya hay un ciclo abierto.');
         const number=(previous?.number || 0)+1;

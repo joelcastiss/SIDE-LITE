@@ -12,14 +12,8 @@ async function transaction(pool, fn) {
 }
 
 async function lockAuthorizedGame(c,identity,id) {
-  const {rows:[user]}=await c.query(`select u.id from auth.users u
-    join auth.sessions s on s.user_id=u.id and s.id=$2
-    join public.lite_profiles p on p.id=u.id
-    where u.id=$1 and u.email_confirmed_at is not null
-      and (s.not_after is null or s.not_after > clock_timestamp())
-      and (u.banned_until is null or u.banned_until <= clock_timestamp())
-    for share of u,s,p`,[identity.id,identity.sessionId]);
-  if (!user) throw fail(403,'Cuenta o sesión no autorizada.');
+  const {rows:[user]}=await c.query('select side_lite_private.lock_active_identity($1,$2) as active',[identity.id,identity.sessionId]);
+  if (!user?.active) throw fail(403,'Cuenta o sesión no autorizada.');
   const {rows:[grant]}=await c.query(`select g.user_id from side_lite_private.lite_teacher_grants g
     join auth.users u on u.id=g.user_id where g.user_id=$1 and g.revoked_at is null
       and u.email_confirmed_at is not null and lower(u.email)=g.approved_email for share of g`,[identity.id]);

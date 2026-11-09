@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { closeOne, sweep, CycleCloseError } from './worker.js';
 
-function database({ badSecond = false } = {}) {
+function database({ badSecond = false, missingSecret = false } = {}) {
   let state = { status: 'open', results: [], cash: 30000 };
   const sql = { get state() { return state; } };
   sql.begin = async fn => {
     const snapshot = structuredClone(state);
     const tx = async (parts, ...values) => {
       const q = parts.join('?').replace(/\s+/g, ' ').trim().toLowerCase();
-      if (q.startsWith('select c.id')) return state.status === 'open' ? [{ id: 'cycle', game_id: 'game', seed: 'seed', event_id: null }] : [];
+      if (q.startsWith('select c.id')) return state.status === 'open' ? [{ id: 'cycle', game_id: 'game', seed: missingSecret ? null : 'seed', event_id: null }] : [];
       if (q.startsWith('select id, costs')) return [{ id: 'game', costs: { basic: 20, standard: 30, premium: 40 } }];
       if (q.startsWith('select id, cash, inventory')) return [{ id: 'company', cash: state.cash, inventory: [] }, ...(badSecond ? [{ id: 'bad', cash: -1, inventory: [] }] : [])];
       if (q.startsWith('select quality')) return [{ quality: 'basic', quantity: 10, price: 100, marketing_amount: 0 }];
@@ -53,4 +53,10 @@ test('el barrido aísla ciclo fallido y procesa otros, con trabajo acotado', asy
   let calls = 0;
   await sweep(async () => { calls++; return 'ok'; }, 3);
   assert.equal(calls, 3);
+});
+
+test('un ciclo vencido sin semilla se reporta como fallo y no se cierra', async () => {
+  const db = database({missingSecret:true});
+  await assert.rejects(closeOne(db), CycleCloseError);
+  assert.deepEqual(db.state, { status: 'open', results: [], cash: 30000 });
 });
