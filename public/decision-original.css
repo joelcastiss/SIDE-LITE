@@ -75,3 +75,18 @@ body:has(#app.lite-decision-active #decision)>main{max-width:none;padding:0}
 #app .lite-student-decisions .decision-detail{min-width:0}
 #app .lite-student-decisions .decision-form-scroll{min-width:0}
 @media(max-width:720px){#app .lite-student-decisions .decision-tabs .decision-tab{flex:0 0 auto}}
+/* Estructura y controles de decisionMenu de SIDE Original. */
+#app .lite-student-decisions .decision-tabs{align-items:end;gap:5px;padding:10px 12px 0;background:rgba(3,11,22,.97)}
+#app .lite-student-decisions .decision-tabs .decision-tab{position:relative;min-width:155px;min-height:50px;padding:12px 14px;border:1px solid transparent;border-bottom:0;border-radius:12px 12px 0 0;background:#07172a;color:#8ea4bd;letter-spacing:.5px}
+#app .lite-student-decisions .decision-tabs .decision-tab.active{color:#fff;background:linear-gradient(180deg,#103b66,#0a2038);border-color:#3da7ff55;box-shadow:0 -6px 20px #278dff13}
+#app .lite-student-decisions .decision-tabs .decision-tab.active:after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;background:#ffd44f;border-radius:3px}
+#app .lite-student-decisions .decision-tabs img{width:27px;height:27px}
+#app .lite-student-decisions .detail-heading img{width:70px;height:70px;object-fit:contain;border-radius:16px;background:#07121b;border:1px solid rgba(255,255,255,.09);box-shadow:0 0 28px rgba(67,174,255,.14)}
+#app .lite-student-decisions .detail-heading h1{font-size:31px}
+#app .lite-student-decisions .section-save-bar{position:sticky;bottom:12px;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:15px;padding:11px 12px 11px 15px;border:1px solid rgba(255,211,79,.31);border-radius:14px;background:rgba(4,14,25,.96);box-shadow:0 18px 55px #000c;backdrop-filter:blur(14px)}
+#app .lite-student-decisions .section-draft-summary{flex:1;min-width:0}
+#app .lite-student-decisions .section-draft-summary span,#app .lite-student-decisions .section-draft-summary small{display:block;color:#a5bcd0;font-size:11px}
+#app .lite-student-decisions .section-draft-summary #estimate{margin:4px 0;color:#ffd34f;font-size:14px;font-weight:600}
+#app .lite-student-decisions .decision-action-pair{display:flex;gap:10px}
+#app .lite-student-decisions .decision-action-pair button{min-height:48px}
+@media(max-width:720px){#app .lite-student-decisions .decision-tabs .decision-tab{min-width:128px;padding:10px}#app .lite-student-decisions .detail-heading img{width:42px;height:42px}#app .lite-student-decisions .detail-heading h1{font-size:21px}#app .lite-student-decisions .section-save-bar{align-items:stretch;flex-direction:column}#app .lite-student-decisions .decision-action-pair{display:grid;grid-template-columns:1fr 1fr}#app .lite-student-decisions .decision-action-pair button{width:100%;min-width:0}}

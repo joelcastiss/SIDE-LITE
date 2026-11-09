@@ -34,13 +34,27 @@ function enhanceStudent() {
   const quantity = row.querySelector('input[name=quantity]').closest('label');
   const price = row.querySelector('input[name=price]').closest('label');
   const marketing = form.querySelector('.campaign-section');
-  const scroll = document.createElement('div'); scroll.className = 'decision-form-scroll'; scroll.setAttribute('role','region'); scroll.setAttribute('aria-label','Contenido de la sección de decisión');
+  const scroll = document.createElement('div'); scroll.className = 'decision-form-scroll'; scroll.tabIndex = 0; scroll.setAttribute('role','region'); scroll.setAttribute('aria-label','Contenido de la sección de decisión');
   const cards = document.createElement('div'); cards.className = 'decision-cards decision-list';
   form.insertBefore(scroll, quality); scroll.append(cards);
   const nodes = [quality, quantity, price, marketing];
   sections.forEach(([id, label, icon], i) => cards.append(card(label, icon, id, nodes[i])));
   row.remove();
-  const actions = form.querySelector('.inline'); if (actions) actions.classList.add('section-save-bar');
+  const actions = form.querySelector('.inline');
+  if (actions) {
+    actions.classList.add('section-save-bar');
+    const estimate = form.querySelector('#estimate');
+    const summary = document.createElement('div'); summary.className = 'section-draft-summary';
+    const caption = document.createElement('span'); caption.textContent = 'RESUMEN DE LA DECISIÓN';
+    const hint = document.createElement('small'); hint.textContent = 'Puedes guardar un borrador o confirmar las cuatro decisiones.';
+    summary.append(caption, estimate, hint);
+    const pair = document.createElement('div'); pair.className = 'decision-action-pair';
+    for (const button of [...actions.querySelectorAll('button')]) {
+      button.classList.add('game-confirm-btn', button.value === 'draft' ? 'save-section-btn' : 'submit-decisions-btn');
+      pair.append(button);
+    }
+    actions.append(summary, pair); scroll.append(actions);
+  }
   const buttons = [];
   function select(index, focus = false) {
     const [id, label, icon, description] = sections[index];

@@ -55,3 +55,19 @@ body:has(.faculty-shell){background:#081a34}body:has(.faculty-shell)>header{disp
 .faculty-shell .faculty-create-heading{font-size:18px;margin:20px 0 12px}
 .faculty-shell .events-config-summary>strong{display:none}
 @media(max-width:680px){.faculty-shell .config-start-footer{flex-direction:column;align-items:stretch}}
+/* Detalle financiero de docente.css de SIDE, alimentado por resultados Lite. */
+.faculty-shell .result-company-card .card-title{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faculty-shell .result-company-card .card-title label{min-width:220px;margin:0}
+.faculty-shell .individual-report{max-width:760px;margin:0 auto}
+.faculty-shell .individual-report h3{margin:0 0 6px}
+.faculty-shell .financial-section{margin:20px 0}
+.faculty-shell .financial-section h4{color:#39d0ff;margin:0 0 8px}
+.faculty-shell .financial-rows{border:1px solid #39d0ff59;border-radius:12px;overflow:hidden}
+.faculty-shell .financial-rows>div{display:grid;grid-template-columns:1fr minmax(100px,auto);gap:18px;padding:11px 14px;border-bottom:1px solid #39d0ff59}
+.faculty-shell .financial-rows>div:last-child{border-bottom:0}
+.faculty-shell .financial-rows span{color:#b4d0df}
+.faculty-shell .financial-rows strong{text-align:right}
+.faculty-shell .lite-cycle-report+ .lite-cycle-report{margin-top:24px}
+.faculty-shell .lite-cycle-report[hidden]{display:none}
+.faculty-shell #faculty-reports .hint{max-width:38ch;font-size:12px}
+@media(max-width:680px){.faculty-shell .result-company-card .card-title{align-items:stretch;flex-direction:column}.faculty-shell .result-company-card .card-title label{min-width:0;width:100%}}

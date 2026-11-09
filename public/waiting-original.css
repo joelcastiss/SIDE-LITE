@@ -1,0 +1,10 @@
+/* Encabezado de studentWaiting, adaptado de css/styles.css de SIDE. */
+.student-side.student-waiting .waiting-intro{background:#020817;color:#edf5ff;padding:18px;border-radius:0}
+.student-side .waiting-header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.student-side .waiting-heading{min-width:0}.student-side .waiting-heading .eyebrow{margin:0 0 4px;color:#ffd329;font-size:12px;letter-spacing:1.5px}
+.student-side .waiting-heading h1{margin:0;font-size:clamp(21px,2.5vw,32px);line-height:1.12;letter-spacing:.3px}
+.student-side .waiting-heading p{margin:5px 0 0;font-size:13px;color:#9db1c8}
+.student-side .waiting-clock{display:grid;grid-template-columns:auto auto;align-items:center;gap:5px 12px;color:#a9bed5}
+.student-side .waiting-clock span{max-width:16ch;font-size:11px;font-weight:800;line-height:1.4}
+.student-side .waiting-clock strong{color:#ffd329;font-size:32px;font-weight:900;line-height:1}.student-side .waiting-clock small{grid-column:1/-1;font-size:11px}
+@media(max-width:650px){.student-side .waiting-header{align-items:flex-start;flex-direction:column;gap:10px}}
