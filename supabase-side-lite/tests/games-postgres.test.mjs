@@ -17,11 +17,11 @@ test('create and join use confirmed identities, teacher approval, unique members
   let server;
   try {
     for(let i=0;i<ids.length;i++) {
-      await pool.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[ids[i],`test-${ids[i]}@example.test`]);
+      await pool.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[ids[i],`test-${ids[i]}@${i===0?'upch.pe':'example.test'}`]);
       await pool.query('insert into auth.sessions(id,user_id) values($1,$2)',[sessions[i],ids[i]]);
       await pool.query('insert into public.lite_profiles(id,display_name) values($1,$2)',[ids[i],`User ${i}`]);
     }
-    await pool.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values($1,$2)',[ids[0],`test-${ids[0]}@example.test`]);
+    await pool.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values($1,$2)',[ids[0],`test-${ids[0]}@upch.pe`]);
     let allowed=true;
     const app=createGamesApp({pool,verifyToken:async token=>{const identity=tokens.get(token);if(!identity)throw Error('invalid');return identity;},limitJoin:async()=>allowed});
     server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});

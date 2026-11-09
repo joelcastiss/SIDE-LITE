@@ -17,7 +17,7 @@ create table public.lite_profiles (
 -- The email is bound to the verified identity; a changed address loses access.
 create table side_lite_private.lite_teacher_grants (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  approved_email text not null check (approved_email = lower(btrim(approved_email)) and approved_email like '%@%'),
+  approved_email text not null check (approved_email = lower(btrim(approved_email)) and approved_email ~ '^[^@[:space:]]+@upch[.]pe$'),
   granted_at timestamptz not null default now(),
   granted_by uuid references auth.users(id) on delete set null,
   revoked_at timestamptz

@@ -5,7 +5,7 @@ Estado: **preparación incompleta; no aplicar ni desplegar**. Proyecto previsto:
 ## Controles preparados
 
 - Migración propia con tablas, claves foráneas de partida, unicidad de decisiones y resultados, RLS y restricciones iniciales. Las semillas y concesiones docentes están en esquema privado. El plazo inicial se fija usando el reloj de PostgreSQL.
-- La identidad preparada verifica firma, emisor, audiencia y vigencia del JWT; la autorización docente procede de una concesión de base de datos vinculada a correo confirmado, no del dominio ni de metadatos editables.
+- La migración exige correo docente en el dominio exacto `@upch.pe` para cada concesión; también es necesaria la aprobación administrativa. La identidad preparada verifica firma, emisor, audiencia y vigencia del JWT; la autorización docente procede de una concesión de base de datos vinculada a correo confirmado, no del dominio ni de metadatos editables.
 - Operaciones parciales para crear partidas, unirse por código, iniciar ciclos y enviar decisiones; el cierre preparado utiliza el motor económico existente y una transacción con bloqueo. Hay un limitador persistente de intentos por cuenta, aún sin ensamblar en un servicio desplegable. No hay despliegue ni programador activos.
 - Las políticas pretenden limitar empresas, decisiones y resultados a su dueño o docente autorizado. La visibilidad del ranking necesita una proyección segura específica.
 

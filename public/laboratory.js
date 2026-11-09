@@ -13,6 +13,22 @@ export function simulateLaboratory({cash=30000,costs={basic:50,standard:80,premi
  return closeCycle({cash,batches:inventory,costs,event,decision,seed:SAMPLE_SEED,companyId:SAMPLE_COMPANY});
 }
 
+// Adapted from SIDE1 js/laboratorio.js: lineChart. Only the source of cycle
+// numbers and monetary values differs; no SIDE1 backend or economic model is used.
+export function laboratoryLineChart(title, rows, unit='S/') {
+ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const fmt=(n,u)=>n==null?'No disponible':u==='S/'?'S/ '+n.toLocaleString('es-PE',{maximumFractionDigits:2}):n.toLocaleString('es-PE',{maximumFractionDigits:2})+' '+u;
+ const normalized=rows.map(([cycle,value])=>[Number(cycle),value==null?null:Number(value)]).filter(([cycle,value])=>Number.isSafeInteger(cycle)&&cycle>0&&cycle<=6&&(value===null||Number.isFinite(value))).sort((a,b)=>a[0]-b[0]);
+ const valid=normalized.filter(r=>r[1]!=null);if(!valid.length)return `<div class="lab-chart"><h3>${esc(title)}</h3><p>No disponible: faltan cierres con este indicador.</p></div>`;
+ const vals=valid.map(r=>r[1]),min=Math.min(0,...vals),max=Math.max(0,...vals),range=max-min||1;
+ const last=Math.max(1,...normalized.map(r=>r[0])),x=c=>last===1?300:50+(c-1)*500/(last-1),y=v=>180-(v-min)/range*150;
+ const points=normalized.map(([cycle,value])=>value==null?null:{cycle,value,x:x(cycle),y:y(value)});
+ let segments='';for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(a&&b&&b.cycle===a.cycle+1)segments+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#167f9d" stroke-width="3"/>`;}
+ const dots=points.filter(Boolean).map(p=>`<g tabindex="0"><title>Ciclo ${p.cycle}: ${esc(fmt(p.value,unit))}</title><circle cx="${p.x}" cy="${p.y}" r="6" fill="#126582"/><text x="${p.x}" y="${Math.max(14,p.y-12)}" text-anchor="middle" class="lab-point-value">${esc(fmt(p.value,unit))}</text></g>`).join('');
+ const labels=Array.from({length:last},(_,i)=>`<text x="${x(i+1)}" y="205" text-anchor="middle">${i+1}</text>`).join('');
+ return `<div class="lab-chart"><div class="lab-chart-head"><h3>${esc(title)}</h3><span>Escala: ${esc(unit)} · eje horizontal: ciclo</span></div><svg class="lab-line-chart" viewBox="0 0 600 220" role="img" aria-label="${esc(title+': '+normalized.map(([c,v])=>'ciclo '+c+' '+fmt(v,unit)).join('; '))}"><line x1="50" y1="${y(0)}" x2="550" y2="${y(0)}" stroke="#55748a" stroke-width="1" stroke-dasharray="5 4"/><text x="12" y="${y(0)+4}">0</text>${segments}${dots}${labels}</svg><p class="lab-line-note">Cada punto es un cierre disponible; una interrupción indica datos ausentes.</p></div>`;
+}
+
 /** Original SIDE laboratory, backed only by authorized closed results and a local Lite simulation. */
 export function renderLaboratory(container,{cash=30000,costs={basic:50,standard:80,premium:120},inventory=[],game=null,companies=[],cycles=[],results=[],onRefresh=null}={}){
  if(!container)throw new Error('Falta el contenedor del laboratorio');
@@ -43,7 +59,7 @@ export function renderLaboratory(container,{cash=30000,costs={basic:50,standard:
     const margin=v.revenue?100*v.profit/v.revenue:null;
     const metrics=`<div class="lab-metrics"><div><span>◈ &nbsp;Ventas del ciclo</span><strong>${money(v.revenue)}</strong></div><div><span>↗ &nbsp;Utilidad</span><strong>${money(v.profit)}</strong></div><div><span>◉ &nbsp;Margen</span><strong>${margin===null?'No aplica':margin.toFixed(1)+' %'}</strong></div><div><span>◇ &nbsp;Unidades vendidas</span><strong>${escape(v.sold)}</strong></div></div>`;
     const history=closed.filter(r=>r.company_id===row.company_id&&Number(r.number)<=Number(row.number));
-    const graph=chart==='finance'?bars('Resultado económico',[['Ingresos',v.revenue],['Costo de ventas',-v.costOfSales],['Marketing',-v.marketing],['Utilidad',v.profit]]):chart==='production'?bars('Unidades del ciclo',[['Vendidas',v.sold],['Demanda potencial',v.demand],['Inventario final',(v.inventory||[]).reduce((n,b)=>n+b.quantity,0)]],'unidades'):bars('Utilidad por ciclo',history.map(r=>['Ciclo '+r.number,r.result.profit]));
+    const graph=chart==='finance'?bars('Resultado económico',[['Ingresos',v.revenue],['Costo de ventas',-v.costOfSales],['Marketing',-v.marketing],['Utilidad',v.profit]]):chart==='production'?bars('Unidades del ciclo',[['Vendidas',v.sold],['Demanda potencial',v.demand],['Inventario final',(v.inventory||[]).reduce((n,b)=>n+b.quantity,0)]],'unidades'):laboratoryLineChart('Utilidad por ciclo',history.map(r=>[r.number,r.result.profit]));
     content.innerHTML=context+metrics+chartButtons()+graphArea(graph)+explain('Resultados del ciclo cerrado.','La utilidad considera ventas, costo de ventas y marketing.','Revisa la relación entre precio, cantidad, calidad y marketing.','¿Qué decisión cambiarías para mejorar la utilidad?');
     container.querySelectorAll('[data-lab-chart]').forEach(b=>b.onclick=()=>{chart=b.dataset.labChart;show()});
    }else{

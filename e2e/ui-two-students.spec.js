@@ -1,4 +1,7 @@
 import {test,expect} from '@playwright/test';
+import pg from 'pg';
+import {assertLocalDatabase} from '../server/database-url.js';
+import {closeCycle} from '../js/engine.js';
 
 // Requires local SIDE-LITE server and a disposable localhost database. It does not use Neon.
 const base='http://127.0.0.1:4178';
@@ -29,7 +32,7 @@ async function account(browser,role,name){
 async function state(ctx,id){const r=await ctx.request.get(`${base}/api/games/${id}`);expect(r.ok()).toBeTruthy();return r.json()}
 
 test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',async({browser})=>{
- test.setTimeout(1100000);const items=[];
+ test.setTimeout(1100000);const items=[];const pool=new pg.Pool({connectionString:assertLocalDatabase(process.env.DATABASE_URL)});
  try{
   const teacher=await account(browser,'teacher','docente');items.push(teacher);
   const a=await account(browser,'student','alumna');items.push(a);
@@ -46,7 +49,10 @@ test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',as
   const games=await teacher.context.request.get(`${base}/api/games`);expect(games.ok()).toBeTruthy();
   const game=(await games.json()).find(x=>x.code===code);expect(game).toBeTruthy();
   for(let n=1;n<=cycleCount;n++)await test.step(`Ciclo ${n}`,async()=>{
+   const before=await state(teacher.context,game.id);
    const start=teacher.page.locator('#start');await expect(start).toBeEnabled({timeout:20000});await start.click();
+   await expect.poll(async()=>{const s=await state(teacher.context,game.id);return s.cycles.at(-1)?.number},{timeout:20000}).toBe(n);
+   await expect(teacher.page.locator('.round-number strong')).toContainText(`${n} / ${cycleCount}`);
    for(const [person,amount,quality] of [[a,200,'basic'],[b,400,'standard']]){
     const decision=person.page.locator('#decision');await expect(decision).toBeVisible({timeout:20000});
     await decision.locator('[name=quality]').selectOption(quality);await decision.locator('[name=quantity]').fill('10');
@@ -55,9 +61,15 @@ test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',as
     await expect(person.page.getByText('Decisión confirmada.')).toBeVisible();
    }
    await expect.poll(async()=>{const gameState=await state(teacher.context,game.id);return gameState.cycles.find(x=>x.number===n)?.status},{timeout:150000,intervals:[500,1000]}).toBe('closed');
+   const cycle=(await state(teacher.context,game.id)).cycles.find(x=>x.number===n);
+   const {rows:[privateCycle]}=await pool.query('SELECT seed FROM lite_cycles WHERE id=$1',[cycle.id]);
    for(const person of [a,b]){
     const own=await state(person.context,game.id);const faculty=await state(teacher.context,game.id);
     expect(own.results).toHaveLength(n);expect(own.results.at(-1).result).toEqual(faculty.results.find(x=>x.number===n&&x.company_id===own.company.id).result);
+    const company=before.companies.find(x=>x.id===own.company.id);const first=person===a;
+    expect(own.results.at(-1).result).toEqual(closeCycle({cash:company.cash,batches:company.inventory,costs:before.game.costs,event:cycle.event_id,seed:privateCycle.seed,companyId:company.id,decision:{quality:first?'basic':'standard',quantity:10,price:120,marketingAmount:first?200:400}}));
+    expect(own.ranking.map(({id,returnPercent})=>({id,returnPercent}))).toEqual(faculty.ranking.map(({id,returnPercent})=>({id,returnPercent})));
+    await expect(person.page.locator('#cycle-status')).toHaveText('Cerrado',{timeout:25000});
    }
   });
   await expect(teacher.page.getByText('Partida finalizada.').first()).toBeVisible({timeout:20000});
@@ -71,5 +83,5 @@ test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',as
   await expect(laboratory.getByText('Comparación de resultados oficiales de ciclos cerrados.')).toBeVisible();
   await expect(laboratory.locator('#lab-other')).toBeVisible();
   for(const person of items){await person.page.locator(person===teacher?'#teacher-logout':'#logout').click();await expect(person.page.locator('#startBtn')).toBeVisible()}
- }finally{await Promise.allSettled(items.map(x=>x.context.close()))}
+ }finally{await Promise.allSettled(items.map(x=>x.context.close()));await pool.end()}
 });

@@ -3,12 +3,22 @@ begin;
 insert into auth.users(id,email,email_confirmed_at) values
  ('00000000-0000-0000-0000-000000000001','a@example.test', now()),
  ('00000000-0000-0000-0000-000000000002','b@example.test', now()),
- ('00000000-0000-0000-0000-000000000003','teacher@example.test', now()),
+ ('00000000-0000-0000-0000-000000000003','teacher@upch.pe', now()),
  ('00000000-0000-0000-0000-000000000004','other@example.test', now()),
  ('00000000-0000-0000-0000-000000000005','peer@example.test', now());
 insert into public.lite_profiles(id,display_name) select id, email from auth.users;
 insert into side_lite_private.lite_teacher_grants(user_id,approved_email)
- values ('00000000-0000-0000-0000-000000000003','teacher@example.test');
+ values ('00000000-0000-0000-0000-000000000003','teacher@upch.pe');
+do $$ begin
+ begin
+  insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values ('00000000-0000-0000-0000-000000000004','other@example.test');
+  raise exception 'non-institutional teacher grant accepted';
+ exception when check_violation then null; end;
+ begin
+  insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values ('00000000-0000-0000-0000-000000000004','other@upch.pe.evil.test');
+  raise exception 'spoofed institutional domain accepted';
+ exception when check_violation then null; end;
+end $$;
 insert into public.lite_games(id, teacher_id,name,code,cycle_count,capital_min,capital_max,costs) values
  ('10000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000003','Game 1','ABCD0001',3,10000,10000,'{}'),
  ('10000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000004','Game 2','ABCD0002',3,10000,10000,'{}');

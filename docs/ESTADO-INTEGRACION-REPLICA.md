@@ -16,3 +16,9 @@ Rama de trabajo: `codex/integracion-side-lite`, basada en `7267051`. Los cambios
 Archivos originales SIDE1 reutilizados: `css/laboratorio.css`, copiado como `public/laboratory.css`; se reutilizan activos SIDE y partes de la estructura/clases de `docente.html`. `public/laboratory.js` y el panel están adaptados y no son copias íntegras del JavaScript original. Falta integrar los componentes originales restantes.
 
 Pruebas ejecutadas en esta rama: 61 pruebas Node; empaquetado BFF; prueba Playwright del laboratorio con PostgreSQL 17 local; RLS y API Supabase con Auth emulado y PostgreSQL local; no demuestran seguridad ni autenticación de Supabase remoto. Las pruebas de ciclos largas se informan por separado tras terminar. No se han aplicado migraciones remotas; las migraciones Supabase no están listas para aplicar.
+
+## Comprobación local de sincronización
+
+Se incorporaron límites al tiempo de espera de actualización, descarte de respuestas anteriores y aislamiento de borradores por ciclo. Dos pruebas Playwright con API simulada comprobaron una respuesta bloqueada y tardía, dos sesiones y recuperación tras pérdida de red. Una partida real local de tres ciclos de 120 segundos con docente y dos estudiantes terminó correctamente y contrastó cada resultado con el motor económico. Una partida local de seis ciclos de 120 segundos también terminó correctamente, con docente y dos estudiantes, transiciones automáticas, decisiones, ranking y resultados contrastados con el motor económico. Estas pruebas no acreditan Supabase remoto.
+
+La migración Supabase en preparación exige además dominio exacto @upch.pe y aprobación administrativa. PostgreSQL aislado con Auth emulado aprobó pruebas RLS y dominios inválidos; no aplicar hasta revisar privilegios efectivos y probar autenticación y cierre reales.
