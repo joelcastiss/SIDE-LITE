@@ -30,7 +30,7 @@ for(const viewport of [{name:'escritorio',width:1440,height:900},{name:'móvil',
     await page.getByRole('button',{name:'Cantidad',exact:true}).click();await page.locator('#decision [name=quantity]').fill('10');await page.locator('#decision button[value=confirm]').click();
     await expect(page.locator('#error')).toContainText(/demostración|disponible|conectad/i);
    }else{
-    for(const id of ['rondas','empresas','resultados','podio','laboratorio','historial']){
+    for(const id of ['configuracion','rondas','empresas','resultados','podio','laboratorio','historial']){
      await page.locator(`[data-tab=${id}]`).click();await expect(page.locator(`#tab-${id}`)).toBeVisible();
     }
     await page.locator('[data-tab=laboratorio]').click();await page.getByRole('button',{name:'Probar otra decisión'}).click();await expect(page.locator('#lab-lite-form')).toBeVisible();
