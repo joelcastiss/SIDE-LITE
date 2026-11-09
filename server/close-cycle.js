@@ -6,13 +6,13 @@ export async function closeDue(pool){
   let cursor=null;
   for(;;){
    // Preserve PostgreSQL's microsecond precision; JS Date would truncate the cursor.
-   const {rows:due}=await pool.query("SELECT id, ends_at::text AS cursor_ends_at FROM lite_cycles WHERE status='open' AND ends_at<=now() AND ($1::timestamptz IS NULL OR (ends_at,id)>($1::timestamptz,$2::uuid)) ORDER BY ends_at,id LIMIT 100",cursor?[cursor.ends_at,cursor.id]:[null,null]);
+   const {rows:due}=await pool.query("SELECT id, ends_at::text AS cursor_ends_at FROM lite_cycles WHERE status='open' AND paused_at IS NULL AND (ends_at<=now() OR close_requested_at IS NOT NULL) AND ($1::timestamptz IS NULL OR (ends_at,id)>($1::timestamptz,$2::uuid)) ORDER BY ends_at,id LIMIT 100",cursor?[cursor.ends_at,cursor.id]:[null,null]);
    if(!due.length)break;
    for(const {id} of due){
     const c=await pool.connect();
     try{
       await c.query('BEGIN');
-      const {rows:[cy]}=await c.query("SELECT * FROM lite_cycles WHERE id=$1 AND status='open' AND ends_at<=now() FOR UPDATE SKIP LOCKED",[id]);
+      const {rows:[cy]}=await c.query("SELECT * FROM lite_cycles WHERE id=$1 AND status='open' AND paused_at IS NULL AND (ends_at<=now() OR close_requested_at IS NOT NULL) FOR UPDATE SKIP LOCKED",[id]);
       if(!cy){await c.query('COMMIT');continue}
       const {rows:[g]}=await c.query('SELECT * FROM lite_games WHERE id=$1',[cy.game_id]);
       const {rows:companies}=await c.query('SELECT * FROM lite_companies WHERE game_id=$1 FOR UPDATE',[g.id]);

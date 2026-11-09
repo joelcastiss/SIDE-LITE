@@ -3,7 +3,7 @@ import {dirname,resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const publicDir=join(root,'public');
-const list=['index.html','app.js','campaign.js','style.css','neon-session.js','bff-session.js',
+const list=['index.html','app.js','campaign.js','laboratory.js','laboratory-engine.js','laboratory.css','style.css','neon-session.js','supabase-session.js','bff-session.js',
  'assets/logo-side.png','assets/logo-side-original-pdf.png','assets/logo-ciencias-ingenieria.png','assets/icons/profile-person.webp','assets/icons/perfil-profesor.png','assets/Poppins-Regular.ttf','assets/Poppins-SemiBold.ttf',
  'assets/icons/categories/canales_ventas.svg','assets/icons/categories/finanzas.svg','assets/icons/teacher/configuracion.svg','assets/icons/teacher/empresas.svg','assets/icons/teacher/resultados.svg','assets/icons/teacher/podio.svg','assets/icons/teacher/rondas.svg'];
 const types={html:'text/html; charset=utf-8',js:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8',
@@ -18,9 +18,9 @@ for(const file of list){
    if(!text.includes(before))throw Error('No se encontró el import original en public/app.js');
    text=text.replace(before,before+"\nimport {createBffSession} from './bff-session.js';");
   }
-  const old="const neon=window.sideLiteNeonClient ? createNeonSession(window.sideLiteNeonClient) : null;";
+  const old="const managed=supabase || neon;";
   if(text.includes(old))text=text.replace(old,
-   "const neon=window.sideLiteBff ? createBffSession() : (window.sideLiteNeonClient ? createNeonSession(window.sideLiteNeonClient) : null);");
+   "const managed=window.sideLiteBff ? createBffSession() : (supabase || neon);");
   if(!text.includes('window.sideLiteBff ? createBffSession()'))throw Error('No se pudo activar la sesión BFF');
   content=Buffer.from(text);
  }

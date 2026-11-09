@@ -45,7 +45,7 @@ test('API remota no expone semilla en inicio ni detalle de docente o estudiante'
 test('servidores devuelven lista explícita de ciclos pero motor conserva la semilla',async()=>{
  for(const file of ['../remote/api-app.js','../server/index.js']){
   const source=await readFile(new URL(file,import.meta.url),'utf8');
-  assert.match(source,/SELECT id,game_id,number,starts_at,ends_at,status,event_id,now\(\) AS server_now FROM (?:lite\.)?lite_cycles/);
+  assert.match(source,/SELECT id,game_id,number,starts_at,ends_at,status,event_id,(?:paused_at,close_requested_at,)?now\(\) AS server_now FROM (?:lite\.)?lite_cycles/);
   assert.match(source,/RETURNING id,game_id,number,starts_at,ends_at,status,event_id/);
   assert.match(source,/seed:cycle\.seed/);
  }

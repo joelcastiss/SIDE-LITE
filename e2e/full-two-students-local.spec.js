@@ -35,7 +35,7 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
   const second=await register(browser,'student',`alumno${cycles}`); contexts.push(second);
   const catalog=await call(teacher,'/catalog');
   expect(catalog.length).toBeGreaterThan(0);
-  const game=await call(teacher,'/games','POST',{name:`Aula ${cycles}`,cycleCount:cycles,duration:8,
+  const game=await call(teacher,'/games','POST',{name:`Aula ${cycles}`,cycleCount:cycles,duration:120,
    capitalMin:30000,capitalMax:100000,costs:{basic:50,standard:80,premium:120},events:[catalog[0].id]});
   const companyA=await call(first,'/join','POST',{code:game.code,name:'Empresa Aurora'});
   const companyB=await call(second,'/join','POST',{code:game.code,name:'Empresa Bahia'});
@@ -47,7 +47,7 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
   for(let number=1;number<=cycles;number++) await test.step(`Ciclo ${number}`,async()=>{
    const cycle=await call(teacher,`/games/${game.id}/start`,'POST',{});
    expect(cycle.number).toBe(number);
-   expect((Date.parse(cycle.ends_at)-Date.parse(cycle.starts_at))/1000).toBe(8);
+   expect((Date.parse(cycle.ends_at)-Date.parse(cycle.starts_at))/1000).toBe(120);
    expect(cycle.event_id).toBe(catalog[0].id);
    for(const [context,decision] of [[first,{quality:'basic',quantity:10,price:100,marketingAmount:200,confirmed:true}],
     [second,{quality:'standard',quantity:10,price:120,marketingAmount:0,confirmed:true}]]){
@@ -55,6 +55,8 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
    }
    const open=await call(teacher,`/games/${game.id}`);
    expect(open.decisions.filter(d=>d.confirmed)).toHaveLength(2);
+   // Exercise authorized early close; the real 120-second deadline is tested separately.
+   await call(teacher,`/games/${game.id}/cycle-control`,'POST',{action:'close'});
    await finishCycle(teacher,game.id,number);
    const faculty=await call(teacher,`/games/${game.id}`);
    expect(faculty.results).toHaveLength(number*2);
@@ -72,9 +74,9 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
   const page=await teacher.newPage();
   await page.goto(base);
   await page.getByRole('button',{name:`Aula ${cycles}`}).click();
-  await expect(page.getByRole('heading',{name:'Clasificación'})).toBeVisible();
-  await expect(page.getByRole('heading',{name:'Resultados'})).toBeVisible();
+  await page.locator('[data-tab=podio]').click();await expect(page.locator('#tab-podio h2')).toBeVisible();
+  await page.locator('[data-tab=resultados]').click();await expect(page.locator('#resultsHeading')).toBeVisible();
   await expect(page.getByText('Partida finalizada.')).toBeVisible();
-  await expect(page.getByRole('button',{name:'Iniciar ciclo'})).toBeDisabled();
+  await page.locator('[data-tab=rondas]').click();await expect(page.locator('#start')).toBeDisabled();
  }finally{await Promise.allSettled(contexts.map(context=>context.close()))}
 });

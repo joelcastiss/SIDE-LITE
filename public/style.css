@@ -21,3 +21,26 @@ body:has(.landing-screen),body:has(.profile-screen){background:#081a34;color:#f8
 .student-side .decision-tab{display:flex;align-items:center;gap:8px}.student-side .decision-tab img{width:22px;height:22px}
 /* Modal de acceso SIDE: jerarquía, ancho y superficie originales. */
 .modal-root .modal{width:min(600px,100%);background:#08182f;border-width:1px;border-radius:24px;padding:30px 32px 56px}.modal-root .modal-side-logo{display:block;margin:0 auto 12px}.modal-root h2,.modal-root .modal-lead,.modal-root .switch-line{text-align:center}.modal-root input,.modal-root select{background:#091a31!important;border-radius:12px!important}.modal-root .primary-gold{border-radius:12px}.modal-root .switch-line{margin-top:30px}@media(max-width:650px){.modal-root .modal{padding:24px 20px 36px}}
+/* Ajustes de distribución del panel docente de SIDE original. */
+body:has(.faculty-shell){background:#081a34}body:has(.faculty-shell)>header{display:none}body:has(.faculty-shell)>main{max-width:none;padding:0}body:has(.faculty-shell) #error{position:fixed;z-index:1100;top:4px;right:12px;background:#081a34;color:#ffe18a}.faculty-shell{min-height:100dvh;border-radius:0}.faculty-shell .sidebar{width:260px;position:sticky;top:0;height:100dvh}.faculty-shell .content{padding:24px;min-width:0}.faculty-shell .teacher-config-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.faculty-shell .teacher-config-card{padding:18px;border:1px solid #39d0ff66;border-radius:10px;background:#09182f}.faculty-shell .teacher-config-footer{grid-column:1/-1}.faculty-shell .teacher-config-card h3{font-size:14px;color:#39d0ff;text-transform:uppercase}.faculty-shell .topbar{padding:0 0 18px}.faculty-shell .faculty-wordmark-small{font-size:32px}.faculty-shell .hero-card{display:flex;align-items:center;justify-content:space-between}.faculty-shell .content .panel{margin-bottom:0}@media(max-width:760px){.faculty-shell .sidebar{position:static;width:auto;height:auto}.faculty-shell .teacher-config-grid{grid-template-columns:1fr}.faculty-shell .teacher-config-footer{grid-column:auto}.faculty-shell .topbar{align-items:flex-start;flex-wrap:wrap}.faculty-shell .top-actions{flex-wrap:wrap}}
+.student-side.student-waiting .waiting-intro{padding:28px 24px 12px;background:#06172e;color:#fff;border-radius:14px 14px 0 0}.student-side .waiting-intro span{font-size:12px;font-weight:700;color:#ffd329}.student-side .waiting-intro h1{font-size:clamp(25px,3vw,38px);margin:6px 0}.student-side .waiting-intro p{color:#c4d3df}.student-side.student-waiting .decision-topbar{margin:0}.student-side.student-waiting .decision-window{border-radius:0 0 14px 14px}
+.faculty-shell .sidebar-bottom{display:grid;gap:6px}@media(max-width:760px){.faculty-shell .sidebar-bottom{display:flex;margin-top:0}.faculty-shell .sidebar-link{font-size:12px}}
+.faculty-shell #faculty-lab{margin-top:20px}.faculty-shell .lab-lite{padding:22px}.faculty-shell .lab-lite .hint{float:none;display:block;color:#b4d0df}.faculty-shell .lab-lite label{min-width:0}.faculty-shell .lab-lite dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 20px}.faculty-shell .lab-lite dt{color:#a9cbdc}.faculty-shell .lab-lite dd{margin:0;font-weight:600}.faculty-shell #lab-lite-error{color:#ffd68a}.faculty-shell .lab-lite input,.faculty-shell .lab-lite select{width:100%;padding:11px;border:1px solid #3b7290;border-radius:7px;font:inherit}.faculty-shell .lab-lite button{margin-top:10px}
+/* Estructura de secciones tomada de docente.html de SIDE; acciones por API Lite. */
+.faculty-shell nav .nav-btn{border:1px solid transparent;background:transparent;color:#d8f6ff;text-align:left;width:100%;font:inherit;font-weight:600;cursor:pointer}
+.faculty-shell nav .nav-btn.active{background:#073655;border-color:#20bfe9;color:#fff}
+.faculty-shell .faculty-tab[hidden]{display:none}
+.faculty-shell .faculty-tab{padding-top:20px}
+.faculty-shell .section-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+.faculty-shell .section-head h2{margin:.25rem 0}
+.faculty-shell .round-status{display:flex;align-items:center;gap:2rem;padding:1.3rem;margin-bottom:1rem}
+.faculty-shell .round-number{display:grid;gap:.2rem;color:#55d6f4}
+.faculty-shell .round-number strong{font-size:1.6rem;color:white}
+.faculty-shell .timer-box{margin-left:auto;font-size:1.35rem;color:white}
+.faculty-shell .company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.faculty-shell .teacher-section-title{display:flex;align-items:center;gap:1rem}
+.faculty-shell .teacher-section-icon img{height:40px;width:40px}
+.faculty-shell .teacher-guide{margin:1rem 0}
+.faculty-shell .winner-hero{display:flex;align-items:center;justify-content:space-between}
+.faculty-shell .trophy-orb img{width:64px;height:64px}
+@media(max-width:767px){.faculty-shell .section-head,.faculty-shell .round-status{align-items:stretch;flex-direction:column}.faculty-shell .timer-box{margin-left:0}}
