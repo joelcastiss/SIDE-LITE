@@ -17,9 +17,12 @@ for(const viewport of [{name:'escritorio',width:1440,height:900},{name:'móvil',
    await page.getByRole('button',{name:'Partida de demostración',exact:true}).click();
    if(role==='student'){
     await expect(page.locator('#decision')).toBeVisible();
-    for(const field of ['quality','quantity','price','marketingAmount'])await expect(page.locator(`#decision [name=${field}]`)).toBeVisible();
+    for(const [section,field] of [['Calidad','quality'],['Cantidad','quantity'],['Precio','price'],['Marketing','marketingAmount']]){
+     await page.getByRole('button',{name:section,exact:true}).click();
+     await expect(page.locator(`#decision [name=${field}]`)).toBeVisible();
+    }
     await expect(page.locator('#lite-ranking')).toBeAttached();await expect(page.locator('#lite-results')).toBeAttached();
-    await page.locator('#decision [name=quantity]').fill('10');await page.locator('#decision button[value=confirm]').click();
+    await page.getByRole('button',{name:'Cantidad',exact:true}).click();await page.locator('#decision [name=quantity]').fill('10');await page.locator('#decision button[value=confirm]').click();
     await expect(page.locator('#error')).toContainText(/demostración|disponible|conectad/i);
    }else{
     for(const id of ['rondas','empresas','resultados','podio','laboratorio','historial']){

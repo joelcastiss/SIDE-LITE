@@ -46,3 +46,12 @@ body:has(.faculty-shell){background:#081a34}body:has(.faculty-shell)>header{disp
 @media(max-width:767px){.faculty-shell .section-head,.faculty-shell .round-status{align-items:stretch;flex-direction:column}.faculty-shell .timer-box{margin-left:0}}
 
 .faculty-shell main.content{margin:0;max-width:none;align-self:stretch}
+
+/* Distribución de configuración trasladada de docente.css de SIDE. */
+.faculty-shell .events-config-summary{margin-top:22px}
+.faculty-shell .config-start-footer{margin:24px 0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px;border:1px solid #39d0ffa6;border-radius:18px;background:#09182f}
+.faculty-shell .config-start-footer p{margin:5px 0 0;color:#b4d0df}
+.faculty-shell .faculty-games-card{margin:24px 0;padding:20px}
+.faculty-shell .faculty-create-heading{font-size:18px;margin:20px 0 12px}
+.faculty-shell .events-config-summary>strong{display:none}
+@media(max-width:680px){.faculty-shell .config-start-footer{flex-direction:column;align-items:stretch}}

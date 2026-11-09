@@ -67,3 +67,11 @@ body:has(#app.lite-decision-active #decision)>main{max-width:none;padding:0}
 #app.lite-decision-active .lite-student-decisions .section-save-bar button[value=confirm]{background:linear-gradient(110deg,#ffe34c,#ff9900);border-color:#ffdf5c;color:#081a34;font-weight:700}
 @media(max-width:720px){#app.lite-decision-active .lite-decision-topbar{flex-wrap:wrap;gap:10px;padding:12px} .lite-decision-identity{width:100%}.lite-decision-metrics{flex:1;min-width:0}.lite-decision-metrics>div{min-width:0;flex:1;padding:8px}.lite-decision-metrics strong{font-size:15px}.lite-decision-actions{width:100%;justify-content:space-between}#app .lite-send-all{min-width:145px}#app.lite-student-lobby.lite-decision-active>.layout{margin:0 10px}}
 #app.lite-decision-active:has(#back) .lite-send-all,#app.lite-decision-active:has(#back) .section-save-bar button[value=confirm]{background:linear-gradient(110deg,#ffe34c,#ff9900);border-color:#ffdf5c;color:#081a34}#app.lite-decision-active .lite-student-decisions .campaign-section{padding:16px}
+/* Navegación por secciones de decisionMenu de SIDE Original. */
+#app .lite-student-decisions .decision-tabs .decision-tab{display:flex;align-items:center;gap:8px;flex:1 0 auto;justify-content:center;padding:10px 14px;color:#dbeeff;border:1px solid rgba(255,255,255,.1);border-radius:11px;background:linear-gradient(145deg,#12263a,#07121c);font-size:13px;font-weight:600}
+#app .lite-student-decisions .decision-tabs .decision-tab.active{background:#023863;border-color:#39d0ff;color:#fff}
+#app .lite-student-decisions .decision-tabs .decision-tab:focus-visible{outline:3px solid #39d0ff;outline-offset:2px}
+#app .lite-student-decisions .decision-card[hidden]{display:none}
+#app .lite-student-decisions .decision-detail{min-width:0}
+#app .lite-student-decisions .decision-form-scroll{min-width:0}
+@media(max-width:720px){#app .lite-student-decisions .decision-tabs .decision-tab{flex:0 0 auto}}
