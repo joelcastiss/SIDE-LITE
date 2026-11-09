@@ -15,7 +15,7 @@ async function account(browser,role,name){
  await page.locator('#startBtn').click();
  await page.locator(`[data-profile=${role}]`).click();
  await page.locator('#show-register').click();
- const email=`${name}-${stamp}@side.test`;
+ const email=`${name}-${stamp}@upch.pe`;
  const register=page.locator('#register');
  await register.locator('[name=name]').fill(name);
  await register.locator('[name=email]').fill(email);

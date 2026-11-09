@@ -3,7 +3,7 @@ import pg from 'pg';
 import {assertLocalDatabase} from '../server/database-url.js';
 const base='http://127.0.0.1:4184/api',db=new pg.Pool({connectionString:assertLocalDatabase(process.env.DATABASE_URL)}),suffix=Date.now(),password='prueba-segura-2026',key='side-lite-local-testing-key-2026';
 async function call(path,method='GET',body,cookie){const r=await fetch(base+path,{method,headers:{...(cookie?{cookie}:{}),...(body?{'content-type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});return {status:r.status,body:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]}}
-async function account(role,name){const email=`${name}-${suffix}@side.test`;assert.equal((await call('/register','POST',{email,password,name,role,key})).status,201);const r=await call('/login','POST',{email,password});assert.equal(r.status,200);return r.cookie}
+async function account(role,name){const email=`${name}-${suffix}@upch.pe`;assert.equal((await call('/register','POST',{email,password,name,role,key})).status,201);const r=await call('/login','POST',{email,password});assert.equal(r.status,200);return r.cookie}
 try{
  const teacher=await account('teacher','docente'),other=await account('teacher','otro'),a=await account('student','alumna'),b=await account('student','alumno');
  const game=(await call('/games','POST',{name:'Podio prueba',cycleCount:3,duration:120,costs:{basic:50,standard:80,premium:120}},teacher)).body;

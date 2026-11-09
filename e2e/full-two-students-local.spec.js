@@ -15,7 +15,7 @@ async function call(ctx,path,method='GET',data){
 }
 async function register(browser,role,name){
  const context=await browser.newContext();
- const email=`${name}-${nonce}@side.test`;
+ const email=`${name}-${nonce}@upch.pe`;
  await call(context,'/register','POST',{email,password,name,role,key:teacherKey});
  await call(context,'/login','POST',{email,password});
  return context;

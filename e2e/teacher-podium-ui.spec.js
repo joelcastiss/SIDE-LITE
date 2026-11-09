@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 const base='http://127.0.0.1:4178',password='clave-podio-prueba-2026',key=process.env.TEACHER_REGISTRATION_KEY||'side-lite-local-testing-key-2026';
 async function req(ctx,path,method='GET',data){const r=await ctx.request.fetch(base+'/api'+path,{method,data});expect(r.ok(),`${path}: ${r.status()} ${await r.text()}`).toBeTruthy();return r.json()}
-async function account(browser,role,tag){const c=await browser.newContext(),email=`podio-${tag}-${Date.now()}@side.test`;await req(c,'/register','POST',{email,password,name:tag,role,key});await req(c,'/login','POST',{email,password});return c}
+async function account(browser,role,tag){const c=await browser.newContext(),email=`podio-${tag}-${Date.now()}@upch.pe`;await req(c,'/register','POST',{email,password,name:tag,role,key});await req(c,'/login','POST',{email,password});return c}
 test('docente gestiona ciclos, notas y podio desde el panel local',async({browser})=>{
  test.setTimeout(120000);const teacher=await account(browser,'teacher','Docente'),student=await account(browser,'student','Alumno'),other=await account(browser,'teacher','Ajeno');
  try{
