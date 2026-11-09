@@ -71,3 +71,20 @@ body:has(.faculty-shell){background:#081a34}body:has(.faculty-shell)>header{disp
 .faculty-shell .lite-cycle-report[hidden]{display:none}
 .faculty-shell #faculty-reports .hint{max-width:38ch;font-size:12px}
 @media(max-width:680px){.faculty-shell .result-company-card .card-title{align-items:stretch;flex-direction:column}.faculty-shell .result-company-card .card-title label{min-width:0;width:100%}}
+/* Entrada del estudiante: estructura lobby-card de index.html de SIDE. */
+body:has(.student-home){background:#020817;color:#edf5ff}
+body:has(.student-home)>main{max-width:none;padding:0}
+.student-home.dashboard-screen{position:relative;min-height:calc(100dvh - 72px);background:#020817}
+.student-home .dashboard-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#0b2b4c,#020817 75%)}
+.student-home .dashboard-inner{position:relative;z-index:2;width:min(1100px,92vw);margin:auto;padding:28px 0 50px}
+.student-home .lobby{text-align:center;display:grid;place-items:center;min-height:calc(100dvh - 72px)}
+.student-home .lobby-card{box-sizing:border-box;width:min(570px,90vw);padding:30px 34px;border-radius:22px;background:#061a35e8;border:1px solid #2d8cff77;box-shadow:0 25px 80px #000b}
+.student-home .dash-logo{display:block;width:165px;max-width:55%;height:auto;margin:0 auto 20px}
+.student-home .lobby-card h1{font-size:clamp(26px,4vw,48px);line-height:1.15;color:#ffd329;letter-spacing:1px;margin:7px 0}
+.student-home .lobby-card p{color:#c9d7e8}.student-home .eyebrow{color:#ffd329!important;font-weight:700}
+.student-home .student-join-form{text-align:left;margin-top:24px}.student-home .student-join-form label{display:block;margin:16px 0;color:#edf5ff}
+.student-home .student-join-form input{width:100%;box-sizing:border-box;background:#091a31;color:#fff;border:1px solid #39d0ff;border-radius:12px}
+.student-home .student-join-form button{width:100%;background:#39d0ff;color:#081a34;border-radius:12px;margin-top:8px}
+.student-home .student-game-list{margin:24px 0 0;text-align:left;background:transparent;border:0;padding:0;color:#edf5ff}
+.student-home .student-game-list h2{font-size:18px;color:#fff}.student-home .student-game-list .list{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:650px){.student-home .lobby-card{padding:24px 20px}.student-home .lobby-card h1{font-size:28px}}
