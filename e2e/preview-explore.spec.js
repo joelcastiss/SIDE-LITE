@@ -9,7 +9,7 @@ for(const viewport of [{name:'escritorio',width:1440,height:900},{name:'móvil',
   for(const role of ['student','teacher'])test(`${role}: navega sin enviar datos al servidor`,async({page})=>{
    test.setTimeout(60000);const calls=[];
    page.on('request',r=>{const u=new URL(r.url());if(u.pathname.includes('/api/')||!['GET','HEAD'].includes(r.method()))calls.push(`${r.method()} ${u.pathname}`)});
-   await page.goto(`${base}/SIDE-LITE/`);await expect(page.locator('#static-preview-notice')).toBeVisible();
+   await page.goto(`${base}/SIDE-LITE/public/?static=1`);await expect(page.locator('#static-preview-notice')).toBeVisible();
    await page.locator('#startBtn').click();await page.locator(`[data-profile=${role}]`).click();
    await expect(page.locator('#login')).toBeVisible();await page.locator('#show-register').click();await expect(page.locator('#register')).toBeVisible();
    await page.locator('#explore-preview').click();

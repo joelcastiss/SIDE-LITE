@@ -1,0 +1,69 @@
+/* Componentes derivados de decision-window, decision-tabs, decision-card y
+   section-save-bar de SIDE Original (css/styles.css), acotados a SIDE Lite. */
+#app .lite-student-decisions.decision-window{padding:0;overflow:hidden;background:#07182b;border:1px solid rgba(255,255,255,.13);border-radius:18px}
+#app .lite-student-decisions>h2,#app .lite-student-decisions>p{margin:18px 20px}
+#app .lite-student-decisions .decision-tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;background:#06121f;border-bottom:1px solid rgba(255,255,255,.1)}
+#app .lite-student-decisions .decision-tabs a{display:flex;align-items:center;gap:8px;flex:1 0 auto;justify-content:center;padding:10px 14px;color:#dbeeff;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:11px;background:linear-gradient(145deg,#12263a,#07121c);font-size:13px;font-weight:600}
+#app .lite-student-decisions .decision-tabs a:hover,#app .lite-student-decisions .decision-tabs a:focus-visible{border-color:#6bc7ff;color:#fff}
+#app .lite-student-decisions .decision-tabs img{width:30px;height:30px;object-fit:contain}
+#app .lite-student-decisions .decision-detail-head{display:flex;align-items:center;gap:18px;margin:0;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08);background:#07182b}
+#app .lite-student-decisions .detail-heading{display:flex;align-items:center;gap:13px}
+#app .lite-student-decisions .detail-heading img{width:44px;height:44px;object-fit:contain}
+#app .lite-student-decisions .detail-heading span{font-size:13px;color:#5ebaff;font-weight:600}
+#app .lite-student-decisions .detail-heading h1{margin:2px 0;font-size:24px;color:#fff}
+#app .lite-student-decisions .detail-heading p{margin:0;color:#a9bdd0;font-size:14px}
+#app .lite-student-decisions form{padding:18px}
+#app .lite-student-decisions .decision-cards{display:grid;gap:15px}
+#app .lite-student-decisions .decision-card{position:relative;padding:18px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(145deg,rgba(11,29,44,.96),rgba(3,10,16,.98));box-shadow:0 15px 40px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.04);scroll-margin-top:16px}
+#app .lite-student-decisions .decision-card-art{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07)}
+#app .lite-student-decisions .decision-card-art>img{width:54px;height:54px;object-fit:contain;padding:6px;border-radius:12px;background:#06101a;border:1px solid rgba(255,255,255,.08)}
+#app .lite-student-decisions .decision-card-art h3{font-size:19px;margin:4px 0;color:#fff}
+#app .lite-student-decisions .decision-card label{margin-bottom:0}
+#app .lite-student-decisions .campaign-section{margin:0;padding:0;border:0;background:transparent}
+#app .lite-student-decisions .section-save-bar{display:flex;justify-content:flex-end;gap:10px;padding:16px 0 0;border-top:1px solid rgba(255,255,255,.08)}
+#app .lite-student-decisions .section-save-bar button{width:auto}
+@media(max-width:720px){#app .lite-student-decisions .decision-tabs{justify-content:flex-start}#app .lite-student-decisions .decision-tabs a{flex:0 0 auto}#app .lite-student-decisions form{padding:12px}#app .lite-student-decisions .decision-card{padding:14px}#app .lite-student-decisions .section-save-bar{flex-direction:column}#app .lite-student-decisions .section-save-bar button{width:100%}}
+/* Sala del estudiante, resumen de ciclo e informes: componentes de studentLobby. */
+#app.lite-student-lobby{max-width:1180px;margin:auto;color:#f8feff}
+#app.lite-student-lobby .student-lobby-header{position:relative;display:flex;align-items:flex-end;gap:18px;padding:76px 24px 20px;margin:0;background:#09182f;border:1px solid #39d0ff;border-radius:26px 26px 0 0;text-align:center}
+#app.lite-student-lobby .student-lobby-logo{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:150px;height:54px;object-fit:contain}
+#app.lite-student-lobby .student-lobby-header h1{font-size:clamp(25px,3vw,36px);color:#39d0ff;letter-spacing:0;margin:10px 0 0}
+#app.lite-student-lobby .student-cycle-summary{margin:0;border-radius:0;background:#09182f;border:1px solid #39d0ff;border-top:0}
+#app.lite-student-lobby .student-cycle-summary>div{background:#09182f;border-right:1px solid rgb(57 208 255 / 35%)}
+#app.lite-student-lobby .student-cycle-summary span{color:#b4c5d3}
+#app.lite-student-lobby .student-cycle-summary strong{color:#39d0ff}
+#app.lite-student-lobby .student-news{margin:0;padding:12px 20px;color:#b4c5d3;background:#023863;border:1px solid #39d0ff;border-top:0}
+#app.lite-student-lobby .student-news::before{content:'NOTICIAS DEL CICLO · ';color:#39d0ff;font-weight:600}
+#app.lite-student-lobby>.layout{padding:20px;background:#09182f;border:1px solid #39d0ff;border-top:0;border-radius:0 0 26px 26px;align-items:start}
+#app.lite-student-lobby .student-lobby-primary:not(.decision-window),#app.lite-student-lobby .student-lobby-reports>.panel{background:#09182f;border:1px solid rgb(57 208 255 / 35%);border-radius:11px;box-shadow:none}
+#app.lite-student-lobby .student-lobby-reports h2{font-size:14px;color:#39d0ff}
+#app.lite-student-lobby .student-results p{line-height:1.6;color:#f8feff}
+#app.lite-student-lobby .student-results details{padding:10px 12px;border:1px solid rgb(57 208 255 / 35%);border-radius:10px;color:#b4c5d3}
+#app.lite-student-lobby .student-results summary{color:#39d0ff;font-weight:600}
+#app.lite-student-lobby .student-ranking table{font-variant-numeric:tabular-nums}
+@media(max-width:720px){#app.lite-student-lobby .student-lobby-header{padding:68px 16px 16px;align-items:flex-start;flex-wrap:wrap}#app.lite-student-lobby .student-lobby-logo{width:125px;height:45px;top:12px}#app.lite-student-lobby>.layout{padding:12px}#app.lite-student-lobby .student-lobby-reports>.panel{padding:14px}#app.lite-student-lobby .student-cycle-summary>div{min-width:0}#app.lite-student-lobby .student-cycle-summary strong{overflow-wrap:anywhere}}
+/* Barra superior y escenario de decisionMenu de SIDE Original. */
+.lite-decision-topbar{display:none}
+#app.lite-decision-active .lite-decision-topbar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 20px;background:#081a34;border-bottom:1px solid #39d0ff;color:#f8feff}
+body:has(#app.lite-decision-active #decision)>header{display:none}
+body:has(#app.lite-decision-active #decision)>main{max-width:none;padding:0}
+#app.lite-student-lobby.lite-decision-active{max-width:none}
+#app.lite-decision-active>.student-lobby-header,#app.lite-decision-active>.student-cycle-summary,#app.lite-decision-active>.student-news,#app.lite-decision-active>.processing{display:none}
+#app.lite-student-lobby.lite-decision-active>.layout{display:block;margin:0 24px;padding:0;border:0;background:transparent}
+#app.lite-decision-active>.layout>aside{display:none}
+#app.lite-student-lobby.lite-decision-active .lite-student-decisions.decision-window{min-height:calc(100vh - 160px);border:1px solid #39d0ff;border-radius:0 0 14px 14px;background:#09182f}
+.lite-decision-identity,.lite-decision-metrics,.lite-decision-actions{display:flex;align-items:center;gap:12px}
+.lite-decision-identity small,.lite-decision-metrics span,.lite-decision-metrics small,.lite-decision-actions span,.lite-decision-actions strong{display:block;font-size:10px;color:#b4c5d3}
+.lite-decision-identity strong{display:block;font-size:16px}.lite-decision-identity small{margin-top:5px}
+#app .lite-return-lobby{min-width:44px;min-height:44px;padding:4px;border:1px solid #39d0ff;background:#09182f;color:#f8feff;font-size:24px}
+.lite-decision-metrics>div{min-width:160px;padding:12px;border:1px solid #39d0ff;border-radius:10px;background:#09182f}
+.lite-decision-metrics strong{display:block;color:#39d0ff;font-size:22px}.lite-decision-metrics small{margin-top:3px}
+.lite-decision-actions>div{text-align:right}.lite-decision-actions strong{margin-top:5px}
+#app .lite-send-all{min-width:185px;border:1px solid #ffdf5c;background:linear-gradient(110deg,#ffe34c,#ff9900);color:#081a34;font-weight:700}
+#app .lite-enter-decisions{width:auto;background:#f8feff;color:#081a34;border:1px solid #f8feff;font-weight:700}
+#app.lite-decision-active .lite-student-decisions>h2,#app.lite-decision-active .lite-student-decisions>p{display:none}
+#app.lite-decision-active .lite-student-decisions .decision-detail-head{padding:24px;background:#09182f;border-bottom:1px solid #39d0ff}
+#app.lite-decision-active .lite-student-decisions .section-save-bar{padding:20px;border:1px solid #39d0ff;border-radius:12px;background:#023863}
+#app.lite-decision-active .lite-student-decisions .section-save-bar button[value=confirm]{background:linear-gradient(110deg,#ffe34c,#ff9900);border-color:#ffdf5c;color:#081a34;font-weight:700}
+@media(max-width:720px){#app.lite-decision-active .lite-decision-topbar{flex-wrap:wrap;gap:10px;padding:12px} .lite-decision-identity{width:100%}.lite-decision-metrics{flex:1;min-width:0}.lite-decision-metrics>div{min-width:0;flex:1;padding:8px}.lite-decision-metrics strong{font-size:15px}.lite-decision-actions{width:100%;justify-content:space-between}#app .lite-send-all{min-width:145px}#app.lite-student-lobby.lite-decision-active>.layout{margin:0 10px}}
+#app.lite-decision-active:has(#back) .lite-send-all,#app.lite-decision-active:has(#back) .section-save-bar button[value=confirm]{background:linear-gradient(110deg,#ffe34c,#ff9900);border-color:#ffdf5c;color:#081a34}#app.lite-decision-active .lite-student-decisions .campaign-section{padding:16px}
