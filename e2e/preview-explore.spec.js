@@ -11,6 +11,11 @@ for(const viewport of [{name:'escritorio',width:1440,height:900},{name:'móvil',
    page.on('request',r=>{const u=new URL(r.url());if(u.pathname.includes('/api/')||!['GET','HEAD'].includes(r.method()))calls.push(`${r.method()} ${u.pathname}`)});
    await page.goto(`${base}/SIDE-LITE/public/?static=1`);await expect(page.locator('#static-preview-notice')).toBeVisible();
    await page.locator('#startBtn').click();await page.locator(`[data-profile=${role}]`).click();
+   if(role==='student'){
+    await expect(page.locator('#student-entry')).toBeVisible();
+    for(const field of ['code','name','brand'])await expect(page.locator(`#student-entry [name=${field}]`)).toBeVisible();
+    await page.locator('#student-auth-switch button').click();
+   }
    await expect(page.locator('#login')).toBeVisible();await page.locator('#show-register').click();await expect(page.locator('#register')).toBeVisible();
    await page.locator('#explore-preview').click();
    await expect(page.getByRole('button',{name:'Partida de demostración',exact:true})).toBeVisible();

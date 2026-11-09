@@ -170,3 +170,11 @@
 #landing.hidden, #profiles.hidden, #modalRoot.hidden { display: none !important; }
 @font-face{font-family:Poppins;src:url('assets/Poppins-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
 @font-face{font-family:Poppins;src:url('assets/Poppins-SemiBold.ttf') format('truetype');font-weight:600;font-display:swap}
+/* Formulario studentModal de SIDE original, con autenticación Lite posterior. */
+#modalRoot:has(#student-entry:not(.hidden)) .modal{width:min(600px,92vw);background:#08182f;border:1px solid #39d0ff;border-radius:24px;padding:30px 32px 56px}
+#modalRoot #student-entry{text-align:left}
+#modalRoot #student-entry label{display:block;margin:20px 0 0;font-weight:600;color:#f8feff}
+#modalRoot #student-entry input{display:block;width:100%;box-sizing:border-box;background:#091a31!important;border:1px solid #39d0ff!important;border-radius:12px!important;padding:14px!important}
+#modalRoot #student-entry .field-hint{color:#c4d5e1;line-height:1.5;margin:22px 0}
+#modalRoot #student-entry .primary-gold{width:100%;background:#f6fcfd;color:#081a34;border-radius:12px}
+@media(max-width:650px){#modalRoot:has(#student-entry:not(.hidden)) .modal{padding:24px 20px 36px}}
