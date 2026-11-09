@@ -14,10 +14,8 @@ async function transaction(pool, fn) {
 async function lockAuthorizedGame(c,identity,id) {
   const {rows:[user]}=await c.query('select side_lite_private.lock_active_identity($1,$2) as active',[identity.id,identity.sessionId]);
   if (!user?.active) throw fail(403,'Cuenta o sesión no autorizada.');
-  const {rows:[grant]}=await c.query(`select g.user_id from side_lite_private.lite_teacher_grants g
-    join auth.users u on u.id=g.user_id where g.user_id=$1 and g.revoked_at is null
-      and u.email_confirmed_at is not null and lower(u.email)=g.approved_email for share of g`,[identity.id]);
-  if (!grant) throw fail(403,'Docente no autorizado.');
+  const {rows:[grant]}=await c.query('select side_lite_private.api_lock_teacher($1,$2) as authorized',[identity.id,identity.sessionId]);
+  if (!grant?.authorized) throw fail(403,'Docente no autorizado.');
   // Lock order: game then cycle. Decision and closer lock only cycle then companies.
   const {rows:[game]}=await c.query('select id,teacher_id,ended_at from public.lite_games where id=$1 for update',[id]);
   if (!game || game.teacher_id !== identity.id) throw fail(403,'Sin acceso a esta partida.');

@@ -1,13 +1,15 @@
 // Prepared only: do not deploy before database permissions and contract review.
 import postgres from 'npm:postgres@3.4.7';
 import { closeOne, sweep } from './worker.js';
+import { validateDatabaseTarget } from '../database-target.js';
 
 const dbUrl = Deno.env.get('SIDE_CLOSER_DATABASE_URL');
 const cronSecret = Deno.env.get('SIDE_CLOSER_SECRET');
 // A dedicated, high-entropy scheduler secret and a dedicated least-privilege
 // database role are required. Never use this secret in the browser.
 if (!dbUrl || !cronSecret || cronSecret.length < 32) throw new Error('Missing closer configuration');
-const sql = postgres(dbUrl, { max: 1, prepare: false, idle_timeout: 10, connect_timeout: 10 });
+validateDatabaseTarget(dbUrl);
+const sql = postgres(dbUrl, { ssl: 'verify-full', max: 1, prepare: false, idle_timeout: 10, connect_timeout: 10 });
 const encoder = new TextEncoder();
 const key = await crypto.subtle.importKey('raw', encoder.encode(cronSecret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
 

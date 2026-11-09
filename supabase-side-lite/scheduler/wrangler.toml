@@ -1,0 +1,7 @@
+# Preparation only. No Cron Trigger is enabled by this file.
+name = "side-lite-closer-scheduler"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[triggers]
+crons = []

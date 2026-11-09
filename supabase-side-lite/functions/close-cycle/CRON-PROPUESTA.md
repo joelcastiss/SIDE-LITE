@@ -1,34 +1,19 @@
-# Programador propuesto, inactivo
+# Programador preparado, sin activar
 
-No ejecutar sin autorización expresa y sin resolver primero el acceso de los roles LOGIN a `pg_net`. No se ha creado un job, secreto ni extensión con este archivo.
+La implementación candidata está en `../../scheduler/worker.js`, con una configuración de ejemplo que no activa ningún trigger. Un programador externo puede invocar directamente la función Edge con un secreto almacenado solo en el proveedor externo y en la función, sin pasar por `pg_net`. La función no expone una ruta HTTP propia en el programador. La prueba local usa respuestas simuladas: **no certifica el proveedor, el secreto, la conectividad ni el cierre desplegado**.
 
-Se propone `side-lite-close-due` cada **30 segundos**, evaluando en PostgreSQL si existe un ciclo abierto no pausado y vencido o cuyo cierre se solicitó. Solo si existe, se encolaría una invocación de `close-cycle`. La fecha límite sigue siendo 120 segundos; el resultado puede llegar posteriormente, normalmente en el siguiente barrido y con más retraso ante congestión o fallos. El trabajador es idempotente y limita cada barrido a 20 intentos. Confirmar la semántica y latencia en el proyecto antes de utilizarlo con estudiantes.
+La configuración de ejemplo usa el formato de Cloudflare Workers, pero no presupone cuenta, plan ni autorización de despliegue. Su cron admite intervalos de un minuto; aun con puntualidad perfecta, los resultados pueden aparecer hasta un minuto después de los 120 segundos, y fallas o retrasos pueden prolongar ese plazo. Antes de utilizarlo se debe aceptar un objetivo de latencia y verificarlo bajo carga, junto con costes, límites, alertas y recuperación. No afirmar que el cálculo termina exactamente a los 120 segundos.
 
-Ejemplo concreto sujeto a revisión de permisos y previa creación controlada del secreto `side_lite_closer_secret` en Vault y del mismo valor en `SIDE_CLOSER_SECRET` de la función. No incorporar valores de secreto al repositorio ni al historial de SQL:
+## Activación futura y reversión
 
-```sql
-select cron.schedule('side-lite-close-due', '30 seconds', $job$
-  select net.http_post(
-    url := 'https://hwwwoblfpsqqrkxvclag.supabase.co/functions/v1/close-cycle',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'x-side-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'side_lite_closer_secret')
-    ),
-    body := '{}'::jsonb,
-    timeout_milliseconds := 30000
-  )
-  where exists (
-    select 1 from public.lite_cycles
-    where status = 'open' and paused_at is null
-      and (ends_at <= clock_timestamp() or close_requested_at is not null)
-  );
-$job$);
-```
+1. Verificar en un proyecto y un proveedor aislados que las funciones Edge, sus roles y la configuración de red sean correctos; aprovisionar el mismo secreto aleatorio independiente en el proveedor de programación y en `SIDE_CLOSER_SECRET` de Edge por sus mecanismos de secretos. Nunca guardar el valor en Git ni en una instrucción SQL.
+2. Habilitar un trigger de un minuto solo tras revisar el proveedor y la latencia. Comprobar que los eventos fallidos se detectan y alertan, que los ciclos vencidos se recuperan tras interrupciones y que las llamadas concurrentes no duplican resultados. El trigger no demuestra que el cierre haya tenido éxito; vigilar los resultados, las respuestas HTTP y los ciclos vencidos.
+3. Para revertir, desactivar o eliminar el trigger, comprobar que no haya nuevas invocaciones y rotar o eliminar el secreto en ambos extremos. No borrar tablas ni resultados. Los ciclos vencidos se procesarán cuando se restablezca el barrido autorizado.
 
-El trabajo condicional evita hasta 2.880 llamadas HTTP diarias cuando no hay ciclos pendientes, pero PostgreSQL seguirá ejecutando el sondeo 2.880 veces al día. En el peor caso son 86.400 llamadas en 30 días, además de las de la API; el límite Free publicado es 500.000 invocaciones mensuales, sujeto a condiciones y cambios. La base pausada o los límites de ejecución pueden impedir el cierre puntual.
+## Por qué no se activa pg_cron + pg_net
 
-**Riesgo pendiente:** Supabase advierte que los roles con LOGIN pueden leer la cola de `pg_net`, incluidos encabezados descifrados aunque el valor provenga de Vault. La API propuesta usa una credencial PostgreSQL LOGIN: por tanto una intrusión en ese proceso podría acceder al secreto del cierre. No afirmar que la separación es segura ni activar este diseño hasta adoptar y verificar una mitigación apropiada. El secreto no es una clave privilegiada de Supabase, pero permitiría invocar el cierre; este solo procesa ciclos elegibles. Véanse [credenciales en pg_net](https://supabase.com/kb/troubleshooting/database-roles-can-read-request-headers-queued-by-pg_net-ad6357), [cron](https://supabase.com/docs/guides/functions/schedule-functions) y [cuotas](https://supabase.com/docs/guides/functions/pricing).
+La [documentación de Supabase](https://supabase.com/kb/troubleshooting/database-roles-can-read-request-headers-queued-by-pg_net-ad6357) indica que las credenciales de una petición quedan visibles en la cola incluso cuando proceden de Vault. Además, los roles con LOGIN pueden leer y modificar esa cola y [Supabase no admite revocar esos permisos por proyecto](https://supabase.com/kb/troubleshooting/revoking-access-to-pg_net-objects-has-no-effect-0bbc16). La API propuesta usa una conexión PostgreSQL propia: poner el secreto del cierre en esa cola permitiría a un compromiso de la API obtenerlo.
 
-**Observabilidad:** el éxito del job solo indica que PostgreSQL encoló la solicitud; no demuestra respuesta HTTP satisfactoria ni cierre económico. Deben conservarse y asociarse los ID de solicitud con `net._http_response`, alertar por fallos, retrasos y ciclos vencidos, y revisar logs de la función. Las respuestas de `pg_net` tienen retención limitada. Esta correlación persistente y alertas aún no están implementadas.
+Una firma HMAC podría ocultar el secreto, pero una solicitud firmada en la cola puede ser observada y reproducida o interferida por un rol con acceso. No se ha diseñado ni probado aquí protección contra repetición ni integridad de la cola. No activar este mecanismo bajo la suposición de que Vault, por sí solo, protege los encabezados en tránsito.
 
-**Reversión tras activación:** detener el job mediante `select cron.unschedule('side-lite-close-due');`, verificar que dejó de existir y deshabilitar o retirar la función y rotar el secreto cuando corresponda. No borrar tablas, resultados, secretos ajenos ni extensiones compartidas. Si quedan ciclos vencidos, el proceso se recuperará al restablecer de forma segura el barrido; no se debe recalcular desde el navegador.
+Fuentes: [cron de Workers](https://developers.cloudflare.com/workers/configuration/cron-triggers/), [programación de funciones Edge](https://supabase.com/docs/guides/functions/schedule-functions).

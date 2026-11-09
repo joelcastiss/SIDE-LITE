@@ -23,18 +23,14 @@ async function requireCurrentUser(c, identity, teacher = false) {
   if (!user?.active) throw fail(403,'Cuenta o sesión no autorizada.');
   if (teacher) {
     // Lock the authoritative grant so revocation cannot race a game creation.
-    const {rows:[grant]} = await c.query(`select g.user_id from side_lite_private.lite_teacher_grants g
-      join auth.users u on u.id=g.user_id where g.user_id=$1 and g.revoked_at is null
-      and u.email_confirmed_at is not null and lower(u.email)=g.approved_email for share of g`,[identity.id]);
-    if (!grant) throw fail(403,'Docente no autorizado.');
+    const {rows:[grant]} = await c.query('select side_lite_private.api_lock_teacher($1,$2) as authorized',[identity.id,identity.sessionId]);
+    if (!grant?.authorized) throw fail(403,'Docente no autorizado.');
   }
 }
 
 async function hasTeacherGrant(c, identity) {
-  const {rows:[grant]}=await c.query(`select g.user_id from side_lite_private.lite_teacher_grants g
-    join auth.users u on u.id=g.user_id where g.user_id=$1 and g.revoked_at is null
-    and u.email_confirmed_at is not null and lower(u.email)=g.approved_email for share of g`,[identity.id]);
-  return !!grant;
+  const {rows:[grant]}=await c.query('select side_lite_private.api_lock_teacher($1,$2) as authorized',[identity.id,identity.sessionId]);
+  return !!grant?.authorized;
 }
 
 function validConfig(body) {

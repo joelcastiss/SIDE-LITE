@@ -38,7 +38,7 @@ test('alta de perfil usa solo ID verificado y exige cuenta y sesión activas',as
  await withServer({...student,id:null,teacher_authorized:false},async(base,calls)=>{
   const bearer=`Bearer ${await token({metadata:{role:'teacher'}})}`;
   const response=await fetch(base+'/api/profile',{method:'POST',headers:{authorization:bearer,'content-type':'application/json'},body:JSON.stringify({display_name:'  Ana  '})});
-  assert.equal(response.status,201);assert.deepEqual(calls[1].params,[user,session,'Ana']);assert.match(calls[1].sql,/auth\.sessions/);assert.match(calls[1].sql,/email_confirmed_at/);assert.match(calls[1].sql,/on conflict \(id\) do nothing/i);
+  assert.equal(response.status,201);assert.deepEqual(calls[1].params,[user,session,'Ana']);assert.match(calls[1].sql,/side_lite_private\.api_create_profile/);
  });
 });
 test('alta rechaza roles y campos no autorizados antes de escribir',async()=>{

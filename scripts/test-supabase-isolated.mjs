@@ -16,10 +16,13 @@ try {
   if (state.schema_exists || state.objects_exist || state.roles_exist) throw Error('Se requiere un clúster y una base vacíos; no se modificó nada.');
   const run = async file => { await db.query(await readFile(file,'utf8')); console.log(`OK ${file}`); };
   await run('supabase-side-lite/tests/postgres-auth-bootstrap.sql');
+  await run('supabase-side-lite/tests/legacy-tables-fixture.sql');
   const migrations=(await readdir('supabase-side-lite/supabase/migrations')).filter(n=>n.endsWith('.sql')).sort();
   for (const migration of migrations) await run(path.join('supabase-side-lite/supabase/migrations',migration));
+  await run('supabase-side-lite/tests/legacy-tables-security.sql');
   await run('supabase-side-lite/tests/postgres-rls-smoke.sql');
   await run('supabase-side-lite/tests/postgres-server-roles.sql');
+  await run('supabase-side-lite/tests/postgres-auth-bridge.sql');
 } finally { await db.end(); }
 const test=spawnSync(process.execPath,['--test','--test-concurrency=1','supabase-side-lite/tests/games-postgres.test.mjs','supabase-side-lite/tests/join-limiter-postgres.test.mjs','supabase-side-lite/tests/multicycle-postgres.test.mjs'],{stdio:'inherit',env:process.env});
 if(test.error) throw test.error;

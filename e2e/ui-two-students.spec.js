@@ -7,13 +7,15 @@ import {closeCycle} from '../js/engine.js';
 const base='http://127.0.0.1:4178';
 const stamp=Date.now();
 const cycleCount=Number(process.env.SIDE_TEST_CYCLES||3);if(![3,6].includes(cycleCount))throw Error('Ciclos de prueba no válidos');
+const mobile=process.env.SIDE_TEST_MOBILE==='YES';
 const pass='clave-prueba-segura-2026';
 const key=process.env.TEACHER_REGISTRATION_KEY||'side-lite-local-testing-key-2026';
 async function account(browser,role,name){
- const context=await browser.newContext();const page=await context.newPage();
+ const context=await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true}:{});const page=await context.newPage();page.setDefaultTimeout(15000);
  await page.goto(base);
  await page.locator('#startBtn').click();
  await page.locator(`[data-profile=${role}]`).click();
+ if(role==='student')await page.locator('#student-auth-switch button').click();
  await page.locator('#show-register').click();
  const email=`${name}-${stamp}@upch.pe`;
  const register=page.locator('#register');
@@ -26,7 +28,7 @@ async function account(browser,role,name){
  await expect(page.locator('#access-message')).toContainText('Cuenta creada');
  const login=page.locator('#login');await login.locator('[name=email]').fill(email);await login.locator('[name=password]').fill(pass);
  await login.getByRole('button',{name:/iniciar sesión/i}).click();
- await expect(page.getByText('Mis partidas').first()).toBeVisible();
+ await expect(role==='teacher'?page.getByText('Mis partidas').first():page.locator('#join')).toBeVisible();
  return {context,page};
 }
 async function state(ctx,id){const r=await ctx.request.get(`${base}/api/games/${id}`);expect(r.ok()).toBeTruthy();return r.json()}
@@ -46,6 +48,7 @@ test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',as
    await join.getByRole('button',{name:'Unirme'}).click();
    await expect(person.page.getByText(name).first()).toBeVisible();
   }
+  if(mobile)for(const person of items)expect(await person.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   const games=await teacher.context.request.get(`${base}/api/games`);expect(games.ok()).toBeTruthy();
   const game=(await games.json()).find(x=>x.code===code);expect(game).toBeTruthy();
   for(let n=1;n<=cycleCount;n++)await test.step(`Ciclo ${n}`,async()=>{
@@ -55,8 +58,11 @@ test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',as
    await expect(teacher.page.locator('.round-number strong')).toContainText(`${n} / ${cycleCount}`);
    for(const [person,amount,quality] of [[a,200,'basic'],[b,400,'standard']]){
     const decision=person.page.locator('#decision');await expect(decision).toBeVisible({timeout:20000});
-    await decision.locator('[name=quality]').selectOption(quality);await decision.locator('[name=quantity]').fill('10');
-    await decision.locator('[name=price]').fill('120');await decision.locator('[name=marketingAmount]').fill(String(amount));
+    await decision.locator('[name=quality]').selectOption(quality);
+    if(mobile)expect(await person.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    await person.page.getByRole('button',{name:'Cantidad',exact:true}).click();await decision.locator('[name=quantity]').fill('10');
+    await person.page.getByRole('button',{name:'Precio',exact:true}).click();await decision.locator('[name=price]').fill('120');
+    await person.page.getByRole('button',{name:'Marketing',exact:true}).click();await decision.locator('[name=marketingAmount]').fill(String(amount));
     await decision.getByRole('button',{name:'Confirmar decisión'}).click();
     await expect(person.page.getByText('Decisión confirmada.')).toBeVisible();
    }

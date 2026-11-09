@@ -29,15 +29,7 @@ export function createIdentityMiddleware({pool, verifyToken} = {}) {
     catch { return res.status(401).json({error:'Sesión inválida o vencida.'}); }
     if (!identity?.id || !UUID.test(identity.id) || !UUID.test(identity.sessionId || '')) return res.status(401).json({error:'Sesión inválida o vencida.'});
     try {
-      const {rows:[record]} = await pool.query(`
-        select p.id, p.display_name, u.email_confirmed_at is not null as email_verified,
-          exists(select 1 from auth.sessions s where s.id = $2 and s.user_id = u.id and (s.not_after is null or s.not_after > now())) as session_active,
-          (u.banned_until is not null and u.banned_until > now()) as banned,
-          exists(select 1 from side_lite_private.lite_teacher_grants g
-            where g.user_id = u.id and g.revoked_at is null and lower(u.email) = g.approved_email
-              and u.email_confirmed_at is not null) as teacher_authorized
-        from auth.users u left join public.lite_profiles p on p.id = u.id
-        where u.id = $1`, [identity.id, identity.sessionId]);
+      const {rows:[record]} = await pool.query('select * from side_lite_private.api_identity($1,$2)', [identity.id, identity.sessionId]);
       if (!record?.session_active || record.banned) return res.status(401).json({error:'Sesión inválida o vencida.'});
       if (!record.email_verified) return res.status(403).json({error:'Verifica tu correo antes de continuar.'});
       req.identity = {...identity, displayName: record.display_name || null, role: record.id ? (record.teacher_authorized ? 'teacher' : 'student') : null};
@@ -64,13 +56,7 @@ export function createIdentityApp({pool, verifyToken} = {}) {
     try {
       // Bind the id to the verified JWT; repeat session/account predicates in the write statement.
       // It is safe to retry: never overwrite an existing profile or grant a role.
-      const {rows} = await pool.query(`
-        insert into public.lite_profiles(id, display_name)
-        select u.id, $3 from auth.users u
-        where u.id = $1 and u.email_confirmed_at is not null
-          and (u.banned_until is null or u.banned_until <= now())
-          and exists(select 1 from auth.sessions s where s.id = $2 and s.user_id = u.id and (s.not_after is null or s.not_after > now()))
-        on conflict (id) do nothing returning id, display_name`, [req.identity.id, req.identity.sessionId, name]);
+      const {rows} = await pool.query('select * from side_lite_private.api_create_profile($1,$2,$3)', [req.identity.id, req.identity.sessionId, name]);
       if (!rows.length) return res.status(409).json({error:'Perfil existente o sesión no disponible.'});
       return res.set('Cache-Control','no-store').status(201).json(rows[0]);
     } catch { return res.status(503).json({error:'No se pudo crear el perfil.'}); }
