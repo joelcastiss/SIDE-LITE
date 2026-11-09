@@ -9,6 +9,18 @@ insert into auth.users(id,email,email_confirmed_at) values
 insert into public.lite_profiles(id,display_name) select id, email from auth.users;
 insert into side_lite_private.lite_teacher_grants(user_id,approved_email)
  values ('00000000-0000-0000-0000-000000000003','teacher@upch.pe');
+-- BYPASSRLS does not imply table write privileges: the runtime can verify a
+-- grant, but cannot promote or revoke teachers even with its server credential.
+set local role service_role;
+do $$ begin
+ if not exists(select 1 from side_lite_private.lite_teacher_grants where user_id='00000000-0000-0000-0000-000000000003') then raise exception 'runtime cannot verify teacher'; end if;
+ perform 1 from side_lite_private.lite_teacher_grants where user_id='00000000-0000-0000-0000-000000000003' for share;
+ begin insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values ('00000000-0000-0000-0000-000000000004','other@upch.pe'); raise exception 'runtime may promote teacher'; exception when insufficient_privilege then null; end;
+ begin update side_lite_private.lite_teacher_grants set revoked_at=now(); raise exception 'runtime may revoke teacher'; exception when insufficient_privilege then null; end;
+ begin update side_lite_private.lite_teacher_grants set approved_email='other@upch.pe'; raise exception 'runtime may change approved email'; exception when insufficient_privilege then null; end;
+ begin delete from side_lite_private.lite_teacher_grants; raise exception 'runtime may delete teacher grant'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
 do $$ begin
  begin
   insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values ('00000000-0000-0000-0000-000000000004','other@example.test');

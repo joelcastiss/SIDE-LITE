@@ -70,6 +70,7 @@ test('registro de vista previa desactivado y HTML seguro',async()=>{
  const h=await handler.fetch(request('/'));
  assert.equal(h.status,200);assert.match(await h.text(),/boot\.js/);
  assert.match(h.headers.get('content-security-policy'),/frame-ancestors 'none'/);
+ assert.match(h.headers.get('content-security-policy'),/frame-src blob:/);
 });
 test('vista previa requiere clave y limita cuerpos sin longitud declarada',async()=>{
  const noGate=await handler.fetch(new Request(origin+'/'));

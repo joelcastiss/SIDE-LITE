@@ -74,7 +74,7 @@ test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',as
   });
   await expect(teacher.page.getByText('Partida finalizada.').first()).toBeVisible({timeout:20000});
   await teacher.page.locator('[data-tab=resultados]').click();await expect(teacher.page.locator('#resultsHeading')).toBeVisible();
-  await teacher.page.locator('[data-tab=podio]').click();await expect(teacher.page.locator('#tab-podio h2')).toBeVisible();
+  await teacher.page.locator('[data-tab=podio]').click();await expect(teacher.page.locator('#tab-podio').getByRole('heading',{name:'Clasificación',exact:true})).toBeVisible();
   await teacher.page.locator('[data-tab=laboratorio]').click();
   const laboratory=teacher.page.locator('#faculty-lab');
   await expect(laboratory.getByText('Resultados oficiales de ciclos cerrados.')).toBeVisible();

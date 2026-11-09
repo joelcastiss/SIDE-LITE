@@ -1,0 +1,31 @@
+/* SIDE1 css/docente.css: bloque original de historial. */
+.history-status{color:var(--muted);font-size:13px;line-height:1.6;min-height:21px}
+.history-empty{padding:42px 24px;text-align:center;border:1px dashed #365570;border-radius:18px;background:#081b2e}
+.history-empty h3{font-size:18px;margin:0 0 12px}.history-empty p{color:var(--muted);font-size:13px;line-height:1.7;margin:0}
+.history-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:18px 0}
+.history-metrics>div{padding:15px;border:1px solid var(--line);border-radius:12px;background:#0b2138;min-width:0}
+.history-metrics small{display:block;color:var(--muted);font-size:11px;line-height:1.6;margin-bottom:7px}
+.history-metrics strong{font-size:16px;line-height:1.5;overflow-wrap:anywhere}
+.history-company-card{margin-top:20px}.history-company-selector{display:block;max-width:480px;margin-bottom:24px;font-size:13px;color:var(--muted)}
+.history-company-selector select{width:100%;min-width:0;margin-top:8px}
+.history-company-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.history-company-heading h3{margin:9px 0;overflow-wrap:anywhere}.history-company-heading>div{min-width:0}
+.history-grade{padding:12px 15px;border-radius:12px;background:#15334a;border:1px solid #4e8193;color:#cde9f2;font-size:12px;line-height:1.6}
+.history-grade strong{color:#ffe08b}.history-cycles{display:grid;gap:12px;margin-top:22px}
+.history-cycle{border:1px solid #33546e;border-radius:14px;background:#071b2e;overflow:hidden}
+.history-cycle>summary{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:17px 20px;cursor:pointer;font-weight:700;list-style:none}
+.history-cycle>summary::-webkit-details-marker{display:none}.history-cycle>summary>span:before{content:'›';display:inline-block;width:18px;color:#73d7e5;transition:transform .15s}
+.history-cycle[open]>summary>span:before{transform:rotate(90deg)}.history-cycle>summary small{color:var(--muted);font-size:11px;font-weight:500;line-height:1.6}
+.history-cycle[open]>summary{border-bottom:1px solid var(--line);background:#102a40}
+.history-cycle-content{padding:4px 20px 20px}.history-cycle-content h4{font-size:15px;margin:22px 0 15px}
+.history-category h5,.history-statements h5{color:#a7dcf3;font-size:13px;margin:18px 0 10px}
+.history-decision-list{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.history-decision{display:flex;align-items:start;justify-content:space-between;gap:18px;padding:13px 15px;background:#0b2237;border-bottom:1px solid var(--line);font-size:12px;line-height:1.7}
+.history-decision:last-child{border-bottom:0}.history-decision>div{min-width:0}.history-decision strong,.history-decision span{display:block;overflow-wrap:anywhere}
+.history-decision span{color:#a8bfd3}.history-decision-values{flex-shrink:0;text-align:right;font-size:11px}
+.history-financial{margin-top:14px}.history-financial>summary{cursor:pointer;font-size:12px;line-height:1.7;color:#a7dcf3;padding:10px 0}
+.history-statements{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}
+.history-statements .financial-section{min-width:0;margin:0}.history-statements .financial-rows>div{gap:10px}.history-statements .financial-rows strong{white-space:nowrap}
+.history-fallback{padding-left:20px;color:#a8bfd3;font-size:12px;line-height:1.8}
+.history-cycle summary:focus-visible,.history-company-selector select:focus-visible{outline:3px solid #80d6ff;outline-offset:-3px}
+@media(max-width:680px){.history-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.history-metrics>div{padding:11px}.history-metrics strong{font-size:13px}.history-company-heading{align-items:start;gap:8px}.history-grade{width:100%}.history-cycle>summary{align-items:start;padding:14px;flex-direction:column;gap:4px}.history-cycle-content{padding:2px 12px 14px}.history-decision{flex-direction:column;gap:8px;padding:11px}.history-decision-values{text-align:left;display:flex;flex-wrap:wrap;gap:12px}.history-statements{grid-template-columns:minmax(0,1fr)}.history-empty{padding:30px 18px}.history-company-selector{max-width:none}}

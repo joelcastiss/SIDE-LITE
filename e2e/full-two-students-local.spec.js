@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
 
 // Requires the local server, its own local database and TEACHER_REGISTRATION_KEY.
 // Never use this test against Neon or any existing production database.
@@ -74,9 +75,20 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
   const page=await teacher.newPage();
   await page.goto(base);
   await page.getByRole('button',{name:`Aula ${cycles}`}).click();
-  await page.locator('[data-tab=podio]').click();await expect(page.locator('#tab-podio h2')).toBeVisible();
+  await page.locator('[data-tab=podio]').click();await expect(page.locator('#tab-podio').getByRole('heading',{name:'Clasificación',exact:true})).toBeVisible();
   await page.locator('[data-tab=resultados]').click();await expect(page.locator('#resultsHeading')).toBeVisible();
   await expect(page.getByText('Partida finalizada.')).toBeVisible();
   await page.locator('[data-tab=rondas]').click();await expect(page.locator('#start')).toBeDisabled();
+  await page.locator('[data-tab=historial]').click();
+  const history=page.locator('#faculty-history');await expect(history.locator('#historyGameSelect option')).toHaveCount(1,{timeout:20000});
+  await expect(history.locator('#historyContent')).toContainText('Empresa Aurora');
+  await expect(history.locator('#historyContent')).toContainText(`Ciclo ${cycles}`);
+  await history.locator('#historyCompanySelect').selectOption(companyB.id);
+  await expect(history.locator('#historyContent')).toContainText('Empresa Bahia');
+  const downloadPromise=page.waitForEvent('download');await history.locator('#downloadHistoryCsv').click();
+  const download=await downloadPromise;expect(download.suggestedFilename()).toBe('resultados-side-lite.csv');
+  const csv=await readFile(await download.path(),'utf8');
+  expect(csv).toContain('Empresa Aurora');expect(csv).toContain('Empresa Bahia');
+  expect(csv.trim().split('\r\n')).toHaveLength(1+cycles*2);
  }finally{await Promise.allSettled(contexts.map(context=>context.close()))}
 });

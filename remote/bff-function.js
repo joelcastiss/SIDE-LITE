@@ -25,7 +25,7 @@ const sessionKey=validConfig?createHash('sha256').update(sessionSecret).digest()
 const common={
  'cache-control':'no-store','referrer-policy':'no-referrer','x-content-type-options':'nosniff',
  'x-frame-options':'DENY',
- 'content-security-policy':"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
+ 'content-security-policy':"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; connect-src 'self'; frame-src blob:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
 };
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{
  status,headers:{...common,'content-type':'application/json; charset=utf-8',...headers}

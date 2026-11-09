@@ -20,7 +20,10 @@ create table side_lite_private.lite_teacher_grants (
   approved_email text not null check (approved_email = lower(btrim(approved_email)) and approved_email ~ '^[^@[:space:]]+@upch[.]pe$'),
   granted_at timestamptz not null default now(),
   granted_by uuid references auth.users(id) on delete set null,
-  revoked_at timestamptz
+  revoked_at timestamptz,
+  -- PostgreSQL requires UPDATE privilege on a column for SELECT FOR SHARE.
+  -- This invariant-only column permits locking without changing authorization.
+  lock_guard boolean not null default true check (lock_guard)
 );
 revoke all on side_lite_private.lite_teacher_grants from public, anon, authenticated;
 
@@ -202,7 +205,12 @@ grant insert (id, display_name), update (display_name) on public.lite_profiles t
 -- The service role is trusted server infrastructure, never a browser credential.
 grant all on public.lite_profiles, public.lite_stores, public.lite_events, public.lite_games,
  public.lite_products, public.lite_companies, public.lite_cycles, public.lite_decisions, public.lite_results to service_role;
-grant all on side_lite_private.lite_teacher_grants, side_lite_private.lite_cycle_secrets to service_role;
+-- Runtime may verify an approval but must never create, change or revoke one.
+-- Revoke first in case project default privileges granted service_role more.
+revoke all on side_lite_private.lite_teacher_grants from service_role;
+grant select on side_lite_private.lite_teacher_grants to service_role;
+grant update (lock_guard) on side_lite_private.lite_teacher_grants to service_role;
+grant all on side_lite_private.lite_cycle_secrets to service_role;
 
 create policy profile_self_read on public.lite_profiles for select to authenticated using (id = (select auth.uid()));
 create policy profile_self_insert on public.lite_profiles for insert to authenticated with check (id = (select auth.uid()));

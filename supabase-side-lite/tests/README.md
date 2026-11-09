@@ -38,3 +38,5 @@ decisiones ni resultados directamente ni concederse permisos docentes, y que
 el docente autorizado sí vea ambos. También verifica aislamiento entre partidas
 y revocación docente. En PostgreSQL 17 local se ejecutó sin errores; las cuentas
 y `auth.uid()` están simulados y esto no valida Supabase Auth ni Data API reales.
+
+La prueba local también comprueba que `service_role` pueda bloquear concesiones docentes para verificar autorización, pero no crearlas, revocarlas, cambiarlas ni borrarlas. Se probó con roles y Auth emulados; no acredita permisos efectivos ni membresías en Supabase real.

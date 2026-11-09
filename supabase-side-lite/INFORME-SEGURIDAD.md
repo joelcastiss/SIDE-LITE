@@ -9,6 +9,8 @@ Estado: **preparación incompleta; no aplicar ni desplegar**. Proyecto previsto:
 - Operaciones parciales para crear partidas, unirse por código, iniciar ciclos y enviar decisiones; el cierre preparado utiliza el motor económico existente y una transacción con bloqueo. Hay un limitador persistente de intentos por cuenta, aún sin ensamblar en un servicio desplegable. No hay despliegue ni programador activos.
 - Las políticas pretenden limitar empresas, decisiones y resultados a su dueño o docente autorizado. La visibilidad del ranking necesita una proyección segura específica.
 
+- La concesión docente deja de otorgar escritura general a `service_role`: solo lectura y permiso de actualización de una columna invariable `lock_guard` para permitir `SELECT FOR SHARE`. La prueba PostgreSQL local confirma lectura/bloqueo y rechazo de inserción, revocación, cambio de correo y eliminación. Este control no restringe a superusuarios, propietarios o miembros de roles con mayores permisos; los permisos y membresías reales de Supabase siguen sin verificar.
+
 ## Bloqueos antes de aplicar o activar
 
 1. Falta el ensamblaje integral de la API de juego y las rutas de lectura y proyecciones, pausa, reanudación, finalización y ranking. La validación de plazos y el bloqueo común deben aplicarse a todas las rutas.
@@ -17,7 +19,8 @@ Estado: **preparación incompleta; no aplicar ni desplegar**. Proyecto previsto:
 4. Revisar funciones `SECURITY DEFINER`, `search_path`, grants, acceso a `auth.users` y `auth.sessions`, y el rol mínimo para la API y el cerrador. El uso de una credencial privilegiada exige autorización explícita dentro de cada operación y no sustituye RLS.
 5. Faltan el despliegue del cerrador, configuración segura de Cron y secretos, monitorización, límites de ejecución y prueba de recuperación. El barrido puede ejecutarse después del plazo; la recepción de decisiones debe rechazarse desde el vencimiento oficial.
 6. Comprobar que el empaquetado incluya el motor original y que los datos de eventos coincidan con él. Las decisiones y resultados deben conservar sus fórmulas, FIFO y ranking. Auditar también las dependencias de la interfaz y completar las herramientas docentes pendientes.
-7. Pasar pruebas con Supabase Auth real, dos estudiantes y docente, acceso cruzado, llamadas directas maliciosas, carreras, ciclos completos de 3 y 6 rondas de 120 segundos, sin navegadores y con interrupciones. Ejecutar asesores de seguridad después de aplicar en un entorno autorizado.
+7. Las políticas RLS de lectura de estudiante usan `auth.uid()` sin comprobar en PostgreSQL la vigencia de la sesión, el bloqueo ni la confirmación actual del correo. El BFF preparado sí comprueba estos datos, pero no basta si Data API expone tablas directamente: definir y probar una estrategia de revocación coherente o restringir dicha exposición antes de aplicar.
+8. Pasar pruebas con Supabase Auth real, dos estudiantes y docente, acceso cruzado, llamadas directas maliciosas, carreras, ciclos completos de 3 y 6 rondas de 120 segundos, sin navegadores y con interrupciones. Ejecutar asesores de seguridad después de aplicar en un entorno autorizado.
 
 ## Evidencia local y límites
 
