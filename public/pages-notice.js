@@ -12,6 +12,7 @@ if (location.hostname.toLowerCase().endsWith('.github.io') || new URLSearchParam
  };
  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showNotice, {once:true}); else showNotice();
  document.addEventListener('submit', event => {
+  if (event.target?.id === 'lab-lite-form') return;
   event.preventDefault();
   event.stopImmediatePropagation();
   const message = document.querySelector('#modalRoot:not(.hidden) #access-message') || document.querySelector('#error');

@@ -44,3 +44,5 @@ body:has(.faculty-shell){background:#081a34}body:has(.faculty-shell)>header{disp
 .faculty-shell .winner-hero{display:flex;align-items:center;justify-content:space-between}
 .faculty-shell .trophy-orb img{width:64px;height:64px}
 @media(max-width:767px){.faculty-shell .section-head,.faculty-shell .round-status{align-items:stretch;flex-direction:column}.faculty-shell .timer-box{margin-left:0}}
+
+.faculty-shell main.content{margin:0;max-width:none;align-self:stretch}
