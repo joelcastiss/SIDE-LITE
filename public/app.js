@@ -132,9 +132,17 @@ function signin(){
  });
  if(supabase)app.querySelector('#teacher-mfa').onsubmit=teacherAction(async()=>{await supabase.verifyMfa({factorId:app.querySelector('#teacherMfaFactor').value,code:app.querySelector('#teacherMfaCode').value.trim()});await finishTeacherIdentity()});
  app.querySelector('#registerForm').onsubmit=teacherAction(async(event,message)=>{
+  const form=event.currentTarget;
   const first=app.querySelector('#registerName').value.trim(),last=app.querySelector('#registerLastName').value.trim(),course=app.querySelector('#registerCourse').value.trim(),email=app.querySelector('#registerEmail').value.trim().toLowerCase(),password=app.querySelector('#registerPassword').value,name=`${first} ${last}`;
   if(!first||!last||!course||name.length>80||course.length>100||!/^[^@\s]+@upch\.pe$/i.test(email))throw Error('Completa los datos e ingresa un correo institucional @upch.pe.');
-  if(managed){await managed.register({email,password,name,firstName:first,lastName:last,course,...(supabase?{redirectTo:recoveryRedirect(window.location)}:{})});message.textContent='Cuenta creada. Confirma tu correo si recibes un enlace y espera la autorización docente antes de iniciar sesión.'}
+  if(supabase){
+   const result=await supabase.register({email,password,name,firstName:first,lastName:last,course});
+   if(!result?.session){message.textContent='No se pudo completar el registro sin confirmación. Contacta al administrador.';return}
+   await supabase.signOut();
+   form.reset();teacherRegister.classList.add('hidden');teacherLogin.classList.remove('hidden');
+   app.querySelector('#loginEmail').value=email;app.querySelector('#loginMessage').textContent='Cuenta creada. Inicia sesión. La autorización docente se comprueba por separado.';app.querySelector('#loginPassword').focus();
+  }
+  else if(managed){await managed.register({email,password,name,firstName:first,lastName:last,course});message.textContent='Cuenta creada. Confirma tu correo si recibes un enlace y espera la autorización docente antes de iniciar sesión.'}
   else{await api('/register','POST',{email,password,name,role:'teacher',key:app.querySelector('#teacherKey').value});message.textContent='Cuenta creada. Ahora inicia sesión.'}
  });
  app.querySelector('#student-auth-switch button').onclick=()=>showAccess('student');
