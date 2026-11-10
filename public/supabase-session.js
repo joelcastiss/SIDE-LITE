@@ -39,12 +39,8 @@ export function createSupabaseSession(client, fetcher = fetch, {captchaTokenProv
     async signIn({email, password}) { return unwrap(await client.auth.signInWithPassword({email, password, ...(loginCaptchaTokenProvider ? {options:await captcha(loginCaptchaTokenProvider)} : {})})); },
     async signInGuest() { const existing=unwrap(await client.auth.getSession())?.session; if(existing?.user?.is_anonymous === true)return existing; if(existing)throw new Error('Cierra tu sesión actual antes de entrar como invitado.'); const data=unwrap(await client.auth.signInAnonymously(captchaTokenProvider ? {options:await captcha()} : undefined)); if(data?.user?.is_anonymous!==true || !data?.session?.access_token)throw new Error('No se pudo crear la sesión de invitado.'); return data.session; },
     async identity() {
-      const session = unwrap(await client.auth.getSession())?.session;
-      if (!session?.access_token) throw Object.assign(new Error('Tu sesión terminó. Vuelve a iniciar sesión.'), {status: 401});
-      if (!session.user?.email_confirmed_at && session.user?.is_anonymous !== true) throw Object.assign(new Error('Verifica tu correo antes de continuar.'), {status: 403});
-      await requireCompletedMfa();
-      // The HTTPS API validates the token, the live Auth session, and the
-      // authoritative teacher grant on every request.
+      // request() already enforces session, confirmed email, MFA and the
+      // server-authoritative role. Do not repeat the same Auth checks.
       return this.request('/me');
     },
     async mfaFactors() {
