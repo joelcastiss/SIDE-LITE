@@ -69,13 +69,13 @@ function signin(){
         </div>
         <label for="registerCourse">Curso</label><input id="registerCourse" placeholder="Finanzas Corporativas" autocomplete="off" required>
         <label for="registerEmail">Correo institucional</label><input id="registerEmail" type="email" placeholder="profesor@upch.pe" required>
-        <label for="registerPassword">Contraseña</label><input id="registerPassword" type="password" minlength="12" placeholder="••••••••" required>
+        <label for="registerPassword">Contraseña (mínimo ${supabase?6:12} caracteres)</label><input id="registerPassword" type="password" minlength="${supabase?6:12}" placeholder="••••••••" autocomplete="new-password" required>
         ${managed ? '' : `<label for="teacherKey">Clave de registro docente</label><input id="teacherKey" type="password" autocomplete="off" required>`}
+        <div id="registerMessage" class="form-message" role="status" aria-live="polite"></div>
         <button class="primary-gold" type="submit">Crear cuenta</button>
       </form>
       <p class="switch-line">¿Ya tienes cuenta? <button type="button" data-switch="login">Iniciar sesión</button></p>
       <p class="field-help">La autorización docente se comprueba por separado; una cuenta institucional no la concede automáticamente.</p>
-      <div id="registerMessage" class="form-message" role="status"></div>
     </section>
 
 </div>`;
@@ -131,8 +131,10 @@ function signin(){
   else{user=await api('/login','POST',{email,password});if(user.role!=='teacher'){await api('/logout','POST');user=null;throw Error('Tu cuenta no tiene autorización docente.');}await home()}
  });
  if(supabase)app.querySelector('#teacher-mfa').onsubmit=teacherAction(async()=>{await supabase.verifyMfa({factorId:app.querySelector('#teacherMfaFactor').value,code:app.querySelector('#teacherMfaCode').value.trim()});await finishTeacherIdentity()});
+ app.querySelector('#registerForm').addEventListener('invalid',event=>{const field=event.target;app.querySelector('#registerMessage').textContent=field.id==='registerPassword'&&field.validity.tooShort?`La contraseña debe tener al menos ${supabase?6:12} caracteres.`:'Revisa los campos obligatorios y vuelve a intentarlo.'},true);
  app.querySelector('#registerForm').onsubmit=teacherAction(async(event,message)=>{
   const form=event.currentTarget;
+  message.textContent='Verificando y creando tu cuenta…';
   const first=app.querySelector('#registerName').value.trim(),last=app.querySelector('#registerLastName').value.trim(),course=app.querySelector('#registerCourse').value.trim(),email=app.querySelector('#registerEmail').value.trim().toLowerCase(),password=app.querySelector('#registerPassword').value,name=`${first} ${last}`;
   if(!first||!last||!course||name.length>80||course.length>100||!/^[^@\s]+@upch\.pe$/i.test(email))throw Error('Completa los datos e ingresa un correo institucional @upch.pe.');
   if(supabase){
