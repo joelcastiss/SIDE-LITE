@@ -671,7 +671,7 @@ function teacherSession(){
   if(!supabaseClient)throw new Error('No se pudo conectar con el servicio de acceso.');
   if(teacherSessionPromise)return teacherSessionPromise;
   teacherSessionPromise=Promise.all([
-    import('../supabase-session.js'), import('../turnstile-provider.js?v=20261110-login-fast1'), import('../captcha-config.js')
+    import('../supabase-session.js?v=20261110-login-fast2'), import('../turnstile-provider.js?v=20261110-login-fast1'), import('../captcha-config.js')
   ]).then(([{createSupabaseSession},{createTurnstileProvider},{turnstileSiteKey,teacherCaptchaEnabled}])=>{
     const captcha=teacherCaptchaEnabled ? createTurnstileProvider({siteKey:turnstileSiteKey}) : null;
     if(teacherCaptchaEnabled&&!captcha)throw new Error('No está disponible la verificación de acceso.');
