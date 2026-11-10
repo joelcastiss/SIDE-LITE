@@ -12,7 +12,7 @@ const app=document.querySelector('#app'), error=document.querySelector('#error')
 const useSupabase=!staticPreview && (location.hostname.toLowerCase()==='joelcastiss.github.io' || new URLSearchParams(location.search).get('auth')==='supabase');
 let authClient=window.sideLiteSupabaseClient;
 if(!authClient && useSupabase){const {createSideLiteClient}=await import('./supabase-client.js');authClient=createSideLiteClient();}
-const supabase=authClient ? createSupabaseSession(authClient,fetch,{captchaTokenProvider:createTurnstileProvider({siteKey:turnstileSiteKey})}) : null;
+const supabase=authClient ? createSupabaseSession(authClient,fetch,{captchaTokenProvider:createTurnstileProvider({siteKey:turnstileSiteKey}),loginCaptchaTokenProvider:null}) : null;
 const neon=!supabase && window.sideLiteNeonClient ? createNeonSession(window.sideLiteNeonClient) : null;
 const managed=supabase || neon;
 if(managed)document.querySelector('.badge').textContent=supabase?'SIDE Lite':'Integración de prueba';
@@ -124,7 +124,8 @@ function signin(){
   const select=app.querySelector('#teacherMfaFactor');select.replaceChildren();for(const factor of factors){const option=document.createElement('option');option.value=factor.id;option.textContent=factor.name;select.append(option)}
   app.querySelector('#loginForm').classList.add('hidden');app.querySelector('#teacher-mfa').classList.remove('hidden');app.querySelector('#teacherMfaCode').focus();
  }
- app.querySelector('#loginForm').onsubmit=teacherAction(async()=>{
+ app.querySelector('#loginForm').onsubmit=teacherAction(async(event,message)=>{
+  message.textContent='Iniciando sesión…';
   const email=app.querySelector('#loginEmail').value.trim().toLowerCase(),password=app.querySelector('#loginPassword').value;
   if(!/^[^@\s]+@upch\.pe$/i.test(email))throw Error('Se requiere correo institucional @upch.pe.');
   if(managed){await managed.signIn({email,password});try{await finishTeacherIdentity()}catch(err){if(supabase&&err.code==='MFA_REQUIRED'){await showTeacherMfa();return}throw err}}
