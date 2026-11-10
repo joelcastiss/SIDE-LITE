@@ -70,8 +70,12 @@ export function createSupabaseSession(client, fetcher = fetch, {captchaTokenProv
       // This is only a UX check; the API must validate the JWT and authorization independently.
       if (!session.user?.email_confirmed_at && session.user?.is_anonymous !== true) throw Object.assign(new Error('Verifica tu correo antes de continuar.'), {status: 403});
       await requireCompletedMfa();
-      const response = await fetcher('https://hwwwoblfpsqqrkxvclag.supabase.co/functions/v1/side-lite-api/api' + path, {method, headers: {Authorization: `Bearer ${session.access_token}`, apikey: 'sb_publishable_52fukw__BaCel-Igx5e0vg_RgsvhxiN', ...(body !== undefined ? {'Content-Type': 'application/json'} : {})}, body: body !== undefined ? JSON.stringify(body) : undefined, cache: 'no-store', credentials: 'omit', redirect: 'error'});
-      const data = await response.json().catch(() => ({}));
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      let response, data;
+      try { response = await fetcher('https://hwwwoblfpsqqrkxvclag.supabase.co/functions/v1/side-lite-api/api' + path, {signal:controller.signal, method, headers: {Authorization: `Bearer ${session.access_token}`, apikey: 'sb_publishable_52fukw__BaCel-Igx5e0vg_RgsvhxiN', ...(body !== undefined ? {'Content-Type': 'application/json'} : {})}, body: body !== undefined ? JSON.stringify(body) : undefined, cache: 'no-store', credentials: 'omit', redirect: 'error'}); data = await response.json().catch(error => { if(controller.signal.aborted) throw error; return {}; }); }
+      catch(error) { if(controller.signal.aborted) throw new Error('La conexión tardó demasiado. Inténtalo de nuevo.'); throw error; }
+      finally { clearTimeout(timeout); }
       if (!response.ok) throw Object.assign(new Error(data.error || 'No se pudo completar la solicitud.'), {status: response.status});
       return data;
     }
