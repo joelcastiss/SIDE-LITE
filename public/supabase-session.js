@@ -7,7 +7,7 @@ export function recoveryRedirect(location) {
 }
 
 /** Supabase Auth adapter. Authorization is performed by the server, never by user metadata. */
-export function createSupabaseSession(client, fetcher = fetch, {captchaTokenProvider = null, loginCaptchaTokenProvider = captchaTokenProvider} = {}) {
+export function createSupabaseSession(client, fetcher = fetch, {captchaTokenProvider = null, loginCaptchaTokenProvider = captchaTokenProvider, registerCaptchaTokenProvider = captchaTokenProvider} = {}) {
   if (!client?.auth) throw new TypeError('Cliente de Supabase Auth no disponible.');
   let projectUrl;
   try { projectUrl = new URL(client.supabaseUrl); } catch { throw new TypeError('URL de Supabase no válida.'); }
@@ -28,7 +28,7 @@ export function createSupabaseSession(client, fetcher = fetch, {captchaTokenProv
   return {
     async register({email, password, name, firstName, lastName, course, redirectTo}) {
       const data = {display_name: name, ...(firstName ? {nombre:firstName} : {}), ...(lastName ? {apellido:lastName} : {}), ...(course ? {curso:course} : {})};
-      return unwrap(await client.auth.signUp({email, password, options: {data, ...(redirectTo ? {emailRedirectTo: redirectTo} : {}), ...await captcha()}}));
+      return unwrap(await client.auth.signUp({email, password, options: {data, ...(redirectTo ? {emailRedirectTo: redirectTo} : {}), ...await captcha(registerCaptchaTokenProvider)}}));
     },
     async verifyEmail({email, otp}) {
       return unwrap(await client.auth.verifyOtp({email, token: otp, type: 'signup', ...((captchaTokenProvider) ? {options:await captcha()} : {})}));
