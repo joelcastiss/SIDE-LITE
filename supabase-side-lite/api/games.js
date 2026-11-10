@@ -145,7 +145,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
     try {
       // A failing limiter must deny requests. IP-based throttling should also be
       // enforced at the trusted edge; do not trust X-Forwarded-For directly.
-      const allowed=await limitJoin({userId:req.identity.id});
+      const allowed=await limitJoin({userId:req.identity.id,code:req.body?.code});
       if (allowed !== true) throw fail(429,'Demasiados intentos. Inténtalo más tarde.');
       const {code,name,brand,recoverySecret:providedSecret}=req.body || {};
       if (typeof code !== 'string' || !/^[0-9a-f]{8}$/i.test(code) || typeof name !== 'string' || name.trim().length<2 || name.length>80 || (req.identity.isAnonymous && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80)) || (brand !== undefined && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80))) throw fail(400,'Datos inválidos.');
@@ -177,7 +177,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
   app.post('/api/guest/recover',async(req,res,next)=>{
     try {
       if(!req.identity.isAnonymous)throw fail(403,'Se requiere una sesión de invitado.');
-      if(await limitJoin({userId:req.identity.id})!==true)throw fail(429,'Demasiados intentos. Inténtalo más tarde.');
+      if(await limitJoin({userId:req.identity.id,code:req.body?.code})!==true)throw fail(429,'Demasiados intentos. Inténtalo más tarde.');
       const {code,recoverySecret,newRecoverySecret}=req.body||{};
       if(typeof code!=='string'||!/^[0-9a-f]{8}$/i.test(code)||typeof recoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(recoverySecret)||typeof newRecoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(newRecoverySecret)||newRecoverySecret===recoverySecret)throw fail(400,'Datos de recuperación inválidos.');
       const hash=crypto.createHash('sha256').update(recoverySecret).digest(),newHash=crypto.createHash('sha256').update(newRecoverySecret).digest();
