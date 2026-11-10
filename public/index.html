@@ -22,51 +22,55 @@
   <link rel="stylesheet" href="css/character-selection.css?v=20260927-selector">
   <link rel="stylesheet" href="css/world_minimap.css?v=20261009-mobile-map">
   <link rel="stylesheet" href="css/role-selection.css?v=20261009-brand-scale">
+  <link rel="stylesheet" href="css/institutional.css?v=original-20261110">
+  <link rel="stylesheet" href="css/coachmarks.css?v=original-20261110">
+  <script defer src="js/landing-progress.js?v=original-20261110"></script>
 </head>
 <body>
 <main id="app">
   <section id="landing" class="screen landing-screen">
-    <img class="upch-corner" src="assets/upch_logo.png" alt="Universidad Peruana Cayetano Heredia">
+    <img class="landing-faculty-logo" src="assets/logo-ciencias-ingenieria.png" alt="Ciencias e Ingeniería Cayetano">
     <div class="landing-overlay"></div>
     <div class="landing-content">
-      <img class="landing-side-logo" src="assets/side_logo.png" alt="SIDE">
-      <p class="landing-subtitle">SIMULADOR DE DECISIONES FINANCIERAS</p>
-      <div class="loading-wrap" aria-label="Carga inicial">
-        <div class="loading-track">
-          <div id="loadingBar" class="loading-bar"></div>
-          <span id="loadingPercent">0%</span>
+      <img class="landing-wordmark" src="assets/logo-side-original-pdf.png" alt="SIDE">
+      <p class="landing-subtitle">Simulador de Decisiones Financieras</p>
+      <div class="loading-wrap">
+        <div id="landingProgress" class="landing-progress" role="progressbar" aria-label="Carga de la página" aria-valuemin="0" aria-valuemax="100" aria-valuetext="Cargando página">
+          <div class="landing-progress-fill"></div><span id="landingProgressText">Cargando</span>
         </div>
-        <button id="startBtn" class="start-link" disabled>Empezar</button>
+        <button id="startBtn" class="start-link" disabled>EMPEZAR</button>
       </div>
     </div>
   </section>
 
   <section id="profiles" class="screen profile-screen hidden" aria-label="Elegir perfil">
     <div class="profile-bg"></div>
-    <img class="upch-corner" src="assets/upch_logo.png" alt="Universidad Peruana Cayetano Heredia">
+    <img class="profile-faculty-logo" src="assets/logo-ciencias-ingenieria.png" alt="Ciencias e Ingeniería Cayetano">
 
     <div class="profile-main">
-      <img class="profile-side-logo" src="assets/side_logo.png" alt="SIDE">
+      <img class="profile-side-logo" src="assets/logo-side-original-pdf.png" alt="SIDE">
       <h1 class="profile-title">Elige cómo entrar</h1>
       <p id="roomCancellationNotice" class="form-message hidden" role="status" aria-live="polite"></p>
 
+      <div class="profile-cards">
       <button class="profile-card student-hero" data-profile="student" aria-label="Iniciar sesión como estudiante">
-        <img class="student-hero-img" src="assets/estudiante.png" alt="">
+        <img class="student-hero-img" src="assets/icons/profile-person.webp" alt="">
         <span class="student-hero-copy">
           <span class="hero-eyebrow">Estudiante</span>
           <span class="profile-description">Dirige tu empresa y decide en cada ciclo.</span>
-          <span class="hero-cta">Entrar a una partida <i class="hero-arrow" aria-hidden="true"><img src="assets/icons/ui/arrow-right-thick.svg" alt=""></i></span>
+          <span class="hero-cta">Entrar a una partida</span>
         </span>
       </button>
-    </div>
-
     <button class="profile-card teacher-mini" data-profile="teacher" aria-label="Iniciar sesión como profesor">
-      <img class="teacher-mini-img" src="assets/profesor.png" alt="">
+      <img class="teacher-mini-img" src="assets/icons/perfil-profesor.png" alt="">
       <span class="teacher-mini-copy">
         <span class="mini-eyebrow">Profesor</span>
+        <span class="profile-description">Administra una partida</span>
         <span class="mini-cta">Iniciar sesión</span>
       </span>
     </button>
+      </div>
+    </div>
   </section>
 
   <div id="modalRoot" class="modal-root hidden">
@@ -93,7 +97,7 @@
 
     <section id="teacherLoginModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="teacherLoginTitle">
       <button class="close-btn" data-close aria-label="Cerrar">×</button>
-      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <img src="assets/logo-side-original-pdf.png" class="modal-side-logo" alt="SIDE">
       <h2 id="teacherLoginTitle">Acceso del profesor</h2>
       <p class="modal-lead">Ingresa a tu cuenta para administrar una partida.</p>
       <form id="loginForm">
@@ -109,7 +113,7 @@
 
     <section id="teacherRegisterModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="teacherRegisterTitle">
       <button class="close-btn" data-close aria-label="Cerrar">×</button>
-      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <img src="assets/logo-side-original-pdf.png" class="modal-side-logo" alt="SIDE">
       <h2 id="teacherRegisterTitle">Registro del profesor</h2>
       <p class="modal-lead">Crea tu cuenta para administrar partidas de SIDE.</p>
       <form id="registerForm">
@@ -128,7 +132,7 @@
 
     <section id="studentModal" class="modal student-join-modal hidden" role="dialog" aria-modal="true" aria-labelledby="studentJoinTitle" aria-describedby="studentJoinIntro">
       <button class="close-btn" data-close aria-label="Cerrar">×</button>
-      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <img src="assets/logo-side-original-pdf.png" class="modal-side-logo" alt="SIDE">
       <h2 id="studentJoinTitle">Entrar a una partida</h2>
       <p id="studentJoinIntro" class="modal-lead">Introduce el código que te entregó tu profesor.</p>
       <form id="studentForm" class="student-join-form" aria-describedby="studentRejoinHelp">
@@ -152,7 +156,7 @@
 
     <section id="creditsModal" class="modal credits-modal hidden" role="dialog" aria-modal="true" aria-labelledby="creditsTitle" aria-describedby="creditsIntro">
       <button class="close-btn" data-close aria-label="Cerrar créditos">×</button>
-      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <img src="assets/logo-side-original-pdf.png" class="modal-side-logo" alt="SIDE">
       <h2 id="creditsTitle">Créditos</h2>
       <p id="creditsIntro" class="modal-lead">Modelos 3D creados por artistas y bibliotecas que hacen posible el mundo de SIDE.</p>
       <div id="creditsList" class="credits-list" aria-live="polite"></div>
@@ -163,7 +167,7 @@
   <section id="studentLoading" class="screen game-loading-screen hidden" aria-label="Preparando tu empresa">
     <div class="game-loading-bg" aria-hidden="true"></div>
     <div class="game-loading-content">
-      <img src="assets/side_logo.png" class="game-loading-logo" alt="SIDE">
+      <img src="assets/logo-side-original-pdf.png" class="game-loading-logo" alt="SIDE">
       <div class="loading-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
       <p class="eyebrow">Conectando con la simulación</p>
       <h1>Preparando tu empresa…</h1>
@@ -205,7 +209,7 @@
     </div>
     <div class="dashboard-inner lobby">
       <div class="lobby-card">
-        <img src="assets/side_logo.png" class="dash-logo" alt="SIDE">
+        <img src="assets/logo-side-original-pdf.png" class="dash-logo" alt="SIDE">
         <div class="lobby-content" tabindex="0" role="region" aria-label="Partida, noticias y resultados; contenido desplazable">
           <p class="eyebrow">PARTIDA</p>
           <h1 id="lobbyCode">SIDE-000</h1>
@@ -248,7 +252,7 @@
     <div class="character-selection-bg" aria-hidden="true"></div>
     <div class="character-selection-shell">
       <header class="character-selection-header">
-        <img src="assets/side_logo.png" class="character-selection-logo" alt="SIDE">
+        <img src="assets/logo-side-original-pdf.png" class="character-selection-logo" alt="SIDE">
         <p class="character-selection-kicker">TU IDENTIDAD EN SIDE</p>
         <h1 id="characterSelectionTitle">SELECCIONA TU PERSONAJE</h1>
         <p>Elige quién te representará durante este ciclo de simulación.</p>
@@ -291,7 +295,7 @@
   <section id="simulationLoading" class="screen simulation-loading-screen hidden" aria-label="Cargando simulador 3D">
     <div class="simulation-loading-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="simulation-loading-card">
-      <img src="assets/side_logo.png" class="simulation-loading-logo" alt="SIDE">
+      <img src="assets/logo-side-original-pdf.png" class="simulation-loading-logo" alt="SIDE">
       <span class="simulation-loading-kicker">SIDE · CIUDAD EMPRESARIAL</span>
       <h1>PREPARANDO MUNDO 3D…</h1>
       <p id="simulationLoadingText" role="status" aria-live="polite">Preparando escena y controles...</p>
@@ -309,7 +313,7 @@
 
     <div class="sim3d-hud">
       <div class="sim3d-top">
-        <div class="sim3d-brand"><img src="assets/side_logo.png" alt="SIDE"><div><span>SIMULADOR 3D</span><strong>TU EMPRESA</strong></div></div>
+        <div class="sim3d-brand"><img src="assets/logo-side-original-pdf.png" alt="SIDE"><div><span>SIMULADOR 3D</span><strong>TU EMPRESA</strong></div></div>
         <div class="sim3d-stats">
           <div class="sim3d-fun-notice">Modo diversión: no afecta tus ingresos</div>
           <div class="sim3d-stat cash"><span>PUNTOS DISPONIBLES</span><strong id="simCash">100,000 pts</strong></div>
@@ -376,7 +380,7 @@
 
     <div id="sim3dStart" class="sim3d-start">
       <div class="sim3d-start-card">
-        <img src="assets/side_logo.png" alt="SIDE">
+        <img src="assets/logo-side-original-pdf.png" alt="SIDE">
         <span class="sim3d-start-kicker">PRIMER INGRESO</span>
         <h2>Controles del simulador</h2>
         <p>Recorre la tienda y la ciudad, atiende clientes y gana puntos de tienda. Modo diversión: no afecta tus ingresos, tu caja ni el resultado del ciclo. Usa la Tablet para tus decisiones económicas.</p>
@@ -534,7 +538,7 @@
     </div>
     <div id="sim3dSummary" class="sim3d-summary hidden">
       <div class="sim3d-summary-card">
-        <img src="assets/side_logo.png" alt="SIDE">
+        <img src="assets/logo-side-original-pdf.png" alt="SIDE">
         <span class="sim3d-summary-kicker">JORNADA RECREATIVA</span>
         <h2 id="summaryTitle">Fin de la jornada</h2>
         <p id="summarySubtitle">Tus logros de diversión no afectan el cierre económico.</p>
@@ -682,6 +686,7 @@
 <script src="pages-notice.js?v=20261110-preview"></script>
 <script src="services/lite-game-service.js?v=20261110-lite"></script>
 <script src="js/lite-decisions.js?v=20261110-lite"></script>
+<script src="js/coachmarks-lite.js?v=20261110"></script>
 <script src="services/lite-student-entry.js?v=20261110-lite"></script>
 </body>
 </html>

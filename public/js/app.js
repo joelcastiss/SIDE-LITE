@@ -644,7 +644,6 @@ function publishWorldAtmosphere(){
 }
 
 // Landing / acceso
-const loadingTimer=setInterval(()=>{const bar=$('loadingBar');if(!bar){clearInterval(loadingTimer);return}const p=Math.min(100,(Number(bar.dataset.p)||0)+1);bar.dataset.p=p;bar.style.width=p+'%';$('loadingPercent').textContent=p+'%';if(p>=100){clearInterval(loadingTimer);$('startBtn').disabled=false}},28);
 $('startBtn')?.addEventListener('click',()=>showScreen('profiles'));
 $('openCreditsBtn')?.addEventListener('click',()=>{renderCredits();showModal('creditsModal')});
 document.querySelector('.modal-backdrop')?.addEventListener('click',closeModal);

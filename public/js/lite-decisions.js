@@ -31,7 +31,7 @@
       const icon=$('detailCategoryIcon'); if (icon) icon.src='assets/icons/categories/'+entry.icon;
     }
     for (const [index, entry] of entries.entries()) {
-      const tab=document.createElement('button'); tab.type='button'; tab.className='decision-tab';
+      const tab=document.createElement('button'); tab.type='button'; tab.className='decision-tab'; tab.dataset.cat=entry.key;
       const icon=document.createElement('img'); icon.alt=''; icon.src='assets/icons/categories/'+entry.icon;
       const label=document.createElement('span'); label.textContent=entry.label; tab.append(icon,label); tab.addEventListener('click',()=>select(index)); nav.append(tab);
       const card=document.createElement('div'); card.className='decision-card';

@@ -51,15 +51,15 @@
 
     <section id="tab-configuracion" class="tab-panel active">
       <div class="hero-card">
-        <div><span class="eyebrow">PARTIDA ÚNICA ACTIVA</span><h2>Configuración de la simulación</h2><p>El docente solo puede mantener una partida activa. El código es asignado por el sistema y no puede editarse. La TEA y la caja pueden actualizarse para los próximos ciclos.</p></div>
+        <div><span class="eyebrow">PARTIDA ÚNICA ACTIVA</span><h2>Configuración de la simulación</h2><p>Configura la sala y comparte el código generado con tus estudiantes. La configuración se aplica al crear la partida.</p></div>
         <div class="faculty-wordmark faculty-wordmark-small" aria-hidden="true">SIDE</div>
       </div>
-      <p id="financeConfigHelp" class="info-banner" role="status">La TEA y la caja se aplican desde el Ciclo 1.</p>
+      <p id="financeConfigHelp" class="info-banner" role="status">El capital inicial se aplica desde el Ciclo 1.</p>
       <div class="grid two">
         <article class="card">
           <div class="card-title"><h3>Identificación</h3><span>Partida</span></div>
           <label>Nombre de la simulación<input id="gameName" value="SIDE — Simulación Principal"></label>
-          <label>Curso<input id="gameCourse" value="Finanzas Corporativas"></label>
+          <label>Curso<input id="gameCourse" value="Finanzas Corporativas" disabled aria-describedby="courseHint"></label><p id="courseHint" class="hint">Referencia visual; el curso no se guarda en la partida.</p>
           <label>Código de partida<input id="gameCode" class="locked-input" value="" placeholder="Se asigna al crear la sala" maxlength="12" readonly aria-readonly="true"></label>
           <p class="hint">El nombre legal y comercial lo define cada estudiante. El código de partida se genera automáticamente.</p>
         </article>
@@ -155,7 +155,7 @@
     </section>
     <section id="tab-laboratorio" class="tab-panel teacher-workspace" aria-labelledby="lab-heading">
       <article class="card lab"><div class="section-head"><div><h2 id="lab-heading">Laboratorio Estratégico</h2><p>Explora decisiones y resultados de ciclos cerrados.</p></div></div>
-      <div class="lab-controls"><label>Código de partida<select id="lab-game"></select></label><label>Empresa<select id="lab-company"></select></label><label>Ciclo (verificar cierre)<select id="lab-cycle"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></label><button type="button" id="lab-present" class="secondary" aria-pressed="false">Mostrar al estudiante</button><button type="button" id="lab-refresh" class="secondary">Actualizar datos</button><button type="button" id="lab-demo" class="secondary" hidden>Activar demostración local</button></div>
+      <div class="lab-controls"><label>Código de partida<select id="lab-game"></select></label><label>Empresa<select id="lab-company"></select></label><label>Ciclo cerrado<select id="lab-cycle"></select></label><button type="button" id="lab-refresh" class="secondary">Actualizar datos</button><button type="button" id="lab-demo" class="secondary" hidden>Activar demostración local</button></div>
       <div class="lab-tabs" role="group" aria-label="Vistas del laboratorio"><button type="button" data-lab-tab="results" aria-pressed="true">Ver resultados</button><button type="button" data-lab-tab="scenario" aria-pressed="false">Probar otra decisión</button><button type="button" data-lab-tab="compare" aria-pressed="false">Comparar empresas</button></div>
       <p id="lab-status" role="status" aria-live="polite"></p><div id="lab-content"></div></article>
     </section>
@@ -247,15 +247,12 @@
 <script src="js/cycle_model.js?v=20261028-materiales"></script>
 <script src="services/live_results.js?v=20261027-live-sales"></script>
 <script src="js/student_financial_view.js?v=20261028-balance"></script>
-<script src="services/laboratorio_service.js?v=20261030-4"></script>
-<script src="services/laboratorio_demo.js?v=1"></script>
-<script src="js/laboratorio_model.js?v=20261030-4"></script>
-<script src="js/laboratorio_scenarios.js?v=1"></script>
-<script src="js/laboratorio.js?v=20261030-7"></script>
+
 <script src="js/docente.js?v=20261110-lite"></script>
 <script src="pages-notice.js?v=20261110-preview"></script>
 <script src="services/lite-game-service.js?v=20261110-lite"></script>
-<script src="services/lite-teacher-game.js?v=20261110-lite"></script>
+<script src="services/lite-teacher-game.js?v=20261110-laboratorio"></script>
+<script type="module" src="js/lite-laboratory.js?v=20261110"></script>
 </body>
 </html>
 

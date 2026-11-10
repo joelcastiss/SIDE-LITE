@@ -1,0 +1,77 @@
+/* Identidad institucional compartida: propuesta gráfica SIDE. */
+@font-face{font-family:SidePoppins;src:url('../assets/fonts/poppins/Poppins-Regular.ttf')}@font-face{font-family:SidePoppins;src:url('../assets/fonts/poppins/Poppins-SemiBold.ttf');font-weight:600}@font-face{font-family:SidePoppins;src:url('../assets/fonts/poppins/Poppins-Bold.ttf');font-weight:700}
+:root{--side-canvas:#081a34;--side-panel:#09182f;--side-panel-raised:#023863;--side-panel-inset:#09182f;--side-decision-canvas:#081a34;--side-decision-panel:#09182f;--side-decision-raised:#023863;--side-line:#39d0ff;--side-line-subtle:rgb(57 208 255 / 35%);--side-line-control:#39d0ff;--side-text:#f8feff;--side-text-muted:#b4c5d3;--side-blue:#39d0ff;--side-blue-strong:#39d0ff;--side-gold:#39d0ff;--side-gold-light:#f8feff;--side-gold-deep:#39d0ff;--side-gold-ink:#081a34;--side-gold-edge:#023863;--side-font:SidePoppins,Arial,sans-serif}
+#landing,#profiles{background:#081a34;min-height:100dvh;color:#f8feff}#landing{display:flex;align-items:center;justify-content:center;padding:130px 24px 80px}#landing .landing-overlay,#profiles .profile-bg{display:none}#landing .landing-content{width:min(780px,100%);padding:0}#landing .landing-side-logo{display:block!important;width:min(500px,80vw);height:auto;margin:auto;filter:none}#landing .landing-subtitle{display:block!important;margin:0 0 38px;color:#b4c5d3;font-size:clamp(18px,2.3vw,30px);font-weight:700;text-transform:none}#landing .loading-wrap{width:auto}#landing .start-link,.profile-card :is(.hero-cta,.mini-cta),#modalRoot .primary-gold{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:10px 26px;border:1px solid #f8feff;border-radius:14px;background:#f8feff;color:#081a34;font-weight:700;letter-spacing:0;box-shadow:none;text-shadow:none}#landing .start-link:not(:disabled):hover,.profile-card:hover :is(.hero-cta,.mini-cta),#modalRoot .primary-gold:hover{background:#39d0ff;border-color:#39d0ff;color:#081a34}#landing .start-link:focus-visible,.profile-card:focus-visible,#modalRoot button:focus-visible,#modalRoot input:focus-visible{outline:3px solid #fff;outline-offset:3px}
+:is(#landing,#profiles) .upch-corner{width:78px;height:78px;top:24px;left:24px;padding:4px;object-fit:contain;border:0;border-radius:8px;box-shadow:none}
+#profiles{padding:115px 24px 40px;display:flex;justify-content:center;align-items:center}#profiles .profile-main{width:min(900px,100%);gap:8px}#profiles .profile-side-logo{width:min(250px,60vw);height:auto;aspect-ratio:auto;object-fit:contain;filter:none}#profiles .profile-title{margin:0 0 22px;color:#b4c5d3;font-size:20px}#profiles .profile-cards{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,7vw,90px)}#profiles :is(.student-hero,.teacher-mini){position:relative;inset:auto;width:100%;min-height:290px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;padding:25px;border:2px solid #39d0ff;border-radius:36px;background:#023863;box-shadow:none;transform:none}#profiles :is(.student-hero,.teacher-mini):hover{background:#074b79;border-color:#8ce4ff;transform:none}#profiles :is(.student-hero-img,.teacher-mini-img){width:125px;height:90px;max-width:none;margin:0;object-fit:contain;border:0;border-radius:0;background:none;filter:brightness(0) invert(1)}#profiles :is(.student-hero-copy,.teacher-mini-copy){display:flex;align-items:center;gap:8px;margin:0;line-height:1.4}#profiles :is(.hero-eyebrow,.mini-eyebrow){font-size:19px;letter-spacing:0;text-transform:uppercase;color:#39d0ff}#profiles .profile-description{color:#c4d5e1;font-size:14px;font-weight:600}#profiles :is(.hero-cta,.mini-cta){font-size:14px;margin-top:8px}
+#modalRoot .modal-backdrop{background:rgb(3 13 30 / 70%);backdrop-filter:none}#modalRoot .modal{background:#023863;border:2px solid #39d0ff;border-radius:32px;box-shadow:0 20px 70px #0008;padding:30px;max-height:calc(100dvh - 32px)}#modalRoot .modal-side-logo{filter:none}#modalRoot .modal h2{color:#39d0ff;font-size:clamp(22px,4vw,28px)}#modalRoot .modal-lead,#modalRoot .field-hint{color:#c4d5e1}#modalRoot .modal label{font-weight:600;color:#d6e4ed}#modalRoot .modal input{background:#072c50;border-color:#39d0ff;border-radius:18px}#modalRoot .modal input:focus{box-shadow:0 0 0 3px #39d0ff55}#modalRoot .switch-line button{color:#8ce4ff}#modalRoot .primary-gold{width:100%;cursor:pointer}
+@media(max-width:650px){#profiles{padding:100px 20px 32px;align-items:flex-start}#profiles .profile-cards{grid-template-columns:1fr;gap:16px}#profiles :is(.student-hero,.teacher-mini){min-height:235px;padding:20px}#profiles :is(.student-hero-img,.teacher-mini-img){height:70px}#profiles .profile-title{margin-bottom:10px}#modalRoot .modal{padding:24px 20px}.two-cols{grid-template-columns:1fr;gap:0}}
+@media(prefers-reduced-motion:reduce){#landing *,#profiles *{transition:none!important}}
+
+/* Portada: proporciones de la primera lámina de la propuesta. */
+#landing{--landing-ink:#091a34;--landing-cyan:#39c5f2;--landing-white:#f6fcfd;--landing-muted:#b0bfca;min-height:100dvh;padding:clamp(28px,5.6vh,54px) clamp(20px,3.8vw,56px);align-items:stretch;font-family:SidePoppins,Arial,sans-serif}
+#landing::before{content:"";position:absolute;inset:clamp(28px,5.6vh,54px) clamp(20px,3.8vw,56px);border:1.5px solid var(--landing-cyan);border-radius:clamp(34px,5vw,65px);pointer-events:none}
+#landing .upch-corner{top:clamp(56px,12vh,112px);left:clamp(48px,8.8vw,135px);width:clamp(52px,6vw,76px);height:clamp(52px,6vw,76px);z-index:3}
+#landing .landing-content{display:flex;flex-direction:column;justify-content:center;align-items:center;width:min(900px,100%);padding:90px 24px 50px}
+#landing .landing-wordmark{display:flex;justify-content:center;align-items:baseline;color:var(--landing-white);font-family:SidePoppins,Arial,sans-serif;font-style:italic;font-weight:700;font-size:clamp(100px,13vw,180px);line-height:.94;letter-spacing:-.075em;padding-right:.075em}
+#landing .landing-wordmark-d{position:relative}
+#landing .landing-wordmark-d::after{content:"";position:absolute;left:39%;top:41%;width:0;height:0;border-top:.105em solid transparent;border-bottom:.105em solid transparent;border-left:.16em solid var(--landing-ink);transform:skewX(12deg)}
+#landing .landing-subtitle{margin:8px 0 clamp(24px,4vh,36px);color:var(--landing-muted);font-weight:600;font-size:clamp(18px,2.5vw,32px);line-height:1.25}
+#landing .loading-wrap{display:flex;flex-direction:column;align-items:center;width:min(480px,100%)}
+#landing .landing-progress{position:relative;width:100%;height:48px;overflow:hidden;border:1.5px solid var(--landing-cyan);border-radius:999px;background:#023863;display:grid;place-items:center;color:#081a34;font-size:17px;font-weight:600}
+#landing .landing-progress-fill{position:absolute;inset:0 auto 0 0;width:100%;background:var(--landing-cyan);transform:scaleX(.12);transform-origin:left;opacity:.7;transition:transform .25s ease,opacity .25s ease}
+#landing .landing-progress.is-complete .landing-progress-fill{transform:scaleX(1);opacity:1}
+#landing .landing-progress span{position:relative;color:var(--landing-white)}#landing .landing-progress.is-complete span{color:var(--landing-ink)}
+#landing .start-link{min-width:165px;min-height:48px;margin-top:34px;padding:10px 24px;border-radius:16px;background:var(--landing-white);color:var(--landing-ink);font-size:16px;font-weight:700}
+#landing .start-link:active{transform:translateY(2px);background:#b4eaff}
+@media(max-width:650px){#landing{padding:20px 16px}#landing::before{inset:20px 16px;border-radius:32px}#landing .upch-corner{top:42px;left:38px;width:52px;height:52px}#landing .landing-content{padding:110px 18px 60px}#landing .landing-wordmark{font-size:clamp(72px,21vw,120px)}#landing .landing-subtitle{max-width:280px;font-size:18px;margin:12px 0 34px}#landing .landing-progress{height:42px}#landing .start-link{margin-top:34px}}
+@media(prefers-reduced-motion:reduce){#landing .landing-progress-fill{transition:none}}
+#landing .loading-wrap{margin:0}
+#landing .landing-progress-fill{transition:none}
+#landing .landing-wordmark-d::after{display:none}
+
+/* Marcas originales aportadas para la portada; no afecta los demás perfiles. */
+#landing .landing-faculty-logo{position:absolute;z-index:3;top:clamp(58px,11vh,100px);left:clamp(55px,8.5vw,130px);width:clamp(120px,12vw,165px);height:auto;object-fit:contain;filter:invert(1) hue-rotate(180deg);background:transparent}
+#landing .landing-wordmark{display:block;width:min(340px,65vw);height:auto;margin:0;mix-blend-mode:screen}
+#landing .landing-progress-fill{width:35%;transform:translateX(-110%);opacity:1;animation:landing-indeterminate 1.2s ease-in-out infinite}
+#landing .landing-progress.is-complete .landing-progress-fill{width:100%;transform:none;animation:none;transition:width .25s ease}
+#landing .landing-progress.has-error .landing-progress-fill{display:none;animation:none}
+#landing .landing-progress span{color:var(--landing-white)}#landing .landing-progress.is-complete span{color:var(--landing-ink)}
+#landing .start-link:disabled{opacity:.55;cursor:wait}
+@keyframes landing-indeterminate{to{transform:translateX(300%)}}
+@media(max-width:650px){#landing .landing-faculty-logo{top:42px;left:40px;width:115px}#landing .landing-wordmark{width:min(280px,67vw)}}
+@media(prefers-reduced-motion:reduce){#landing .landing-progress-fill{animation:none;transform:none}}
+#landing .landing-content{background:var(--landing-ink)}
+#landing .landing-content{background:transparent;z-index:auto}
+#landing .landing-wordmark{mix-blend-mode:lighten}
+
+/* Logotipo original: mantener color, transparencia y proporción. */
+#landing .landing-wordmark{padding:0;mix-blend-mode:normal;object-fit:contain}
+
+/* Progreso visual estimado; la finalización espera a los recursos reales. */
+#landing .landing-progress-fill{width:var(--landing-progress,0%);transform:none;animation:none;transition:width 20ms linear}
+#landing .landing-progress.is-complete .landing-progress-fill{width:100%;transition:width 20ms linear}
+#landing .landing-progress span{color:#f8feff;text-shadow:0 1px 3px #081a34}
+#landing .landing-progress.is-complete span{color:#081a34;text-shadow:none}
+@media(prefers-reduced-motion:reduce){#landing .landing-progress-fill{transition:none}}
+
+/* Los perfiles usan las mismas marcas institucionales que la portada. */
+#profiles .profile-faculty-logo{position:absolute;z-index:3;top:24px;left:24px;width:clamp(120px,12vw,165px);height:auto;object-fit:contain;filter:invert(1) hue-rotate(180deg)}
+#profiles .profile-side-logo{width:min(250px,60vw);height:auto;aspect-ratio:auto;object-fit:contain;filter:none}
+@media(max-width:650px){#profiles .profile-faculty-logo{top:24px;left:24px;width:115px}}
+
+/* El icono del profesor incluye su propio fondo azul. */
+#profiles .teacher-mini-img{filter:none;mix-blend-mode:lighten}
+
+/* Marco de selección de perfiles, adaptable al contenido en móviles. */
+#profiles{position:relative;min-height:100dvh;padding:clamp(135px,17vh,165px) clamp(42px,8vw,120px) clamp(65px,9vh,90px)}
+#profiles::before{content:"";position:absolute;inset:clamp(22px,5vh,48px) clamp(18px,3.8vw,56px);border:1.5px solid var(--side-blue);border-radius:clamp(32px,5vw,65px);pointer-events:none}
+#profiles .profile-faculty-logo{top:clamp(55px,10vh,96px);left:clamp(48px,8vw,125px)}
+#profiles .profile-main{z-index:1;width:min(900px,100%)}
+#profiles :is(.student-hero-img,.teacher-mini-img){width:170px;height:120px}
+@media(max-width:650px){#profiles{padding:120px 35px 60px}#profiles::before{inset:18px 15px;border-radius:32px}#profiles .profile-faculty-logo{top:38px;left:38px}#profiles :is(.student-hero-img,.teacher-mini-img){width:150px;height:95px}}
+
+/* Mantener la marca completa y separada del contenido de la sala. */
+#studentLobby .lobby-card{padding-top:82px}
+#studentLobby .dash-logo{top:14px;left:50%;transform:translateX(-50%);width:150px;height:54px;max-width:65%;object-fit:contain;filter:none}
+@media(max-width:600px){#studentLobby .lobby-card{padding-top:68px}#studentLobby .dash-logo{top:12px;width:125px;height:45px}}

@@ -2,7 +2,7 @@
 // shared, durable rate limiter and a PostgreSQL pool with server-only access.
 import express from 'express';
 import crypto from 'node:crypto';
-import {EVENTS, closeCycle, rank} from '../../js/engine.js';
+import {EVENTS, RULES, closeCycle, rank} from '../../js/engine.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const integer = (v, min, max) => Number.isSafeInteger(v) && v >= min && v <= max;
@@ -117,6 +117,61 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         return {game,company:ownCompany?companies.find(x=>x.id===ownCompany.id):null,isTeacher,companies,cycles,decisions,ownDecision,results,ranking};
       });
       return res.json(result);
+    } catch(e) { return next(e); }
+  });
+  // Historical laboratory reads are restricted to the owner of the game and
+  // to closed cycles. Simulation never writes decisions or official results.
+  app.get('/api/games/:id/laboratory',async (req,res,next)=>{
+    try {
+      if (!UUID.test(req.params.id)) throw fail(400,'Partida inválida.');
+      const data=await transaction(pool,async c=>{
+        await c.query('set transaction isolation level repeatable read');
+        await requireCurrentUser(c,req.identity,true);
+        const {rows:[game]}=await c.query('select id from public.lite_games where id=$1 and teacher_id=$2',[req.params.id,req.identity.id]);
+        if (!game) throw fail(403,'Sin acceso a esta partida.');
+        const {rows:cycles}=await c.query("select id,number,event_id from public.lite_cycles where game_id=$1 and status='closed' order by number",[game.id]);
+        const {rows:companies}=await c.query('select id,name from public.lite_companies where game_id=$1 order by name',[game.id]);
+        const {rows}=await c.query(`select r.cycle_id,r.company_id,r.result,d.quality,d.quantity,d.price,d.marketing_amount,d.confirmed
+          from public.lite_results r join public.lite_cycles cy on cy.id=r.cycle_id and cy.game_id=r.game_id
+          left join public.lite_decisions d on d.game_id=r.game_id and d.cycle_id=r.cycle_id and d.company_id=r.company_id and d.confirmed
+          where r.game_id=$1 and cy.status='closed' order by cy.number,r.company_id`,[game.id]);
+        const records=rows.map(({quality,quantity,price,marketing_amount,confirmed,...row})=>({...row,
+          decision:confirmed?{quality,quantity,price,marketingAmount:marketing_amount}:null}));
+        return {cycles,companies,records};
+      });
+      return res.json(data);
+    } catch(e) { return next(e); }
+  });
+  app.post('/api/games/:id/laboratory/simulate',async (req,res,next)=>{
+    try {
+      const {cycleId,companyId,decision}=req.body||{};
+      if (!UUID.test(req.params.id)||!UUID.test(cycleId||'')||!UUID.test(companyId||'')) throw fail(400,'Selección inválida.');
+      if (!decision || !qualities.includes(decision.quality)||!integer(decision.quantity,0,100000)||!integer(decision.price,1,100000)
+        ||!integer(decision.marketingAmount,0,10000)||(decision.marketingAmount>0&&decision.marketingAmount<200)) throw fail(400,'Decisión inválida.');
+      const result=await transaction(pool,async c=>{
+        await c.query('set transaction isolation level repeatable read');
+        await requireCurrentUser(c,req.identity,true);
+        const {rows:[game]}=await c.query('select id,costs from public.lite_games where id=$1 and teacher_id=$2',[req.params.id,req.identity.id]);
+        if (!game) throw fail(403,'Sin acceso a esta partida.');
+        const {rows:[row]}=await c.query(`select cy.number,cy.event_id,r.result,s.seed
+          from public.lite_cycles cy join public.lite_results r on r.game_id=cy.game_id and r.cycle_id=cy.id and r.company_id=$3
+          join public.lite_companies co on co.id=r.company_id and co.game_id=cy.game_id
+          join side_lite_private.lite_cycle_secrets s on s.cycle_id=cy.id
+          where cy.game_id=$1 and cy.id=$2 and cy.status='closed'`,[game.id,cycleId,companyId]);
+        if (!row) throw fail(404,'No hay un resultado cerrado para esta selección.');
+        if (row.result?.ruleVersion!==RULES.version) throw fail(409,'La versión histórica del motor no está disponible para simulación.');
+        let batches=[];
+        if (row.number>1) {
+          const {rows:[previous]}=await c.query(`select r.result from public.lite_results r join public.lite_cycles cy on cy.id=r.cycle_id and cy.game_id=r.game_id
+            where r.game_id=$1 and r.company_id=$2 and cy.number=$3 and cy.status='closed'`,[game.id,companyId,row.number-1]);
+          if (!previous || !Array.isArray(previous.result?.inventory) || previous.result.cashEnd!==row.result.cashStart)
+            throw fail(409,'No está disponible el estado histórico de apertura.');
+          batches=previous.result.inventory;
+        }
+        try { return closeCycle({cash:row.result.cashStart,batches,costs:game.costs,event:row.event_id,seed:row.seed,companyId,decision}); }
+        catch { throw fail(400,'La decisión no es válida o supera la caja de apertura.'); }
+      });
+      return res.json({result});
     } catch(e) { return next(e); }
   });
   app.post('/api/games',async (req,res,next)=>{

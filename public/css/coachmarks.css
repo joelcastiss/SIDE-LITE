@@ -1,0 +1,11 @@
+.coach-help{flex:none;width:30px;height:30px;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;font:600 16px SidePoppins,Poppins,sans-serif;cursor:pointer}
+.coach-help:focus-visible,.coach-card button:focus-visible{outline:3px solid #f9c95b;outline-offset:3px}
+.coach-layer[hidden],.coach-spot[hidden]{display:none}
+.coach-layer{position:fixed;inset:0;z-index:2147483000;pointer-events:none;background:rgba(4,15,34,.24);font-family:SidePoppins,Poppins,sans-serif}
+.coach-spot{position:fixed;border-radius:9px;box-shadow:0 0 0 9999px rgba(4,15,34,.55),0 0 0 3px #f6ca5e;pointer-events:none;transition:top .18s ease,left .18s ease,width .18s ease,height .18s ease}
+.coach-card{pointer-events:auto;position:fixed;box-sizing:border-box;width:min(320px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;border-radius:14px;background:#fff;color:#122646;padding:17px 18px;box-shadow:0 12px 36px #07162d66;outline:none}
+.coach-progress{font-size:11px;font-weight:700;color:#536984}.coach-card h2{font:700 17px SidePoppins,Poppins,sans-serif;margin:5px 0;color:#122646}.coach-card p{font:400 13px/1.5 SidePoppins,Poppins,sans-serif;margin:0 0 15px}.coach-actions{display:flex;align-items:center;gap:7px}.coach-actions span{flex:1}.coach-actions button{border:0;border-radius:8px;padding:8px 9px;background:#eaf0f7;color:#173252;font:600 12px SidePoppins,Poppins,sans-serif;cursor:pointer}.coach-actions [data-action=skip]{background:transparent}.coach-actions [data-action=next]{background:#163d70;color:white}.coach-actions button[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){.coach-spot{transition:none}}
+
+
+.coach-card button,.coach-help{font-family:SidePoppins,Poppins,sans-serif!important}

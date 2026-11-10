@@ -155,8 +155,42 @@
 .side-compulsory strong { font-variant-numeric: tabular-nums; }
 .cash-fx span { max-width: min(85vw, 36rem); color: var(--side-text); font-family: var(--side-font); }
 @media (prefers-reduced-motion: reduce) { .cash-fx.play, .cash-pulse { animation: none !important; } .cash-fx.play { opacity: 1; transform: none; } }
-.cycle-pause-overlay { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: var(--side-space-5, 24px); background: rgb(2 7 22 / .88); }
-.cycle-pause-overlay[hidden] { display: none; }
-.cycle-pause-overlay > .side-panel { width: min(100%, 480px); padding: var(--side-space-6, 32px); border: 1px solid var(--side-gold); border-radius: 20px; color: var(--side-text); background: var(--side-panel); }
-.cycle-pause-overlay h2 { color: var(--side-gold); }
-.cycle-pause-overlay p { line-height: var(--side-leading-body); }
+/* Persistent cycle status: stays outside the page flow and never captures focus. */
+.cycle-pause-notice {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 1100;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: min(440px, calc(100vw - 40px));
+  box-sizing: border-box;
+  padding: 18px 20px;
+  border: 1px solid #ffd447;
+  border-left: 4px solid #ffd447;
+  border-radius: 14px;
+  background: #0b2038;
+  color: #eaf4ff;
+  box-shadow: 0 10px 32px rgb(0 0 0 / .35);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(calc(100% + 40px));
+  transition: transform .3s ease, opacity .3s ease, visibility 0s linear .3s;
+}
+.cycle-pause-notice.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition-delay: 0s;
+}
+.cycle-pause-notice__icon { color: #ffd447; font-size: 26px; line-height: 1; font-weight: 800; }
+.cycle-pause-notice strong { display: block; color: #ffd447; font-size: 15px; line-height: 1.4; }
+.cycle-pause-notice p { margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #bfd4e8; }
+@media (max-width: 480px) {
+  .cycle-pause-notice { right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); width: calc(100vw - 24px); padding: 14px; gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cycle-pause-notice { transition: none; transform: none; }
+}

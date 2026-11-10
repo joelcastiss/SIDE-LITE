@@ -1,0 +1,11 @@
+@font-face{font-family:Poppins;src:url('../assets/fonts/poppins/Poppins-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:Poppins;src:url('../assets/fonts/poppins/Poppins-SemiBold.ttf') format('truetype');font-weight:600 700;font-display:swap}
+.plan-assistant{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(var(--plan-bottom,20px),env(safe-area-inset-bottom));z-index:130;font-family:Poppins,sans-serif;color:#e9f5ff}
+.plan-assistant[hidden],.plan-assistant [hidden]{display:none!important}
+.plan-assistant button{font:inherit;cursor:pointer;color:inherit}
+.plan-assistant-toggle{display:grid;place-items:center;width:50px;height:50px;border:1px solid #68cce2;border-radius:50%;background:#09243c;box-shadow:0 4px 16px #0005}
+.plan-assistant-panel{position:absolute;right:0;bottom:62px;width:min(296px,calc(100vw - 32px));max-height:calc(100dvh - var(--plan-bottom,20px) - 82px);overflow:auto;box-sizing:border-box;background:#071b30;border:1px solid #529bb3;border-radius:14px;padding:14px 16px;box-shadow:0 8px 28px #0005;font-size:12px;line-height:1.5}
+.plan-assistant-panel header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.plan-assistant-panel h2{margin:0;font-size:15px;color:#e9f5ff;font-weight:600}.plan-assistant-panel header button{display:grid;place-items:center;min-width:32px;min-height:32px;background:transparent;border:0;font-size:22px;padding:0}.plan-assistant-panel h3{font-size:12px;margin:12px 0 4px;color:#f1d16a;font-weight:600}
+.plan-assistant-target{display:block;font-size:13px;font-weight:600}.plan-assistant-note{font-size:11px;color:#a9bfd1;margin:10px 0 0}.plan-assistant-status{color:#b5e5da;margin:12px 0 2px}
+.plan-assistant dl{margin:0}.plan-assistant dl>div{display:flex;justify-content:space-between;gap:8px;padding:4px 0}.plan-assistant dd{margin:0;font-weight:600;text-align:right}.plan-assistant-go{display:block;margin-top:10px;padding:0;border:0;background:transparent;color:#9dd8e8!important;font-size:10px!important;text-decoration:underline;text-underline-offset:3px}.plan-assistant button:focus-visible{outline:2px solid #b7eaff;outline-offset:3px}
+@media(max-width:600px){.plan-assistant{right:16px}}
