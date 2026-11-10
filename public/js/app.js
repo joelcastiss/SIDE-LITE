@@ -655,7 +655,7 @@ function openStudentAdmission(){
   authoritativeStudentState=null;studentClock=null;studentStateFailure=null;autoEnterDecisions=false;stopStudentSync();
   message('studentMessage','');showModal('studentModal');
 }
-document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{if(card.dataset.profile==='teacher')showModal('teacherLoginModal');else openStudentAdmission();}));
+document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{if(card.dataset.profile==='teacher'){showModal('teacherLoginModal');void teacherSession().catch(()=>{});}else openStudentAdmission();}));
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!$('modalRoot')?.classList.contains('hidden')){closeModal();return;}
   if(e.key!=='Escape')return;
@@ -674,6 +674,9 @@ function teacherSession(){
   ]).then(([{createSupabaseSession},{createTurnstileProvider},{turnstileSiteKey,teacherCaptchaEnabled}])=>{
     const captcha=teacherCaptchaEnabled ? createTurnstileProvider({siteKey:turnstileSiteKey}) : null;
     if(teacherCaptchaEnabled&&!captcha)throw new Error('No está disponible la verificación de acceso.');
+    // Load the Turnstile script while the professor fills the form; the token
+    // is still requested fresh and verified by Supabase when submitting.
+    if(captcha?.preload)void captcha.preload().catch(()=>{});
     return createSupabaseSession(supabaseClient,fetch,{captchaTokenProvider:captcha});
   });
 }
@@ -706,8 +709,20 @@ $('loginForm')?.addEventListener('submit',async e=>{
   e.preventDefault();const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;
   if(!/^[^@\s]+@upch\.pe$/i.test(email)){message('loginMessage','Ingresa un correo institucional @upch.pe.',true);return;}
   const button=e.currentTarget.querySelector('[type="submit"]');if(button)button.disabled=true;let session;
-  try{message('loginMessage','Ingresando...');session=await teacherSession();await session.signIn({email,password});await teacherWithMfa(session,()=>teacherIdentity(session));openTeacherPanel();}
-  catch(error){if(session)await session.signOut().catch(()=>{});message('loginMessage',error.message||'No se pudo iniciar sesión.',true);}
+  try{
+    message('loginMessage','Preparando acceso seguro...');
+    session=await teacherSession();
+    message('loginMessage','Verificando seguridad y credenciales...');
+    await session.signIn({email,password});
+    message('loginMessage','Comprobando autorización docente...');
+    await teacherWithMfa(session,()=>teacherIdentity(session));
+    openTeacherPanel();
+  }
+  catch(error){
+    // Explain a failed login immediately, even if session cleanup is slow.
+    message('loginMessage',error.message||'No se pudo iniciar sesión.',true);
+    if(session)await session.signOut().catch(()=>{});
+  }
   finally{if(button)button.disabled=false;}
 });
 // Keep SIDE Lite's existing minimum for new passwords in the original form.
