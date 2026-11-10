@@ -48,15 +48,25 @@
   for (const id of ['cutRound', 'startCycle1Btn']) if ($(id)) { $(id).hidden = true; $(id).style.display = 'none'; }
   for (const id of ['viewPdf', 'downloadPdf', 'resultCompanySelect', 'refreshReports', 'copyGameLink', 'cancelGame', 'clearEvents', 'saveAll']) if ($(id)) { $(id).hidden = true; $(id).style.display = 'none'; }
   document.querySelectorAll('.nav-btn').forEach(button => {
-    if (!['configuracion', 'rondas', 'empresas', 'resultados', 'podio', 'laboratorio'].includes(button.dataset.tab)) { button.hidden = true; button.style.display = 'none'; }
+    if (!['configuracion', 'rondas', 'empresas', 'resultados', 'podio', 'laboratorio', 'historial'].includes(button.dataset.tab)) { button.hidden = true; button.style.display = 'none'; }
   });
+
+  document.querySelector('.nav-btn[data-tab="rondas"]')?.classList.remove('hidden');
 
   function showTab(name) {
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.toggle('active', el.dataset.tab === name));
     document.querySelectorAll('.tab-panel').forEach(el => { el.classList.toggle('active', el.id === 'tab-' + name); if (el.id === 'tab-' + name) el.classList.remove('hidden'); });
-    const titles = {configuracion:'Configuración de la simulación', rondas:'Ciclos y eventos', empresas:'Empresas participantes', resultados:'Resultados', podio:'Ganador y podio', laboratorio:'Laboratorio Estratégico'};
+    const titles = {configuracion:'Configuración de la simulación', rondas:'Ciclos y eventos', empresas:'Empresas participantes', resultados:'Resultados', podio:'Ganador y podio', laboratorio:'Laboratorio Estratégico', historial:'Historial'};
     if ($('pageTitle') && titles[name]) $('pageTitle').textContent = titles[name];
     if (name === 'laboratorio') document.dispatchEvent(new CustomEvent('side-lite-laboratory-open'));
+    if (name === 'historial') void openHistory();
+  }
+  let historyMounted = false;
+  async function openHistory() {
+    if (historyMounted) return;
+    historyMounted = true;
+    try { const {renderTeacherHistory} = await import('../teacher-history.js'); renderTeacherHistory($('tab-historial'), {listGames:()=>api.request('/games','GET',undefined,'teacher'),loadGame:id=>api.getGame(id)}); }
+    catch (error) { historyMounted=false; $('historyStatus').textContent='No se pudo consultar el historial. Revisa tu conexión.'; }
   }
   function render(snapshot) {
     const game = snapshot.game, cycle = snapshot.cycles?.at(-1);
@@ -87,7 +97,7 @@
     const grid = $('companiesGrid');
     if (grid) { grid.replaceChildren(); for (const company of snapshot.companies) { const card = document.createElement('article'); card.className = 'card'; const title = document.createElement('h3'); title.textContent = company.name; const detail = document.createElement('p'); detail.textContent = `${company.store || ''} · ${snapshot.decisions?.some(d => d.company_id === company.id && d.confirmed) ? 'Decisión confirmada' : 'Decisión pendiente'}`; card.append(title, detail); grid.append(card); } }
     const reports = $('detailReports');
-    if (reports) { reports.replaceChildren(); for (const item of snapshot.ranking || []) { const line = document.createElement('p'); line.textContent = `${item.name}: ${Number(item.returnPercent).toFixed(1)} % de rentabilidad`; reports.append(line); } for (const item of snapshot.results || []) { const line = document.createElement('p'); const company = snapshot.companies.find(c => c.id === item.company_id); line.textContent = `${company?.name || 'Empresa'} · Ciclo ${item.number} · utilidad S/ ${Number(item.result?.profit || 0).toLocaleString('es-PE')}`; reports.append(line); } }
+    if (reports) { reports.replaceChildren(); for (const item of snapshot.ranking || []) { const line = document.createElement('p'); line.textContent = `${item.name}: ${Number(item.returnPercent).toFixed(1)} % de rentabilidad`; reports.append(line); } for (const item of snapshot.results || []) { const line = document.createElement('p'); const company = snapshot.companies.find(c => c.id === item.company_id); line.textContent = `${company?.name || 'Empresa'} · Ciclo ${item.number} · Ventas ${Number(item.result?.sold || 0)} · Ingresos S/ ${Number(item.result?.revenue || 0).toLocaleString('es-PE')} · Costos S/ ${Number(item.result?.costOfSales || 0).toLocaleString('es-PE')} · Utilidad S/ ${Number(item.result?.profit || 0).toLocaleString('es-PE')} · Caja S/ ${Number(item.result?.cashEnd || 0).toLocaleString('es-PE')}`; reports.append(line); } }
     clearInterval(timer);
     if (cycle?.status === 'open') {
       const remaining = Math.max(0, Date.parse(cycle.ends_at) - Date.parse(cycle.paused_at || cycle.server_now || new Date().toISOString()));
@@ -182,7 +192,7 @@
     } else if (['startGame', 'retryCreate', 'startTimer', 'advanceRound', 'startCycle1Btn'].includes(button.id)) {
       event.preventDefault(); event.stopImmediatePropagation();
       if (button.id === 'startGame' || button.id === 'retryCreate') void create(); else void start();
-    } else if (button.dataset.tab && ['configuracion', 'rondas', 'empresas', 'resultados', 'podio', 'laboratorio'].includes(button.dataset.tab)) {
+    } else if (button.dataset.tab && ['configuracion', 'rondas', 'empresas', 'resultados', 'podio', 'laboratorio', 'historial'].includes(button.dataset.tab)) {
       event.preventDefault(); event.stopImmediatePropagation(); showTab(button.dataset.tab); void (button.dataset.tab === 'podio' ? renderPodium() : refresh()).catch(e => message(e.message));
     }
   }, true);

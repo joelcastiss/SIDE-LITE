@@ -1427,12 +1427,12 @@ $('backHome')?.addEventListener('click',()=>window.location.href='index.html');
     if(!supabaseClient)throw new Error('No hay sesión docente.');
     const {createSupabaseSession}=await import('../supabase-session.js?v=20261110-login-fast3');
     const session=createSupabaseSession(supabaseClient);
-    const identity=await session.identity();
+    const identity=await Promise.race([session.identity(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión docente. Revisa tu conexión.')),8000))]);
     if(identity.role!=='teacher')throw new Error('La cuenta no tiene autorización docente.');
     window.SIDLiteGame?.useRole('teacher');
   } catch(error) {
     console.error('SIDE: acceso docente no autorizado',error);
-    window.location.replace('index.html');
+    window.location.replace('index.html?acceso=docente');
     return;
   }
   // SIDE Lite owns room state and polling through its API controller.

@@ -655,7 +655,7 @@ function openStudentAdmission(){
   authoritativeStudentState=null;studentClock=null;studentStateFailure=null;autoEnterDecisions=false;stopStudentSync();
   message('studentMessage','');showModal('studentModal');
 }
-document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{if(card.dataset.profile==='teacher'){showModal('teacherLoginModal');void teacherSession().catch(()=>{});}else openStudentAdmission();}));
+document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{if(card.dataset.profile==='teacher'){window.location.href='demo-docente.html';}else openStudentAdmission();}));
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!$('modalRoot')?.classList.contains('hidden')){closeModal();return;}
   if(e.key!=='Escape')return;
@@ -675,9 +675,7 @@ function teacherSession(){
   ]).then(([{createSupabaseSession},{createTurnstileProvider},{turnstileSiteKey,teacherCaptchaEnabled}])=>{
     const captcha=teacherCaptchaEnabled ? createTurnstileProvider({siteKey:turnstileSiteKey}) : null;
     if(teacherCaptchaEnabled&&!captcha)throw new Error('No está disponible la verificación de acceso.');
-    // Load the Turnstile script while the professor fills the form; the token
-    // is still requested fresh and verified by Supabase when submitting.
-    if(captcha?.preload)void captcha.preload().catch(()=>{});
+    // A valid session does not require loading a new CAPTCHA challenge.
     return createSupabaseSession(supabaseClient,fetch,{captchaTokenProvider:captcha});
   }).catch(error=>{teacherSessionPromise=null;throw error;});
   return teacherSessionPromise;
@@ -694,6 +692,10 @@ async function teacherIdentity(session){
   }
   if(identity.role!=='teacher')throw new Error('Tu cuenta necesita autorización docente. Contacta al administrador.');
   return identity;
+}
+if(new URLSearchParams(location.search).get('acceso')==='docente'){
+  showScreen('profiles');showModal('teacherLoginModal');message('loginMessage','Comprobando sesión docente…');
+  Promise.race([Promise.resolve().then(()=>teacherSession()).then(session=>teacherWithMfa(session,()=>teacherIdentity(session))),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión. Revisa tu conexión o inicia sesión.')),8000))]).then(()=>openTeacherPanel()).catch(error=>{message('loginMessage',error.status===401?'Inicia sesión para administrar partidas reales.':error.message||'Inicia sesión para continuar.',true)});
 }
 async function teacherWithMfa(session, action){
   try{return await action()}
@@ -723,7 +725,7 @@ $('loginForm')?.addEventListener('submit',async e=>{
   catch(error){
     // Explain a failed login immediately, even if session cleanup is slow.
     message('loginMessage',error.message||'No se pudo iniciar sesión.',true);
-    if(session)await session.signOut().catch(()=>{});
+    if(session)void session.signOut().catch(()=>{});
   }
   finally{if(button)button.disabled=false;}
 });

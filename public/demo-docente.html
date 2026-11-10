@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#081a34">
+  <title>SIDE — Panel docente de demostración</title>
+  <link rel="stylesheet" href="css/design-system.css?v=20261001">
+  <link rel="stylesheet" href="css/docente.css?v=20261028-statement">
+  <link rel="stylesheet" href="css/laboratorio.css?v=20261030-7">
+  <link rel="stylesheet" href="css/responsive.css?v=20261009-mobile">
+  <link rel="stylesheet" href="css/faculty-theme.css?v=20261022-cancelar-rojo">
+  <style>.demo-real-link{color:#fff;font-weight:700;text-decoration:underline}.demo-real-link:focus-visible{outline:2px solid #fff;outline-offset:3px}</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="docente-bg" aria-hidden="true"></div>
+  <aside class="sidebar">
+    <div class="brand"><span class="faculty-wordmark" aria-label="SIDE">SIDE</span></div>
+    <nav aria-label="Secciones del panel docente">
+      <button class="nav-btn active" data-tab="configuracion"><span class="nav-icon"><img src="assets/icons/teacher/configuracion.svg" alt=""></span><span>Configuración</span></button>
+      <button class="nav-btn" data-tab="rondas"><span class="nav-icon"><img src="assets/icons/teacher/rondas.svg" alt=""></span><span>Rondas y eventos</span></button>
+      <button class="nav-btn" data-tab="empresas"><span class="nav-icon"><img src="assets/icons/teacher/empresas.svg" alt=""></span><span>Empresas</span></button>
+      <button class="nav-btn" data-tab="resultados"><span class="nav-icon"><img src="assets/icons/teacher/resultados.svg" alt=""></span><span>Resultados</span></button>
+      <button class="nav-btn" data-tab="podio"><span class="nav-icon"><img src="assets/icons/teacher/podio.svg" alt=""></span><span>Ganador y podio</span></button>
+      <button class="nav-btn" data-tab="laboratorio"><span class="nav-icon"><img src="assets/icons/teacher/resultados.svg" alt=""></span><span>Laboratorio Estratégico</span></button>
+      <button class="nav-btn" data-tab="historial"><span class="nav-icon"><img src="assets/icons/teacher/decisiones.svg" alt=""></span><span>Historial</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <button id="backHome" class="sidebar-link"><span class="faculty-back-arrow" aria-hidden="true"></span> Volver al inicio</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <div class="topbar-mark"><span class="mark-dot"></span><span class="eyebrow">SIMULADOR DE DECISIONES FINANCIERAS</span></div>
+        <h1 id="pageTitle">Configuración de la simulación</h1>
+      </div>
+      <div class="top-actions">
+        <span id="gameCodeBadge" class="code-badge">Demostración local</span>
+        <button hidden id="copyGameCode" class="secondary side-button" type="button" aria-live="polite">Copiar código</button>
+        <button hidden id="copyGameLink" class="secondary side-button" type="button" aria-live="polite">Copiar enlace</button>
+        <button id="saveAll" class="secondary">Guardar configuración</button>
+        <button id="cancelGame" class="secondary side-button danger hidden" type="button">Cancelar partida</button>
+
+      </div>
+    </header>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div class="info-banner" role="status">Modo demostración local: los escenarios y resultados son simulados y no son resultados oficiales. <a class="demo-real-link" href="index.html?acceso=docente">Administrar partidas reales</a></div>
+    <div id="gameStatusBanner" class="info-banner" role="status" aria-live="polite">Demostración: configura la simulación y explora el laboratorio local.</div>
+
+    <section id="tab-configuracion" class="tab-panel active">
+      <div class="hero-card">
+        <div><span class="eyebrow">PARTIDA ÚNICA ACTIVA</span><h2>Configuración de la simulación</h2><p>Configura la sala y comparte el código generado con tus estudiantes. La configuración se aplica al crear la partida.</p></div>
+        <div class="faculty-wordmark faculty-wordmark-small" aria-hidden="true">SIDE</div>
+      </div>
+      <p id="financeConfigHelp" class="info-banner" role="status">El capital inicial se aplica desde el Ciclo 1.</p>
+      <div class="grid two">
+        <article class="card">
+          <div class="card-title"><h3>Identificación</h3><span>Partida</span></div>
+          <label>Nombre de la simulación<input id="gameName" value="SIDE — Simulación Principal"></label>
+          <label>Curso<input id="gameCourse" value="Finanzas Corporativas" disabled aria-describedby="courseHint"></label><p id="courseHint" class="hint">Referencia visual; el curso no se guarda en la partida.</p>
+          <label>Código de partida<input id="gameCode" class="locked-input" value="" placeholder="Se asigna al crear la sala" maxlength="12" readonly aria-readonly="true"></label>
+          <p class="hint">El nombre legal y comercial lo define cada estudiante. El código de partida se genera automáticamente.</p>
+        </article>
+        <article class="card">
+          <div class="card-title"><h3>Caja / efectivo</h3><span>Capital inicial</span></div>
+          <div class="native-choice-row"><label><input type="radio" name="capitalMode" value="fixed" id="capitalModeFixed" checked> Monto fijo para todos</label><label><input type="radio" name="capitalMode" value="random" id="capitalModeRandom"> Monto aleatorio</label></div>
+          <div id="fixedCapitalFields"><label>Dinero inicial por empresa (S/)<input id="capital" type="number" value="100000" min="0" step="1000"></label></div>
+          <div id="randomCapitalFields" class="hidden"><div class="value-row"><label>Rango mínimo (S/)<input id="capitalMin" type="number" value="80000" min="0" step="1000"></label><label>Rango máximo (S/)<input id="capitalMax" type="number" value="120000" min="0" step="1000"></label></div><p class="hint">Cada empresa recibe un monto estable dentro de este rango; no cambia al recargar.</p></div>
+        </article>
+        <article class="card">
+          <div class="card-title"><h3>Demanda por distrito</h3><span>Unidades por ciclo</span></div>
+          <label>Los Olivos<input id="demandLosOlivos" type="number" value="1000" min="0"></label>
+          <label>Miraflores<input id="demandMiraflores" type="number" value="1250" min="0"></label>
+          <label>San Juan de Lurigancho<input id="demandSJL" type="number" value="1100" min="0"></label>
+        </article>
+        <article class="card">
+          <div class="card-title"><h3>Financiamiento</h3><span>Regla automática</span></div>
+          <label>Régimen tributario de la sala<select id="taxRegime"><option value="AUTO">Según régimen de cada empresa (valor anterior)</option><option value="NO_MYPE">General: 29.5 %</option><option value="MYPE">MYPE tributario: 10 % hasta 15 UIT y 29.5 % sobre el exceso</option></select></label><p class="hint">Se calcula sobre la utilidad acumulada al final de la partida. UIT 2026: S/ 5,500.</p><label>Umbral para descuento de materiales<input id="quantityDiscountThreshold" type="number" min="0" step="1" value="100"></label><p class="hint">El descuento de 8 % se aplica por opción cuando la compra alcanza este número de unidades de producción (m², unidades o metros). Valor inicial: 100.</p><label>TEA inicial (%)<input id="interest" type="number" step="0.1" value="20" min="0"></label>
+          <div class="rule-box"><strong>Línea de crédito inicial: 70% de la caja</strong><span>La línea puede aumentar o disminuir según caja y activos; el uso reduce el disponible.</span><small>El docente fija únicamente la TEA inicial; los montos se calculan automáticamente para cada empresa.</small></div>
+          <label>% inicial de ventas a crédito<input id="creditPercentStart" type="number" value="20" min="0" max="100"></label>
+        </article>
+        <article class="card cycle-config-card">
+          <div class="card-title"><h3>Duración y ciclos</h3><span id="configCycleCount">1 / 6</span></div>
+          <label>Número de ciclos<input id="cycles" type="number" value="6" min="1" max="20"></label>
+          <div class="value-row"><label>Horas por ciclo operativo<input id="roundHours" type="number" value="0" min="0"></label><label>Minutos por ciclo operativo<input id="roundMinutes" type="number" value="10" min="0" max="59" step="1"></label></div>
+          <div class="integration-note"><strong>Integración previa al Ciclo 1</strong><p>Los estudiantes ingresan y esperan antes de comenzar. Todos los ciclos configurados son de toma de decisiones.</p></div>
+          <input id="roundSecs" type="hidden" value="0">
+          <div class="native-choice-row"><label><input type="radio" name="cycleMode" value="manual" id="cycleModeManual" checked> Manual</label><label><input type="radio" name="cycleMode" value="automatic" id="cycleModeAutomatic"> Automática</label></div>
+          <div id="manualCycleDisclaimer" class="mode-disclaimer"><strong>Modo manual</strong><span>Al guardar, se abre la sala de espera. El Ciclo 1 comienza al terminar el tiempo de integración; el profesor controla el reloj y el avance de los ciclos.</span></div>
+          <div id="automaticCycleConfig"><label>Tiempo de espera antes de comenzar (minutos)<input id="integrationDurationMinutes" type="number" value="5" min="1" max="60" step="1" required></label><label id="scheduledStartLabel">Inicio de la integración (opcional)<input id="scheduledStart" type="datetime-local"></label><div class="mode-disclaimer"><strong id="integrationModeHeading">Sala de espera</strong><span id="integrationModeHelp">El servidor inicia el Ciclo 1 al terminar el tiempo de integración. Puedes cerrar el navegador.</span></div></div>
+          <input id="cycleCloseMode" type="hidden" value="manual"><input id="currentRound" type="hidden" value="1">
+        </article>
+        <article class="card academic-calendar-card">
+          <div class="card-title"><h3>Calendario académico</h3><span id="calendarModeBadge">Referencia</span></div>
+          <div class="value-row"><label>Fecha de inicio<input id="startDate" type="date"></label><label>Fecha de fin<input id="endDate" type="date"></label></div>
+          <p id="academicCalendarHint" class="hint">Las fechas son informativas en modo manual.</p>
+          <div id="automaticCalendar" class="automatic-calendar hidden">
+            <div id="calendarSummary" class="calendar-summary" role="status" aria-live="polite"></div>
+            <ol id="cycleCalendarList" class="cycle-calendar-list" aria-label="Programación de los ciclos"></ol>
+            <p class="calendar-footnote">Las noticias y los eventos confirmados se consultan en Rondas y eventos. Este calendario no anticipa resultados aleatorios.</p>
+          </div>
+        </article>
+      </div>
+      <article class="card events-config-summary">
+        <div class="card-title"><div><h3>Eventos habilitados</h3><p>Selecciona los eventos que podrán ocurrir desde el Ciclo 1.</p></div><button id="openEventPicker" class="secondary" type="button" aria-haspopup="dialog">Seleccionar eventos</button></div>
+        <div id="enabledEventsSummary" class="enabled-events-summary" aria-live="polite">Sin eventos habilitados.</div>
+      </article>
+      <div id="creationFeedback" class="creation-feedback hidden" role="status" aria-live="polite"><p id="creationMessage"></p><button id="retryCreate" class="secondary hidden" type="button">Reintentar</button></div>
+      <div class="config-start-footer"><div><strong id="configReadySummary">Revisa la configuración antes de iniciar.</strong><p>Iniciar partida abre la sala de espera. El Ciclo 1 comienza al terminar el tiempo de integración configurado.</p></div><button id="demo-start" class="primary" type="button">Iniciar demostración</button></div>
+    </section>
+
+    <section id="tab-rondas" class="tab-panel">
+      <article id="teacherLobby" class="card teacher-lobby hidden" aria-labelledby="lobbyHeading"><h2 id="lobbyHeading">Sala de espera</h2><div class="lobby-identity"><strong id="lobbyCode"></strong><button id="copyLobbyCode" class="secondary side-button" type="button" aria-live="polite">Copiar código</button></div><p id="lobbyCountdown" role="timer"></p><p id="lobbyNext"></p><div id="lobbyCompanies" aria-live="polite">Esperando empresas.</div></article>
+      <div class="section-head"><div><span class="eyebrow">CONTROL DE CICLO</span><h2>Tiempo, noticias y eventos</h2></div><button id="advanceRound" class="primary">Pasar al siguiente ciclo <img class="button-arrow-icon" src="assets/icons/ui/arrow-right-thick.svg" alt=""></button></div>
+      <div class="round-status card">
+        <div class="round-number"><span>CICLO</span><strong id="roundDisplay">1 / 6</strong></div>
+        <div><b id="roundState">Preparación</b><p id="roundSummary">La partida está lista para iniciar.</p></div>
+        <div class="timer-box">⏱ <strong id="roundTimer">00:10:00</strong><button id="startTimer" class="mini">Iniciar</button><button id="cutRound" class="mini danger-mini">Cortar ciclo</button><button id="startCycle1Btn" class="mini hidden">▶ Iniciar Ciclo 1</button></div>
+      </div>
+      <div class="grid two">
+        <article class="card"><div class="card-title"><h3>Reglas del ciclo</h3><span id="modeSummaryBadge">Manual</span></div><p id="modeRulesText"><strong>Manual:</strong> el profesor inicia y cierra cada ciclo.</p><p class="hint">El timer del panel estudiante usa la misma referencia de tiempo.</p></article>
+        <article class="card"><div class="card-title"><h3>Noticias generadas</h3><span>Eventos ocurridos</span></div><div id="cycleNews"></div></article>
+      </div>
+      <div class="event-log card"><div class="card-title"><h3>Registro de eventos</h3><button id="clearEvents" class="mini">Limpiar</button></div><div id="eventLog"></div></div>
+    </section>
+
+    <section id="tab-empresas" class="tab-panel teacher-workspace" aria-labelledby="companiesHeading">
+      <div class="section-head"><div class="teacher-section-title"><span class="teacher-section-icon" aria-hidden="true"><img src="assets/icons/teacher/empresas.svg" alt=""></span><div><h2 id="companiesHeading">Empresas participantes</h2><p>Presencia, avance y evaluación de cada empresa.</p></div></div><button id="refreshReports" class="secondary" type="button"><span aria-hidden="true">↻</span> Actualizar información</button></div>
+      <div class="info-banner teacher-guide">Las empresas aparecen al ingresar. La presencia y el avance se actualizan automáticamente; puedes guardar una nota o abrir sus resultados desde cada tarjeta.</div>
+      <p id="companiesLiveStatus" role="status" aria-live="polite">Esperando empresas.</p>
+      <div id="companiesGrid" class="company-grid"></div>
+      <details id="expelledCompanies" class="expelled-company-list hidden">
+        <summary>Empresas eliminadas (<span id="expelledCompaniesCount">0</span>)</summary>
+        <p class="hint">Estas empresas están fuera de la partida. Puedes consultar sus resultados o reactivarlas para que vuelvan a ingresar.</p>
+        <div id="companiesExpelledGrid" class="company-grid"></div>
+      </details>
+    </section>
+
+    <section id="tab-resultados" class="tab-panel teacher-workspace" aria-labelledby="resultsHeading">
+      <div class="section-head"><div class="teacher-section-title"><span class="teacher-section-icon" aria-hidden="true"><img src="assets/icons/teacher/resultados.svg" alt=""></span><div><h2 id="resultsHeading">Resultados por empresa</h2><p>Consulta el cierre del ciclo y sus estados financieros.</p></div></div><div class="top-actions"><button id="viewPdf" class="secondary" type="button">Ver PDF</button><button id="downloadPdf" class="primary" type="button">Descargar PDF</button></div></div>
+      <p class="hint">El PDF incluye todas las empresas activas y el ciclo reportado de cada una.</p>
+      <div class="stats-grid" id="resultStats"></div>
+      <article class="card result-company-card"><div class="card-title"><h3>Detalle por empresa</h3><label>Empresa<select id="resultCompanySelect" aria-label="Empresa para ver resultados"></select></label></div><div id="detailReports"></div></article>
+    </section>
+
+    <section id="tab-podio" class="tab-panel">
+      <div class="hero-card winner-hero"><div><span class="eyebrow">PODIO</span><h2>Resultados y calificaciones</h2><p>SIDE muestra una sugerencia financiera. El podio final publicado se ordena exclusivamente por las notas del profesor y se muestra durante 24 horas desde la hora efectiva de publicación.</p></div><div class="hero-orb trophy-orb"><img src="assets/icons/teacher/podio.svg" alt=""></div></div>
+      <div class="grid two">
+        <article class="card"><div class="card-title"><h3>Sugerencia de SIDE</h3><span>Solo informativa</span></div><p class="hint">Puntaje de 0 a 100: margen de utilidad 35 (20% alcanza el máximo), rentabilidad sobre activos 25 (15%), efectivo/activos 25 (30%) y baja deuda/activos 15. Los indicadores sin datos valen cero.</p><div id="sidePodium" class="suggested-podium"></div></article>
+        <article class="card"><div class="card-title"><h3>Podio según las notas actuales</h3><span id="podiumState">No publicado</span></div><div id="podiumPreview" class="podium" aria-live="polite"></div></article>
+      </div>
+      <article class="card podium-publish"><div class="card-title"><h3>Podio final del profesor</h3><span>Solo notas docentes</span></div><p class="hint">Guarda las notas en Empresas, también después de terminar todos los ciclos. Al finalizar se evalúan todas las empresas participantes, aunque estén desconectadas o inactivas. La vista previa se actualiza con cada nota; pulsa PUBLICAR PODIO para elegir Ahora o Programar (de 1 minuto a 72 horas). La programación se cumple aunque cierres el panel. Las 24 horas empiezan al publicarse. En empates se ordena por nombre.</p><label>Justificación<textarea id="winnerReason" rows="3" placeholder="Criterios utilizados por el docente..."></textarea></label><button id="publishPodium" class="primary">PUBLICAR PODIO</button><div id="podiumSchedule" class="podium-schedule hidden"><span id="podiumScheduledAt"></span><strong id="podiumCountdown"></strong><div class="podium-actions"><button id="podiumPublishNow" class="primary" type="button">Publicar ahora</button><button id="podiumReschedule" class="secondary" type="button">Reprogramar</button><button id="podiumCancelSchedule" class="secondary" type="button">Cancelar programación</button></div></div><p id="publishStatus" class="publish-status" role="status"></p></article>
+    </section>
+    <section id="tab-laboratorio" class="tab-panel teacher-workspace"><div id="demo-laboratorio"></div></section>
+
+    <section id="tab-historial" class="tab-panel teacher-workspace" aria-labelledby="historyHeading">
+      <div class="section-head"><div class="teacher-section-title"><span class="teacher-section-icon" aria-hidden="true"><img src="assets/icons/teacher/decisiones.svg" alt=""></span><div><h2 id="historyHeading">Historial</h2><p>Historial de la última partida finalizada.</p></div></div><button id="refreshHistory" class="secondary" type="button">Actualizar historial</button></div>
+      <div class="info-banner teacher-guide">Selecciona una empresa y despliega sus ciclos para revisar las decisiones y los resultados registrados. Esta consulta es de solo lectura y se reemplaza al finalizar una nueva partida.</div>
+      <p id="historyStatus" class="history-status" role="status" aria-live="polite"></p>
+      <div id="historyContent" aria-busy="false"></div>
+    </section>
+  </main>
+</div>
+
+<dialog id="podiumDialog" class="podium-dialog" aria-labelledby="podiumDialogTitle">
+  <form id="podiumPublishForm">
+    <h2 id="podiumDialogTitle">Cuándo publicar el podio</h2>
+    <label>Publicación<select id="podiumPublishMode"><option value="now">Ahora</option><option value="schedule">Programar</option></select></label>
+    <div id="podiumDelayFields" class="value-row hidden">
+      <label>Horas<input id="podiumHours" type="number" min="0" max="72" step="1" value="0"></label>
+      <label>Minutos<input id="podiumMinutes" type="number" min="0" max="59" step="1" value="1"></label>
+    </div>
+    <p id="podiumPublishPreview" class="hint" aria-live="polite"></p>
+    <p id="podiumPublishError" role="alert"></p>
+    <div class="podium-actions"><button id="confirmPodiumPublish" class="primary" type="submit">Confirmar publicación</button><button id="cancelPodiumPublish" class="secondary" type="button">Cancelar</button></div>
+  </form>
+</dialog>
+<dialog id="eventPicker" class="event-picker" aria-labelledby="eventPickerTitle"><div class="event-picker-toolbar"><span>Configuración de eventos</span><button id="eventSelectAll" class="secondary" type="button">Seleccionar todos</button><button id="closeEventPicker" class="secondary" type="button">Listo</button></div>      <div class="event-bank-card">
+        <div class="card-title"><div><h3 id="eventPickerTitle">Seleccionar eventos</h3><p>Marca los eventos disponibles o genera una selección aleatoria.</p></div><span id="eventSelectionCount">0 seleccionados</span></div>
+        <div class="event-mode-panel">
+          <div>
+            <span class="event-control-label">Modo de selección</span>
+            <div class="native-choice-row compact">
+              <label><input type="radio" name="eventSelectionMode" value="manual" checked> Manual</label>
+              <label><input type="radio" name="eventSelectionMode" value="random"> Aleatoria</label>
+            </div>
+          </div>
+          <label class="random-count-field">Cantidad aleatoria<input id="eventRandomCount" type="number" min="1" max="40" value="15"></label>
+          <button id="eventRandomize" class="secondary" type="button">GENERAR SELECCIÓN ALEATORIA</button>
+          <button id="eventClearSelection" class="mini danger-mini" type="button">Limpiar selección</button>
+        </div>
+        <div class="event-filter-row">
+          <label>Buscar evento<input id="eventSearch" type="search" placeholder="Ej. cuero, SUNAFIL, Fiestas Patrias..."></label>
+          <label>Categoría<select id="eventCategoryFilter"><option value="all">Todas</option></select></label>
+          <label>Afectados<select id="eventScopeFilter"><option value="all">Todos</option><option value="group">Grupal</option><option value="individual">Individual</option></select></label>
+          <span id="eventVisibleCount" class="event-visible-count"></span>
+        </div>
+        <div class="event-bank-help"><strong>GRUPAL</strong><span>Si el evento ocurre, afecta a todas las empresas.</span><strong>INDIVIDUAL</strong><span>Se evalúa empresa por empresa con la probabilidad indicada.</span><strong>OCURRENCIA</strong><span>Es la probabilidad de que el evento se active; no significa que ocurrirá siempre.</span></div>
+        <p class="hint">Configura desde qué ciclo puede ocurrir cada evento. Desmarca «Repetir» para que ocurra una sola vez por partida (o por empresa si es individual). Su efecto conserva la duración indicada.</p>
+        <div class="event-table-wrap"><table class="event-table"><thead><tr><th>Usar</th><th>Descripción</th><th>Afectados</th><th>Ciclos por afectar</th><th>Implicancia</th><th>Ocurrencia</th><th>Desde ciclo</th><th>Repetir</th></tr></thead><tbody id="eventBankBody"></tbody></table></div>
+        <p class="hint event-mode-hint">Ejemplo: <b>+0</b> = mismo ciclo, <b>+1</b> = siguiente ciclo, <b>+2</b> = el efecto empieza después de dos ciclos. Si un evento dura más de un ciclo, se indica dentro de la implicancia.</p>
+      </div>
+</dialog>
+<dialog id="cancelGameDialog" class="event-picker" aria-labelledby="cancelGameTitle">
+  <h2 id="cancelGameTitle">Cancelar partida</h2>
+  <p>Los estudiantes recibirán un aviso y dejarán de poder tomar decisiones. Los resultados registrados se conservarán.</p>
+  <div class="top-actions"><button id="keepGame" class="secondary" type="button">Continuar partida</button><button id="confirmCancelGame" class="secondary danger" type="button">Sí, cancelar partida</button></div>
+</dialog>
+
+<div id="pdfModal" class="modal hidden"><div class="modal-panel"><button id="closePdf" class="modal-close">×</button><h2>Reporte PDF de la simulación</h2><iframe id="pdfFrame" title="Vista previa PDF"></iframe></div></div>
+
+<script type="module" src="js/demo-docente.js?v=20261110-2"></script>
+</body>
+</html>

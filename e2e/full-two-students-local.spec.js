@@ -73,7 +73,7 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
    expect(faculty.ranking[0].returnPercent).toBeGreaterThanOrEqual(faculty.ranking[1].returnPercent);
   });
   const page=await teacher.newPage();
-  await page.goto(base);
+  await page.goto(base+'/__local-ui-test');
   await page.getByRole('button',{name:`Aula ${cycles}`}).click();
   await page.locator('[data-tab=podio]').click();await expect(page.locator('#tab-podio').getByRole('heading',{name:'Clasificación',exact:true})).toBeVisible();
   await page.locator('[data-tab=resultados]').click();await expect(page.locator('#resultsHeading')).toBeVisible();

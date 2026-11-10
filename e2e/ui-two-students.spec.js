@@ -12,22 +12,21 @@ const pass='clave-prueba-segura-2026';
 const key=process.env.TEACHER_REGISTRATION_KEY||'side-lite-local-testing-key-2026';
 async function account(browser,role,name){
  const context=await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true}:{});const page=await context.newPage();page.setDefaultTimeout(15000);
- await page.goto(base);
+ await page.goto(base+'/__local-ui-test');
  await page.locator('#startBtn').click();
  await page.locator(`[data-profile=${role}]`).click();
- if(role==='student')await page.locator('#student-auth-switch button').click();
- await page.locator('#show-register').click();
  const email=`${name}-${stamp}@upch.pe`;
- const register=page.locator('#register');
- await register.locator('[name=name]').fill(name);
- await register.locator('[name=email]').fill(email);
- await register.locator('[name=password]').fill(pass);
- await register.locator('[name=role]').selectOption(role);
- if(role==='teacher')await register.locator('[name=key]').fill(key);
- await register.getByRole('button',{name:/crear cuenta/i}).click();
- await expect(page.locator('#access-message')).toContainText('Cuenta creada');
- const login=page.locator('#login');await login.locator('[name=email]').fill(email);await login.locator('[name=password]').fill(pass);
- await login.getByRole('button',{name:/iniciar sesión/i}).click();
+ if(role==='teacher'){
+  await page.locator('#teacherLoginModal [data-switch=register]').click();
+  await page.locator('#registerName').fill(name);await page.locator('#registerLastName').fill('Prueba');await page.locator('#registerCourse').fill('Finanzas');
+  await page.locator('#registerEmail').fill(email);await page.locator('#registerPassword').fill(pass);await page.locator('#teacherKey').fill(key);
+  await page.locator('#registerForm button[type=submit]').click();await expect(page.locator('#registerMessage')).toContainText('Cuenta creada');
+  await page.locator('#teacherRegisterModal [data-switch=login]').click();await page.locator('#loginEmail').fill(email);await page.locator('#loginPassword').fill(pass);await page.locator('#loginForm button[type=submit]').click();
+ }else{
+  await page.locator('#student-auth-switch button').click();await page.locator('#show-register').click();
+  const register=page.locator('#register');await register.locator('[name=name]').fill(name);await register.locator('[name=email]').fill(email);await register.locator('[name=password]').fill(pass);await register.locator('[name=role]').selectOption(role);await register.getByRole('button',{name:/crear cuenta/i}).click();await expect(page.locator('#access-message')).toContainText('Cuenta creada');
+  await page.locator('#show-login').click();const login=page.locator('#login');await login.locator('[name=email]').fill(email);await login.locator('[name=password]').fill(pass);await login.getByRole('button',{name:/iniciar sesión/i}).click();
+ }
  await expect(role==='teacher'?page.getByText('Mis partidas').first():page.locator('#join')).toBeVisible();
  return {context,page};
 }
@@ -41,7 +40,7 @@ test('docente y dos estudiantes juegan desde el ingreso hasta los resultados',as
   const b=await account(browser,'student','alumno');items.push(b);
   const form=teacher.page.locator('#create');await form.locator('[name=name]').fill('Recorrido completo');
   await form.locator('[name=cycleCount]').selectOption(String(cycleCount));
-  await form.getByRole('button',{name:'Crear partida'}).click();
+  await form.getByRole('button',{name:'Iniciar partida'}).click();
   const codeText=await teacher.page.getByText(/Código:/).first().textContent();const code=codeText.match(/[A-F0-9]{8}/)?.[0];expect(code).toBeTruthy();
   for(const [person,name] of [[a,'Empresa Aurora'],[b,'Empresa Bahía']]){
    const join=person.page.locator('#join');await join.locator('[name=code]').fill(code);await join.locator('[name=name]').fill(name);

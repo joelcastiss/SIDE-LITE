@@ -17,6 +17,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test e2e/teacher-demo.spec.js e2e/teacher-session-security.spec.js e2e/teacher-real-simulated.spec.js --workers=1
       - run: node --check e2e/full-two-students-local.spec.js
   multiplayer:
     runs-on: ubuntu-latest
@@ -38,6 +40,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite
       TEACHER_REGISTRATION_KEY: side-lite-local-testing-key-2026
+      SIDE_LITE_LOCAL_UI_TEST: 1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
