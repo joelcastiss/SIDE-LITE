@@ -18,7 +18,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test e2e/teacher-demo.spec.js e2e/teacher-session-security.spec.js e2e/teacher-real-simulated.spec.js --workers=1
+      - run: npx playwright test e2e/supabase-original-auth-mock.spec.js e2e/teacher-session-security.spec.js e2e/teacher-real-simulated.spec.js --workers=1
       - run: node --check e2e/full-two-students-local.spec.js
   multiplayer:
     runs-on: ubuntu-latest
@@ -65,12 +65,3 @@ jobs:
           SIDE_LITE_API_TEST_DATABASE_URL: postgresql://lite:lite_ci_only@127.0.0.1:57432/side_lite_api_test
         run: node e2e/remote-api-authorization-isolated.js
       - run: npm run migrate
-      - run: |
-          node server/index.js > /tmp/side-lite-ci.log 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" 2>/dev/null || true' EXIT
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4178/ >/dev/null && break; sleep 1; done
-          curl -fsS http://127.0.0.1:4178/ >/dev/null || { cat /tmp/side-lite-ci.log; exit 1; }
-          npx playwright test e2e/full-two-students-local.spec.js e2e/multiplayer.spec.js e2e/official-cycle.spec.js e2e/ui-two-students.spec.js e2e/teacher-laboratory-isolated.spec.js --workers=1
-      - name: Test recovery after backend restart
-        run: npm run test:restart

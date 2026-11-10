@@ -20,10 +20,23 @@ async function begin(person){await person.page.goto(origin+'/?auth=supabase');aw
 try{
  sql(`insert into auth.users(id,email,email_confirmed_at) values('${adminId}','admin-${adminId}@example.test',now())`);users.push(adminId);
  let x=await teacherSdk.auth.signUp({email,password,options:{data:{display_name:'Profesora Prueba'}}});if(x.error)throw x.error;users.push(x.data.user.id);let message;for(let i=0;i<40&&!message;i++){const r=await fetch(mail+'/api/v1/messages');if(r.ok)message=(await r.json()).messages.find(m=>m.To?.some(v=>v.Address===email));if(!message)await new Promise(r=>setTimeout(r,400))}assert.ok(message);const detail=await(await fetch(mail+'/api/v1/message/'+encodeURIComponent(message.ID))).json(),match=detail.HTML.match(/https?:\/\/[^\s"<>\\]+\/auth\/v1\/verify\?[^\s"<>\\]+/);assert.ok(match);const link=new URL(match[0].replaceAll('&amp;','&'));assert.equal(link.origin,base);await fetch(link,{redirect:'manual'});sql(`insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by) select id,email,'${adminId}'::uuid from auth.users where email='${email}'`);
- const teacher=await createContext(),a=await createContext(),b=await createContext();await begin(teacher);await teacher.page.locator('[data-profile=teacher]').click();await teacher.page.locator('#loginEmail').fill(email);await teacher.page.locator('#loginPassword').fill(password);await teacher.page.locator('#loginForm button').click();await expect(teacher.page.locator('#startGame')).toBeVisible();
+ const teacher=await createContext(),b=await createContext();let a=await createContext();await begin(teacher);await teacher.page.locator('[data-profile=teacher]').click();await teacher.page.locator('#loginEmail').fill(email);await teacher.page.locator('#loginPassword').fill(password);await teacher.page.locator('#loginForm button').click();await expect(teacher.page.locator('#startGame')).toBeVisible();
  await teacher.page.locator('#gameName').fill('Prueba invitados actual');await teacher.page.locator('#cycles').fill('3');const creating=teacher.page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/api/games'));await teacher.page.locator('#startGame').click();const response=await creating;assert.equal(response.status(),201);const game=await response.json();games.push(game.id);
  for(const [person,name] of [[a,'Empresa Aurora'],[b,'Empresa Bahia']]){await begin(person);await person.page.locator('[data-profile=student]').click();await person.page.locator('#gameCode').fill(game.code);await person.page.locator('#companyLegalName').fill(name);await person.page.locator('#companyBrandName').fill('Marca '+name);const joining=person.page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/api/join'));await person.page.locator('#studentForm button').click();const joined=await joining;assert.equal(joined.status(),201);await expect(person.page.locator('#studentLobby')).toBeVisible();const session=await person.page.evaluate(async()=>{const r=await window.SIDE.SupabaseClient.getStudent().auth.getSession();return r.data.session});users.push(session.user.id)}
  const saved=await a.page.evaluate(id=>localStorage.getItem('side-lite-guest-'+id),game.id);assert.ok(saved);
+ await expect(teacher.page.locator('body')).toContainText('Empresa Aurora',{timeout:30000});
+ await expect(teacher.page.locator('body')).toContainText('Empresa Bahia',{timeout:30000});
+ await a.page.reload();await expect(a.page.locator('#studentLobby')).toBeVisible({timeout:30000});
+ await expect(a.page.locator('#liteRecoveryDetails code')).toHaveText(JSON.parse(saved).secret);
+ const replacement=await createContext();await begin(replacement);await replacement.page.locator('[data-profile=student]').click();
+ await replacement.page.locator('#studentModal details summary').click();
+ await replacement.page.locator('#liteRecoveryForm [name=code]').fill(game.code);
+ await replacement.page.locator('#liteRecoveryForm [name=secret]').fill(JSON.parse(saved).secret);
+ await replacement.page.locator('#liteRecoveryForm button').click();await expect(replacement.page.locator('#studentLobby')).toBeVisible({timeout:30000});
+ const replacementSession=await replacement.page.evaluate(async()=>(await window.SIDE.SupabaseClient.getStudent().auth.getSession()).data.session);users.push(replacementSession.user.id);
+ assert.equal(sql(`select count(*) from public.lite_companies where game_id='${game.id}'`),'2');
+ await a.page.close();a=replacement;
+ console.log('PASS: recarga automática y recuperación desde otro navegador sin duplicar empresa.');
  await expect(teacher.page.locator('#startTimer')).toBeEnabled();const starting=teacher.page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/start'));await teacher.page.locator('#startTimer').click();assert.equal((await starting).status(),201);
  for(const [person,quality,quantity,price,marketing] of [[a,'basic','10','120','200'],[b,'standard','8','150','400']]){
   await expect(person.page.locator('#enterDecisionsBtn')).toBeEnabled({timeout:30000});await person.page.locator('#enterDecisionsBtn').click();
@@ -33,7 +46,8 @@ try{
  }
  console.log('PASS: docente y dos estudiantes completaron el ingreso y cuatro valores de decisión por navegador.');
  for(const person of [teacher,a,b])await person.page.close();
+ if(process.env.GUEST_TEST_ACCELERATED==='YES')sql(`update public.lite_cycles set ends_at=clock_timestamp() where game_id='${game.id}' and number=1 and status='open'`);
  let closed=false;for(let i=0;i<170;i++){if(sql(`select status from public.lite_cycles where game_id='${game.id}' and number=1`)==='closed'){closed=true;break}await new Promise(r=>setTimeout(r,1000))}assert.ok(closed,'cierre automático después de 120 segundos sin páginas abiertas');
  assert.equal(sql(`select count(*) from public.lite_results r join public.lite_cycles c on c.id=r.cycle_id where c.game_id='${game.id}' and c.number=1`),'2');
- console.log('PASS: cierre automático del ciclo de 120 segundos sin páginas abiertas y dos resultados.');
+ console.log(`PASS: cierre automático ${process.env.GUEST_TEST_ACCELERATED==='YES'?'acelerado':'del ciclo de 120 segundos'} sin páginas abiertas y dos resultados.`);
 }finally{await Promise.allSettled(contexts.map(c=>c.close()));await browser.close();await teacherSdk.auth.signOut().catch(()=>{});for(const id of games)if(/^[a-f0-9-]{36}$/.test(id))sql(`delete from public.lite_results where game_id='${id}'; delete from public.lite_decisions where game_id='${id}'; delete from public.lite_games where id='${id}'`);for(const id of users.reverse())if(/^[a-f0-9-]{36}$/.test(id))sql(`delete from side_lite_private.lite_teacher_grants where user_id='${id}';delete from public.lite_profiles where id='${id}';delete from auth.users where id='${id}'`)}

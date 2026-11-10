@@ -10,8 +10,9 @@
   <link rel="stylesheet" href="css/laboratorio.css?v=20261030-7">
   <link rel="stylesheet" href="css/responsive.css?v=20261009-mobile">
   <link rel="stylesheet" href="css/faculty-theme.css?v=20261022-cancelar-rojo">
+  <style>body.teacher-auth-pending .app-shell { visibility: hidden; }</style>
 </head>
-<body>
+<body class="teacher-auth-pending">
 <div class="app-shell">
   <div class="docente-bg" aria-hidden="true"></div>
   <aside class="sidebar">
@@ -26,6 +27,7 @@
       <button class="nav-btn" data-tab="historial"><span class="nav-icon"><img src="assets/icons/teacher/decisiones.svg" alt=""></span><span>Historial</span></button>
     </nav>
     <div class="sidebar-bottom">
+      <button id="teacherLogout" class="sidebar-link" type="button">Cerrar sesión</button>
       <button id="backHome" class="sidebar-link"><span class="faculty-back-arrow" aria-hidden="true"></span> Volver al inicio</button>
     </div>
   </aside>
@@ -248,9 +250,9 @@
 <script src="services/live_results.js?v=20261027-live-sales"></script>
 <script src="js/student_financial_view.js?v=20261028-balance"></script>
 
-<script src="js/docente.js?v=20261110-auth-timeout"></script>
+<script src="js/docente.js?v=20261110-auth-guard"></script>
 <script src="pages-notice.js?v=20261110-preview"></script>
-<script src="services/lite-game-service.js?v=20261110-lite"></script>
+<script src="services/lite-game-service.js?v=20261110-no-captcha"></script>
 <script src="services/lite-teacher-game.js?v=20261110-history"></script>
 <script type="module" src="js/lite-laboratory.js?v=20261110"></script>
 </body>

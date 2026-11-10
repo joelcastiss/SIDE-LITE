@@ -46,6 +46,9 @@
 
   function rememberedCompany(code) {
     try {
+      const manualKey = 'side-lite-guest-manual-' + code;
+      const manual = JSON.parse(global.localStorage.getItem(manualKey) || 'null');
+      if (manual?.code === code && /^[A-Za-z0-9_-]{43}$/.test(manual.secret || '')) return {key: manualKey, ...manual};
       for (let i = 0; i < global.localStorage.length; i++) {
         const key = global.localStorage.key(i);
         if (!key?.startsWith('side-lite-guest-') || key.startsWith('side-lite-guest-join-')) continue;
@@ -68,12 +71,7 @@
     if (result.error) throw result.error;
     let session = result.data?.session;
     if (!session) {
-      const [{createTurnstileProvider}, {turnstileSiteKey}] = await Promise.all([
-        import('../turnstile-provider.js'), import('../captcha-config.js')
-      ]);
-      const verify = createTurnstileProvider({siteKey: turnstileSiteKey});
-      if (!verify) throw new Error('No está disponible la verificación de acceso.');
-      result = await auth.signInAnonymously({options: {captchaToken: await verify()}});
+      result = await auth.signInAnonymously();
       if (result.error) throw result.error;
       session = result.data?.session;
     }
@@ -99,7 +97,7 @@
     const games = await request('/games', 'GET', undefined, 'student');
     if (!Array.isArray(games)) throw new Error('No se pudieron consultar tus partidas.');
     const previous = games.find(game => game.code === code);
-    if (previous) {
+    if (previous && !global.localStorage.getItem('side-lite-guest-manual-' + code)) {
       const snapshot = await request('/games/' + previous.id, 'GET', undefined, 'student');
       if (!snapshot?.company?.id) throw new Error('No se pudo recuperar tu empresa.');
       activeRole = 'student';
@@ -160,8 +158,18 @@
     activeRole = 'teacher';
     return game;
   }
+  async function recoverGame(code, secret) {
+    code = String(code || '').trim().toUpperCase();
+    secret = String(secret || '').trim();
+    if (!/^[0-9A-F]{8}$/.test(code) || !/^[A-Za-z0-9_-]{43}$/.test(secret)) throw new Error('Ingresa un código y una clave de recuperación válidos.');
+    const key = 'side-lite-guest-manual-' + code;
+    let saved;
+    try { saved = JSON.parse(global.localStorage.getItem(key) || 'null'); } catch { saved = null; }
+    if (!saved || saved.secret !== secret) global.localStorage.setItem(key, JSON.stringify({code, secret}));
+    return joinGame({code, name: 'Estudiante', brand: 'Empresa'});
+  }
   global.SIDLiteGame = {
-    request, createGame, joinGame,
+    request, createGame, joinGame, recoverGame,
     getGame: id => request('/games/' + id),
     startGame: id => request('/games/' + id + '/start', 'POST', {}, 'teacher'),
     useRole: role => { if (!['teacher', 'student'].includes(role)) throw new Error('Perfil inválido.'); activeRole = role; }

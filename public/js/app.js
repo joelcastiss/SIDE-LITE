@@ -655,7 +655,7 @@ function openStudentAdmission(){
   authoritativeStudentState=null;studentClock=null;studentStateFailure=null;autoEnterDecisions=false;stopStudentSync();
   message('studentMessage','');showModal('studentModal');
 }
-document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{if(card.dataset.profile==='teacher'){window.location.href='demo-docente.html';}else openStudentAdmission();}));
+document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{if(card.dataset.profile==='teacher'){showModal('teacherLoginModal');}else openStudentAdmission();}));
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!$('modalRoot')?.classList.contains('hidden')){closeModal();return;}
   if(e.key!=='Escape')return;
@@ -670,14 +670,9 @@ let teacherSessionPromise;
 function teacherSession(){
   if(!supabaseClient)throw new Error('No se pudo conectar con el servicio de acceso.');
   if(teacherSessionPromise)return teacherSessionPromise;
-  teacherSessionPromise=Promise.all([
-    import('../supabase-session.js?v=20261110-login-fast3'), import('../turnstile-provider.js?v=20261110-captcha-visible'), import('../captcha-config.js')
-  ]).then(([{createSupabaseSession},{createTurnstileProvider},{turnstileSiteKey,teacherCaptchaEnabled}])=>{
-    const captcha=teacherCaptchaEnabled ? createTurnstileProvider({siteKey:turnstileSiteKey}) : null;
-    if(teacherCaptchaEnabled&&!captcha)throw new Error('No está disponible la verificación de acceso.');
-    // A valid session does not require loading a new CAPTCHA challenge.
-    return createSupabaseSession(supabaseClient,fetch,{captchaTokenProvider:captcha});
-  }).catch(error=>{teacherSessionPromise=null;throw error;});
+  teacherSessionPromise=import('../supabase-session.js?v=20261110-login-fast3')
+    .then(({createSupabaseSession})=>createSupabaseSession(supabaseClient,fetch))
+    .catch(error=>{teacherSessionPromise=null;throw error;});
   return teacherSessionPromise;
 }
 async function teacherIdentity(session){
@@ -690,24 +685,12 @@ async function teacherIdentity(session){
     try{await session.request('/profile','POST',{display_name:name})}catch(profileError){if(profileError.status!==409)throw profileError;}
     identity=await session.identity();
   }
-  if(identity.role!=='teacher')throw new Error('Tu cuenta necesita autorización docente. Contacta al administrador.');
+  if(identity.role!=='teacher')throw new Error('Esta cuenta no tiene un perfil docente.');
   return identity;
 }
 if(new URLSearchParams(location.search).get('acceso')==='docente'){
   showScreen('profiles');showModal('teacherLoginModal');message('loginMessage','Comprobando sesión docente…');
-  Promise.race([Promise.resolve().then(()=>teacherSession()).then(session=>teacherWithMfa(session,()=>teacherIdentity(session))),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión. Revisa tu conexión o inicia sesión.')),8000))]).then(()=>openTeacherPanel()).catch(error=>{message('loginMessage',error.status===401?'Inicia sesión para administrar partidas reales.':error.message||'Inicia sesión para continuar.',true)});
-}
-async function teacherWithMfa(session, action){
-  try{return await action()}
-  catch(error){
-    if(error.code!=='MFA_REQUIRED')throw error;
-    const factors=await session.mfaFactors();
-    if(factors.length!==1)throw new Error('Completa la verificación multifactor en tu cuenta antes de continuar.');
-    const code=window.prompt('Ingresa el código de seis dígitos de tu aplicación autenticadora:');
-    if(!code)throw new Error('La verificación multifactor fue cancelada.');
-    await session.verifyMfa({factorId:factors[0].id,code:code.trim()});
-    return action();
-  }
+  Promise.race([Promise.resolve().then(()=>teacherSession()).then(session=>teacherIdentity(session)),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión. Revisa tu conexión o inicia sesión.')),8000))]).then(()=>openTeacherPanel()).catch(error=>{message('loginMessage',error.status===401?'Inicia sesión para administrar partidas reales.':error.message||'Inicia sesión para continuar.',true)});
 }
 $('loginForm')?.addEventListener('submit',async e=>{
   e.preventDefault();const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;
@@ -718,8 +701,8 @@ $('loginForm')?.addEventListener('submit',async e=>{
     session=await teacherSession();
     message('loginMessage','Verificando seguridad y credenciales...');
     await session.signIn({email,password});
-    message('loginMessage','Comprobando autorización docente...');
-    await teacherWithMfa(session,()=>teacherIdentity(session));
+    message('loginMessage','Comprobando perfil docente...');
+    await teacherIdentity(session);
     openTeacherPanel();
   }
   catch(error){
@@ -729,19 +712,17 @@ $('loginForm')?.addEventListener('submit',async e=>{
   }
   finally{if(button)button.disabled=false;}
 });
-// Keep SIDE Lite's existing minimum for new passwords in the original form.
-if($('registerPassword'))$('registerPassword').minLength=12;
 $('registerForm')?.addEventListener('submit',async e=>{
   e.preventDefault();const first=$('registerName').value.trim(),last=$('registerLastName').value.trim(),course=$('registerCourse').value.trim(),email=$('registerEmail').value.trim().toLowerCase(),password=$('registerPassword').value,name=`${first} ${last}`;
   if(!first||!last||!course||name.length>80||course.length>100||!/^[^@\s]+@upch\.pe$/i.test(email)){message('registerMessage','Completa los datos e ingresa un correo institucional @upch.pe.',true);return;}
-  if(password.length<12){message('registerMessage','La contraseña debe tener al menos 12 caracteres.',true);return;}
+  if(password.length<6){message('registerMessage','La contraseña debe tener al menos 6 caracteres.',true);return;}
   const form=e.currentTarget,button=form.querySelector('[type="submit"]');if(button)button.disabled=true;
   try{
     message('registerMessage','Creando cuenta...');const session=await teacherSession();const result=await session.register({email,password,name,firstName:first,lastName:last,course});
     if(!result?.session){message('registerMessage','No se pudo completar el registro sin confirmación. Contacta al administrador.',true);return;}
-    try{await session.identity()}catch(error){if(error.status===409){try{await session.request('/profile','POST',{display_name:name})}catch(profileError){if(profileError.status!==409)throw profileError;}}else throw error;}
+    await teacherIdentity(session);
     await session.signOut();form.reset();showModal('teacherLoginModal');$('loginEmail').value=email;
-    message('loginMessage','Cuenta creada. Para administrar partidas necesitas autorización docente.');
+    message('loginMessage','Cuenta creada exitosamente. Ya puedes iniciar sesión.');
   }catch(error){message('registerMessage',error.message||'No se pudo crear la cuenta.',true);}
   finally{if(button)button.disabled=false;}
 });

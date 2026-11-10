@@ -8,7 +8,7 @@ for(const role of ['student','teacher'])test(`sesión guardada ${role}: servidor
  await page.route('https://hwwwoblfpsqqrkxvclag.supabase.co/**',route=>{const headers={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,OPTIONS','access-control-allow-headers':'authorization,apikey,content-type'};if(route.request().method()==='OPTIONS')return route.fulfill({status:204,headers});return route.fulfill({headers,json:new URL(route.request().url()).pathname.endsWith('/me')?{id:'1',display_name:'Ana',role}:[]})});
  await page.route('https://challenges.cloudflare.com/**',route=>route.abort());
  await page.goto(base+'/?acceso=docente');
- if(role==='student'){await expect(page.locator('#loginMessage')).toContainText('autorización docente');await expect(page).not.toHaveURL(/docente\.html/)}else await expect(page).toHaveURL(/docente\.html/);
+ if(role==='student'){await expect(page.locator('#loginMessage')).toContainText('perfil docente');await expect(page).not.toHaveURL(/docente\.html/)}else await expect(page).toHaveURL(/docente\.html/);
 });
 test('una comprobación de sesión bloqueada termina con explicación',async({page})=>{
  await page.route('**/vendor/supabase-js/supabase.js*',route=>route.fulfill({contentType:'application/javascript',body:`window.supabase={createClient:()=>({supabaseUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',auth:{getSession:()=>new Promise(()=>{}),onAuthStateChange:()=>({data:{subscription:{}}})}})};`}));

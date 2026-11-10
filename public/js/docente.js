@@ -1420,6 +1420,11 @@ $('confirmCancelGame')?.addEventListener('click',async()=>{
   finally{teacherBusy=false;state.cancelling=false;btn.disabled=false;refreshSetupSummary();}
 });
 $('backHome')?.addEventListener('click',()=>window.location.href='index.html');
+$('teacherLogout')?.addEventListener('click',async()=>{
+  const button=$('teacherLogout');button.disabled=true;
+  try{const result=await supabaseClient.auth.signOut({scope:'local'});if(result.error)throw result.error;window.location.href='index.html?acceso=docente';}
+  catch(error){button.disabled=false;toast(error.message||'No se pudo cerrar sesión.');}
+});
 
 (async function init(){
   // Every entry to the teacher page must resolve the authoritative server role.
@@ -1430,6 +1435,8 @@ $('backHome')?.addEventListener('click',()=>window.location.href='index.html');
     const identity=await Promise.race([session.identity(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión docente. Revisa tu conexión.')),8000))]);
     if(identity.role!=='teacher')throw new Error('La cuenta no tiene autorización docente.');
     window.SIDLiteGame?.useRole('teacher');
+    document.body.classList.remove('teacher-auth-pending');
+    supabaseClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')setTimeout(()=>window.location.replace('index.html?acceso=docente'),0);});
   } catch(error) {
     console.error('SIDE: acceso docente no autorizado',error);
     window.location.replace('index.html?acceso=docente');
