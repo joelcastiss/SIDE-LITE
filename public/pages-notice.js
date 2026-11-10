@@ -1,4 +1,15 @@
 // The static Pages entry has no server. Never present local-only authentication as working.
+if (location.hostname.toLowerCase() === 'joelcastiss.github.io') {
+ const showPreview = () => {
+  const banner = document.createElement('div');
+  banner.id = 'side-lite-preview';
+  banner.setAttribute('role', 'status');
+  banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:2147483647;padding:8px 16px;background:#fff4ce;color:#3c2900;text-align:center;font:600 13px Arial,sans-serif';
+  banner.textContent = 'Vista previa: la integración de partidas todavía está en verificación.';
+  document.body.appendChild(banner);
+ };
+ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showPreview, {once:true}); else showPreview();
+}
 if (new URLSearchParams(location.search).get('static') === '1') {
  const showNotice = () => {
   const badge = document.querySelector('.badge');

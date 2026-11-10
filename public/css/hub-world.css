@@ -1,0 +1,138 @@
+/* Street-level HUD: keep the scene visible while walking. */
+.simulator-screen .sim3d-brand,
+.simulator-screen .sim3d-stats,
+.simulator-screen .sim3d-missions {
+  background:rgba(13,24,29,.8);
+  border-color:#ffffff25;
+  box-shadow:0 8px 28px #07151d26;
+  border-radius:7px;
+}
+.simulator-screen .sim3d-stats {grid-template-columns:repeat(6,minmax(82px,1fr));max-width:720px}
+.simulator-screen .sim3d-stat {padding:9px 11px}
+.simulator-screen .sim3d-stat span {font-size:8px;letter-spacing:.5px;color:#c0cdd3}
+.simulator-screen .sim3d-stat strong {font-size:15px;font-variant-numeric:tabular-nums}
+.simulator-screen .sim3d-actionbar {top:86px;gap:5px}
+.simulator-screen .sim3d-btn {border-radius:5px;background:#13262ce0;font-size:9px;min-height:36px}
+.simulator-screen .sim3d-btn.primary {background:#f5ca59;color:#17232a;border-color:#f5ca59}
+.simulator-screen .sim3d-missions {top:220px;max-width:240px}
+.simulator-screen .sim3d-objective {display:none}
+.simulator-screen.third-person .sim3d-crosshair {opacity:0}
+.sim-world-location {position:absolute;top:94px;left:20px;z-index:8;pointer-events:none;text-shadow:0 2px 8px #000b}
+.sim-world-location>span {display:block;font-size:8px;letter-spacing:2.2px;color:#f6d580;font-weight:800;margin-bottom:5px}
+.sim-world-location>strong {display:block;color:#fff;font-size:18px;letter-spacing:.25px}
+.sim-world-location {max-width:330px}
+#simulator3d.in-hub .sim-world-location>span {color:#f6d580;letter-spacing:1.5px}
+.sim-world-route>div {min-width:0}
+.sim-world-route b {overflow-wrap:anywhere;line-height:1.45}
+.sim-world-route>span[hidden] {display:none}
+.sim-world-order {display:block;margin-top:7px;padding:6px 8px;border-radius:4px;background:#10292deb;color:#a6e0d1;font:700 9px/1.4 system-ui;letter-spacing:.3px;text-shadow:none}
+.sim-world-order[hidden] {display:none}
+.sim-business-context {margin-top:7px;padding:7px 9px;border-left:2px solid #91caba;border-radius:0 4px 4px 0;background:#10292ded;color:#d8eee7;font:600 10px/1.5 system-ui;text-shadow:none;overflow-wrap:anywhere}
+.sim-business-context[hidden] {display:none}
+.simulator-screen[data-world-zone="store"] .sim3d-missions,
+.simulator-screen[data-world-zone="warehouse"] .sim3d-missions,
+.simulator-screen[data-world-zone="production"] .sim3d-missions {top:280px}
+.simulator-screen .sim3d-message {top:auto;bottom:95px;max-width:min(500px,60vw);text-align:center}
+.sim-world-route {display:flex;align-items:center;gap:10px;margin-top:13px;padding:9px 12px;border-left:2px solid #f5ca59;background:#152a31d9;border-radius:0 5px 5px 0;text-shadow:none}
+.sim-world-route>span {font-size:26px;color:#f5ca59;display:block}
+.sim-world-route small {display:block;font-size:7px;color:#d9bc7b;letter-spacing:.8px}
+.sim-world-route b {display:block;margin-top:4px;font-size:10px;font-weight:600;color:#f2f4ec}
+.sim-world-controls {position:absolute;bottom:27px;left:202px;z-index:10;pointer-events:none;color:#fff;font-size:10px;text-shadow:0 1px 4px #000;line-height:2}
+.sim-world-controls kbd {background:#13262cda;border:1px solid #fff4;border-radius:4px;padding:4px 5px;margin:0 3px 0 12px;font:700 9px system-ui}
+.simulator-screen .sim-minimap {display:block;left:20px;right:auto;bottom:20px;width:165px;padding:10px;border-radius:8px;background:#0e1b22db;border:1px solid #fff3;box-shadow:0 8px 28px #0003}
+.simulator-screen .mini-title {color:#eee5cf;font-size:8px;letter-spacing:1px}
+.simulator-screen .mini-map-area {height:135px;border-radius:3px}
+.hub-map .mini-map-area {background:linear-gradient(90deg,transparent 44%,#697675 44% 56%,transparent 56%),linear-gradient(0deg,transparent 44%,#697675 44% 56%,transparent 56%),#41554c}
+.hub-map .mini-zone {border:1px solid #dbe5db4a;border-radius:2px;right:auto;bottom:auto}
+.hub-map .mini-zone.warehouse {left:21%;top:16%;width:23%;height:23%;background:#a5aea5}
+.hub-map .mini-zone.production {left:61%;top:16%;width:23%;height:23%;background:#9b9b84}
+.hub-map .mini-zone.sales {left:23%;top:63%;width:21%;height:20%;background:#dfc299}
+.hub-map .mini-zone.city {left:62%;top:64%;width:23%;height:23%;background:#8baf85;border-radius:50%}
+.hub-map .mini-zone:after {position:absolute;inset:0;display:grid;place-items:center;font:800 9px system-ui;color:#112127}
+.hub-map .mini-zone.warehouse:after {content:'A'}
+.hub-map .mini-zone.production:after {content:'P'}
+.hub-map .mini-zone.sales:after {content:'T'}
+.hub-map .mini-zone.city:after {content:'◎'}
+.hub-map .mini-point {display:none}
+.hub-map .mini-player {width:11px;height:14px;border-radius:0;background:#fff8db;clip-path:polygon(50% 0,100% 100%,50% 76%,0 100%);box-shadow:none;z-index:2}
+.simulator-screen .sim3d-prompt {font-size:12px;border-radius:7px;background:#102027ed;border:1px solid #f5cf7799}
+.sim-hub-directory {position:absolute;inset:0;z-index:42;display:grid;place-items:center;padding:20px;background:#07131b99;backdrop-filter:blur(8px)}
+.sim-hub-directory.hidden {display:none!important}
+.sim-hub-directory-card {position:relative;width:min(470px,100%);max-height:90vh;overflow:auto;padding:34px;background:#102029;border:1px solid #d1e8ec40;border-radius:10px;box-shadow:0 26px 80px #0008;color:#edf4f3}
+.sim-hub-close {position:absolute;top:15px;right:15px;width:32px;height:32px;border-radius:5px;border:1px solid #fff3;background:transparent;color:white;font-size:23px;cursor:pointer}
+.sim-hub-eyebrow {font-size:9px;font-weight:800;letter-spacing:2px;color:#f5cc6e}
+.sim-hub-directory-card h2 {font:700 29px system-ui;margin:12px 0 8px}
+.sim-hub-directory-card p {font:13px/1.5 system-ui;color:#adc4cd;margin:0 0 24px}
+.sim-hub-districts {display:grid;gap:10px}
+.sim-hub-districts button {width:100%;display:grid;grid-template-columns:26px 1fr 20px;align-items:center;gap:12px;min-height:70px;padding:14px;text-align:left;border:1px solid #aac8d236;border-radius:5px;background:#1a3039;color:#ccdae0;cursor:pointer}
+.sim-hub-districts button>span {font:12px ui-monospace,monospace;color:#96acb5}
+.sim-hub-districts button>strong {font:700 12px/1.5 system-ui;letter-spacing:.6px}
+.sim-hub-districts button>i {font-size:20px;font-style:normal}
+.sim-hub-districts button[aria-pressed=true] {background:#245769;border-color:#a4dcdd;box-shadow:inset 3px 0 #95e5df;color:#fff}
+.sim-hub-districts button:hover {border-color:#c9e7e5}
+.sim-hub-directory-card #simHubSelected {margin:20px 0 14px;font-size:12px}
+.sim-hub-visit {display:flex;justify-content:space-between;align-items:center;width:100%;min-height:50px;border:0;border-radius:5px;padding:0 18px;background:#f0cb71;color:#18242a;font:800 11px system-ui;letter-spacing:1px;cursor:pointer}
+.sim-hub-directory button:focus-visible,.sim3d-btn:focus-visible {outline:3px solid #c9fffa;outline-offset:3px}
+@media(max-width:1100px) {
+  .simulator-screen .sim3d-stats {grid-template-columns:repeat(3,minmax(75px,1fr))}
+  .simulator-screen .sim3d-actionbar {top:auto;bottom:20px;right:16px;max-width:62%;justify-content:flex-end}
+  .sim-world-controls {bottom:105px;left:auto;right:16px;max-width:50%;text-align:right}
+}
+@media(max-width:650px) {
+  .simulator-screen .sim3d-hud {padding:10px}
+  .simulator-screen .sim3d-brand {display:none}
+  .simulator-screen .sim3d-top {display:flex;flex-direction:row;align-items:flex-start;justify-content:flex-end}
+  .simulator-screen .sim3d-stats {grid-template-columns:repeat(2,minmax(72px,1fr));max-width:55%}
+  .simulator-screen .sim3d-stat {padding:6px 8px}
+  .simulator-screen .sim3d-stat span {font-size:6px}
+  .simulator-screen .sim3d-stat strong {font-size:12px}
+  .simulator-screen .sim3d-stat.stock,.simulator-screen .sim3d-stat.rating {display:block}
+  .simulator-screen .sim3d-stat.revenue,.simulator-screen .sim3d-stat.lost {display:none}
+  .sim-world-location {left:12px;top:19px;max-width:40%}
+  .sim-world-location>span {font-size:7px;letter-spacing:1px}
+  .sim-world-location>strong {font-size:13px;line-height:1.5}
+  .sim-world-route {margin-top:9px;padding:7px 8px;gap:6px}
+  .sim-world-route small {font-size:6px;letter-spacing:.3px}
+  .sim-world-route b {font-size:8px}
+  .simulator-screen .sim-minimap {left:12px;bottom:82px;width:110px;padding:7px}
+  .simulator-screen .mini-map-area {height:90px}
+  .simulator-screen .mini-title {font-size:6px}
+  .simulator-screen .sim3d-actionbar {bottom:12px;right:10px;max-width:calc(100% - 20px);gap:4px}
+  .simulator-screen .sim3d-btn.primary {font-size:8px;min-width:120px;min-height:36px}
+  .sim-world-controls {display:none}
+  .simulator-screen .sim3d-missions {display:block;left:auto;right:10px;top:137px;width:53%;max-width:215px;padding:7px;max-height:145px;overflow:auto}
+  .simulator-screen .sim3d-missions-head {gap:4px}
+  .simulator-screen .sim3d-missions-head>span {display:none}
+  .simulator-screen .sim3d-missions-head button {width:28px;height:28px}
+  .simulator-screen .sim3d-mission-list>div {padding:3px;gap:4px}
+  .simulator-screen .sim3d-mission-list p {gap:4px;flex-wrap:wrap}
+  .simulator-screen .sim3d-mission-list b {font-size:8px}
+  .simulator-screen .sim3d-mission-list small {font-size:7px;color:#c1d0d6}
+  .simulator-screen .sim3d-missions.collapsed {width:auto}
+  .sim-world-order {font-size:8px}
+  .sim-business-context {font-size:8px;padding:6px}
+  .simulator-screen[data-world-zone] .sim3d-missions {top:137px}
+  .simulator-screen .sim3d-message {bottom:285px;max-width:calc(100vw - 26px);width:max-content;font-size:9px;padding:9px 12px}
+  #sim3dCameraBtn:before {content:'◉'}
+  #sim3dHubBtn:before {content:'⌂'}
+  .sim-hub-directory {padding:12px}
+  .sim-hub-directory-card {padding:25px 18px}
+  .sim-hub-directory-card h2 {font-size:25px}
+  .sim-hub-districts button {min-height:65px;gap:8px;padding:12px}
+}
+@media(hover:none) and (pointer:coarse) {
+  .simulator-screen .sim-minimap {bottom:auto;top:180px;width:100px}
+  .simulator-screen .sim3d-touch-controls {bottom:90px}
+}
+@media(max-height:550px) and (max-width:950px) {
+  .simulator-screen .sim3d-missions {display:none}
+  .sim-world-location {top:18px;left:12px;max-width:37%}
+  .sim-world-route {margin-top:5px}
+  .simulator-screen .sim-minimap {top:auto;bottom:90px;width:95px}
+  .simulator-screen .mini-map-area {height:65px}
+  .simulator-screen .sim3d-brand {display:none}
+  .simulator-screen .sim3d-stats {grid-template-columns:repeat(4,minmax(70px,1fr));max-width:53%}
+  .simulator-screen .sim3d-stat.revenue,.simulator-screen .sim3d-stat.lost {display:none}
+  .simulator-screen .sim3d-stat.stock,.simulator-screen .sim3d-stat.rating {display:block}
+  .simulator-screen .sim3d-message {bottom:65px;max-width:55vw;font-size:9px}
+}

@@ -1,0 +1,22 @@
+[
+  {"slot":1,"slug":"blazer_azul","genero":"mujer","rol":"tienda","archivo":"","autor":"sin verificar","fuente":"Mixamo: Dwarf Walk (1).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":2,"slug":"blazer_jean","genero":"hombre","rol":"tienda","archivo":"","autor":"sin verificar","fuente":"Mixamo: Dwarf Walk.fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":3,"slug":"casaca_clara","genero":"mujer","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Dwarf Walk (2).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":4,"slug":"sudadera_gris","genero":"hombre","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Dwarf Walk (3).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":5,"slug":"polo_rayas","genero":"mujer","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walk (2).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":6,"slug":"camiseta_shorts","genero":"hombre","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walking (1).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":7,"slug":"sudadera_shorts","genero":"mujer","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walk (4).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":8,"slug":"polo_gris_jean","genero":"hombre","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walking (2).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":9,"slug":"casaca_leggings","genero":"mujer","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walk (5).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":10,"slug":"urbano_negro","genero":"hombre","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walking (3).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":11,"slug":"traje_azul","genero":"mujer","rol":"tienda","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walk (6).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":12,"slug":"sueter_azul","genero":"hombre","rol":"almacen","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walking (6).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":13,"slug":"polo_gris_mujer","genero":"mujer","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walking (4).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":14,"slug":"polo_cargo","genero":"hombre","rol":"cliente","archivo":"","autor":"sin verificar","fuente":"Mixamo: Walking 1).fbx","licencia":"Mixamo; redistribución por verificar","estado":"pending"},
+  {"slot":15,"slug":"urbana_mujer_08","genero":"mujer","rol":"cliente","archivo":"","autor":"","fuente":"","licencia":"","estado":"pending"},
+  {"slot":16,"slug":"urbano_hombre_08","genero":"hombre","rol":"cliente","archivo":"","autor":"","fuente":"","licencia":"","estado":"pending"},
+  {"slot":17,"slug":"urbana_mujer_09","genero":"mujer","rol":"produccion","archivo":"","autor":"","fuente":"","licencia":"","estado":"pending"},
+  {"slot":18,"slug":"urbano_hombre_09","genero":"hombre","rol":"almacen","archivo":"","autor":"","fuente":"","licencia":"","estado":"pending"},
+  {"slot":19,"slug":"urbana_mujer_10","genero":"mujer","rol":"produccion","archivo":"","autor":"","fuente":"","licencia":"","estado":"pending"},
+  {"slot":20,"slug":"urbano_hombre_10","genero":"hombre","rol":"produccion","archivo":"","autor":"","fuente":"","licencia":"","estado":"pending"}
+]

@@ -1,1 +1,688 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SIDE Lite</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="decision-original.css"><link rel="stylesheet" href="laboratory.css"><link rel="stylesheet" href="teacher-history.css"><link rel="stylesheet" href="teacher-reports.css"><link rel="stylesheet" href="faculty-original.css"><link rel="stylesheet" href="access-original.css"><link rel="stylesheet" href="waiting-original.css"><link rel="stylesheet" href="tutorial.css"><style>input[type=email],input[type=password],input[type=text]{width:100%;background:#f9fbfe;border:1px solid #cdd8e6;border-radius:7px;padding:11px;margin-top:6px;font:inherit}.hidden{display:none}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px}.inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.list button{margin:4px}.status{color:#9c2b32}.events{display:grid;grid-template-columns:repeat(2,1fr);font-size:12px}.events label{font-weight:400;margin:3px}table{border-collapse:collapse;width:100%;font-size:12px}td,th{text-align:left;padding:8px;border-bottom:1px solid #e6edf5}pre{white-space:pre-wrap}</style></head><body><header><div class="brand"><img src="assets/logo-side.png" alt="SIDE"><span>Lite</span></div><div class="inline"><span class="badge">Servidor local</span><button id="logout" class="secondary hidden">Salir</button></div></header><main><div id="error" class="status" role="alert"></div><div id="app"></div></main><script src="pages-notice.js"></script><script src="tutorial-original.js"></script><script type="module" src="app.js?v=20261110-auth2"></script><script type="module" src="decision-original.js"></script><script type="module" src="waiting-original.js"></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="side-build" content="2026.09.22.2">
+  <meta name="theme-color" content="#020817">
+  <title>SIDE — Simulador de Decisiones Financieras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/design-system.css?v=20261001">
+  <link rel="stylesheet" href="css/styles.css?v=20261028-statement">
+  <link rel="stylesheet" href="css/student-interface.css?v=20261022-reversion">
+  <link rel="stylesheet" href="css/simulator3d.css?v=20261023-world-fun">
+  <link rel="stylesheet" href="css/hub-world.css?v=20260927-continuous-world">
+  <link rel="stylesheet" href="css/company_summary.css?v=20260917-realismo3">
+  <link rel="stylesheet" href="css/responsive.css?v=20261023-world-fun">
+  <link rel="stylesheet" href="css/production.css?v=20261027-controls-restored">
+  <link rel="stylesheet" href="css/cycle-costs.css?v=20261022">
+  <link rel="stylesheet" href="css/tablet-return.css?v=20261022-decision-return">
+  <link rel="stylesheet" href="css/character-selection.css?v=20260927-selector">
+  <link rel="stylesheet" href="css/world_minimap.css?v=20261009-mobile-map">
+  <link rel="stylesheet" href="css/role-selection.css?v=20261009-brand-scale">
+</head>
+<body>
+<main id="app">
+  <section id="landing" class="screen landing-screen">
+    <img class="upch-corner" src="assets/upch_logo.png" alt="Universidad Peruana Cayetano Heredia">
+    <div class="landing-overlay"></div>
+    <div class="landing-content">
+      <img class="landing-side-logo" src="assets/side_logo.png" alt="SIDE">
+      <p class="landing-subtitle">SIMULADOR DE DECISIONES FINANCIERAS</p>
+      <div class="loading-wrap" aria-label="Carga inicial">
+        <div class="loading-track">
+          <div id="loadingBar" class="loading-bar"></div>
+          <span id="loadingPercent">0%</span>
+        </div>
+        <button id="startBtn" class="start-link" disabled>Empezar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="profiles" class="screen profile-screen hidden" aria-label="Elegir perfil">
+    <div class="profile-bg"></div>
+    <img class="upch-corner" src="assets/upch_logo.png" alt="Universidad Peruana Cayetano Heredia">
+
+    <div class="profile-main">
+      <img class="profile-side-logo" src="assets/side_logo.png" alt="SIDE">
+      <h1 class="profile-title">Elige cómo entrar</h1>
+      <p id="roomCancellationNotice" class="form-message hidden" role="status" aria-live="polite"></p>
+
+      <button class="profile-card student-hero" data-profile="student" aria-label="Iniciar sesión como estudiante">
+        <img class="student-hero-img" src="assets/estudiante.png" alt="">
+        <span class="student-hero-copy">
+          <span class="hero-eyebrow">Estudiante</span>
+          <span class="profile-description">Dirige tu empresa y decide en cada ciclo.</span>
+          <span class="hero-cta">Entrar a una partida <i class="hero-arrow" aria-hidden="true"><img src="assets/icons/ui/arrow-right-thick.svg" alt=""></i></span>
+        </span>
+      </button>
+    </div>
+
+    <button class="profile-card teacher-mini" data-profile="teacher" aria-label="Iniciar sesión como profesor">
+      <img class="teacher-mini-img" src="assets/profesor.png" alt="">
+      <span class="teacher-mini-copy">
+        <span class="mini-eyebrow">Profesor</span>
+        <span class="mini-cta">Iniciar sesión</span>
+      </span>
+    </button>
+  </section>
+
+  <div id="modalRoot" class="modal-root hidden">
+    <div class="modal-backdrop"></div>
+
+    <section id="cycleCostsModal" class="modal cycle-costs-modal hidden" role="dialog" aria-modal="true" aria-labelledby="cycleCostsTitle" aria-describedby="cycleCostsIntro">
+      <p id="cycleCostsCycle" class="cycle-costs-cycle"></p>
+      <h2 id="cycleCostsTitle">Costos descontados al iniciar el ciclo</h2>
+      <p id="cycleCostsIntro" class="modal-lead">Estos pagos ya están registrados en tu caja. Cerrar este aviso no vuelve a cobrarlos.</p>
+      <ul id="cycleCostsItems" class="cycle-costs-items" aria-label="Detalle de costos descontados"></ul>
+      <div class="cycle-costs-total"><span>Total descontado</span><strong id="cycleCostsTotal"></strong></div>
+      <dl class="cycle-costs-balances">
+        <div><dt>Caja antes del descuento</dt><dd id="cycleCostsBefore"></dd></div>
+        <div><dt>Caja después del descuento</dt><dd id="cycleCostsAfter"></dd></div>
+      </dl>
+      <button id="cycleCostsUnderstood" type="button" class="primary-gold" data-close>Entendido</button>
+    </section>
+
+    <section id="studentExpelledModal" class="modal hidden" role="alertdialog" aria-modal="true" aria-labelledby="studentExpelledTitle" aria-describedby="studentExpelledMessage">
+      <h2 id="studentExpelledTitle">Tu empresa fue eliminada de la partida</h2>
+      <p id="studentExpelledMessage" class="modal-lead">El profesor eliminó tu empresa por inactividad. Ya no puedes participar ni enviar decisiones en esta partida. Contacta a tu profesor si necesitas volver a participar.</p>
+      <button type="button" class="primary-gold" data-close>Volver al inicio</button>
+    </section>
+
+    <section id="teacherLoginModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="teacherLoginTitle">
+      <button class="close-btn" data-close aria-label="Cerrar">×</button>
+      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <h2 id="teacherLoginTitle">Acceso del profesor</h2>
+      <p class="modal-lead">Ingresa a tu cuenta para administrar una partida.</p>
+      <form id="loginForm">
+        <label for="loginEmail">Correo institucional</label>
+        <input id="loginEmail" type="email" placeholder="profesor@upch.pe" autocomplete="email" required>
+        <label for="loginPassword">Contraseña</label>
+        <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" required>
+        <button class="primary-gold" type="submit">Iniciar sesión</button>
+      </form>
+      <p class="switch-line">¿No tienes cuenta? <button type="button" data-switch="register">Crear cuenta</button></p>
+      <div id="loginMessage" class="form-message" role="status"></div>
+    </section>
+
+    <section id="teacherRegisterModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="teacherRegisterTitle">
+      <button class="close-btn" data-close aria-label="Cerrar">×</button>
+      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <h2 id="teacherRegisterTitle">Registro del profesor</h2>
+      <p class="modal-lead">Crea tu cuenta para administrar partidas de SIDE.</p>
+      <form id="registerForm">
+        <div class="two-cols">
+          <div><label for="registerName">Nombre</label><input id="registerName" placeholder="Ana" autocomplete="off" required></div>
+          <div><label for="registerLastName">Apellido</label><input id="registerLastName" placeholder="Ramírez" autocomplete="off" required></div>
+        </div>
+        <label for="registerCourse">Curso</label><input id="registerCourse" placeholder="Finanzas Corporativas" autocomplete="off" required>
+        <label for="registerEmail">Correo institucional</label><input id="registerEmail" type="email" placeholder="profesor@upch.pe" required>
+        <label for="registerPassword">Contraseña</label><input id="registerPassword" type="password" minlength="6" placeholder="••••••••" required>
+        <button class="primary-gold" type="submit">Crear cuenta</button>
+      </form>
+      <p class="switch-line">¿Ya tienes cuenta? <button type="button" data-switch="login">Iniciar sesión</button></p>
+      <div id="registerMessage" class="form-message" role="status"></div>
+    </section>
+
+    <section id="studentModal" class="modal student-join-modal hidden" role="dialog" aria-modal="true" aria-labelledby="studentJoinTitle" aria-describedby="studentJoinIntro">
+      <button class="close-btn" data-close aria-label="Cerrar">×</button>
+      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <h2 id="studentJoinTitle">Entrar a una partida</h2>
+      <p id="studentJoinIntro" class="modal-lead">Introduce el código que te entregó tu profesor.</p>
+      <form id="studentForm" class="student-join-form" aria-describedby="studentRejoinHelp">
+        <div class="join-field join-code-field">
+          <label for="gameCode">Código de partida</label>
+          <input id="gameCode" placeholder="Ej. SIDE-PTV6" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="gameCodeError" required>
+          <div id="gameCodeError" class="form-message hidden" role="alert"></div>
+        </div>
+        <div class="join-field">
+          <label for="companyLegalName">Nombre de tu empresa</label>
+          <input id="companyLegalName" placeholder="Ej. Textiles Andinos S.A.C." maxlength="60" autocomplete="organization" required>
+        </div>
+        <div class="join-field">
+          <label for="companyBrandName">Nombre comercial</label>
+          <input id="companyBrandName" placeholder="Ej. BOSS BAGS" maxlength="40" autocomplete="off" required>
+        </div>
+        <button class="primary-gold join-submit" type="submit">Entrar a la partida</button>
+      </form>
+      <div id="studentMessage" class="form-message" role="status"></div>
+    </section>
+
+    <section id="creditsModal" class="modal credits-modal hidden" role="dialog" aria-modal="true" aria-labelledby="creditsTitle" aria-describedby="creditsIntro">
+      <button class="close-btn" data-close aria-label="Cerrar créditos">×</button>
+      <img src="assets/side_logo.png" class="modal-side-logo" alt="SIDE">
+      <h2 id="creditsTitle">Créditos</h2>
+      <p id="creditsIntro" class="modal-lead">Modelos 3D creados por artistas y bibliotecas que hacen posible el mundo de SIDE.</p>
+      <div id="creditsList" class="credits-list" aria-live="polite"></div>
+      <p class="credits-note">Las atribuciones y licencias completas también están registradas en <code>CREDITS.md</code>.</p>
+    </section>
+  </div>
+
+  <section id="studentLoading" class="screen game-loading-screen hidden" aria-label="Preparando tu empresa">
+    <div class="game-loading-bg" aria-hidden="true"></div>
+    <div class="game-loading-content">
+      <img src="assets/side_logo.png" class="game-loading-logo" alt="SIDE">
+      <div class="loading-orbit" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="eyebrow">Conectando con la simulación</p>
+      <h1>Preparando tu empresa…</h1>
+      <div class="game-progress"><div id="joinProgress"></div></div>
+      <p id="joinLoadingText" role="status">Sincronizando partida</p>
+    </div>
+  </section>
+
+  <section id="tutorial" class="screen tutorial-screen hidden" aria-label="Tutorial de las zonas de decisión">
+    <div id="tutorialMount"></div>
+  </section>
+
+  <section id="studentLobby" class="screen dashboard-screen hidden" aria-label="Sala del estudiante">
+    <div class="dashboard-bg" aria-hidden="true"></div>
+    <div id="studentWaiting" class="student-waiting hidden" role="region" aria-label="Sala de espera">
+      <div class="game-loading-bg" aria-hidden="true"></div>
+      <div class="game-loading-content student-waiting-content">
+        <header class="waiting-header">
+          <div class="waiting-heading">
+            <p class="eyebrow">Sala de espera</p>
+            <h1>Aprende cómo jugar</h1>
+            <p id="waitingGameName"></p>
+          </div>
+          <div class="waiting-status">
+            <div class="waiting-clock" role="timer" aria-label="Tiempo restante en la sala de espera">
+              <span>TIEMPO DE SALA DE ESPERA</span>
+              <strong id="waitingCountdown">--:--</strong>
+              <small id="waitingCountdownNote">Esperando inicio del docente</small>
+            </div>
+            <p id="waitingCompanies" class="waiting-companies" role="status" aria-live="polite">Contando empresas conectadas…</p>
+          </div>
+        </header>
+        <div id="waitingTutorialMount" class="waiting-tutorial-mount" aria-label="Cómo jugar"></div>
+        <footer class="waiting-footer">
+          <p id="studentIntegrationNotice" class="hint" role="status" aria-live="polite"></p>
+          <button id="waitingBackToProfiles" class="ghost-btn" type="button">Volver al inicio</button>
+        </footer>
+      </div>
+    </div>
+    <div class="dashboard-inner lobby">
+      <div class="lobby-card">
+        <img src="assets/side_logo.png" class="dash-logo" alt="SIDE">
+        <div class="lobby-content" tabindex="0" role="region" aria-label="Partida, noticias y resultados; contenido desplazable">
+          <p class="eyebrow">PARTIDA</p>
+          <h1 id="lobbyCode">SIDE-000</h1>
+          <h2 id="lobbyGameName">Esperando...</h2>
+          <p id="lobbyStudent">TU EMPRESA</p>
+          <span id="lobbySegment">EMPRESA LISTA PARA DECIDIR</span>
+          <p data-student-sync-status class="student-sync-status hidden" role="status"></p>
+          <button id="cancelledBackToProfiles" class="ghost-btn hidden" type="button">VOLVER AL INICIO</button>
+          <div class="student-cycle-clock"><span>CICLO ACTUAL</span><strong id="studentCycleLabel">Ciclo 1</strong><b id="studentRoundTimer">--:--:--</b><small id="studentTimerNote">Esperando inicio del docente</small></div>
+          <div class="student-news"><span>NOTICIAS DEL CICLO</span><div id="studentNewsList"><p>Sin eventos reportados.</p></div></div>
+          <div class="student-finance-mini">
+            <div><span>ESTADO DE RESULTADOS</span><strong id="studentIncomeResult">S/ 0</strong><small>Utilidad del ciclo</small></div>
+            <div><span>BALANCE DE CAJA</span><strong id="studentCashResult">S/ 0</strong><small>Caja disponible</small></div>
+            <div><span>FLUJO DE CAJA</span><strong id="studentFlowResult">S/ 0</strong><small>Flujo neto del ciclo</small></div>
+          </div>
+          <div class="student-result-breakdown">
+            <div id="studentIncomeStatement"><strong>ESTADO DE RESULTADOS</strong></div>
+            <div><strong>BALANCE DE CAJA</strong><span>Caja inicial <b id="studentBCInicial">S/ 0</b></span><span>Entradas <b id="studentBCEntradas">S/ 0</b></span><span>Salidas <b id="studentBCSalidas">S/ 0</b></span><span>Caja final <b id="studentBCFinal">S/ 0</b></span></div>
+            <div><strong>FLUJO DE CAJA</strong><span>Operación <b id="studentFCOperacion">S/ 0</b></span><span>Inversión <b id="studentFCInversion">S/ 0</b></span><span>Financiamiento <b id="studentFCFinanciamiento">S/ 0</b></span><span>Flujo neto <b id="studentFCNeto">S/ 0</b></span></div>
+          </div>
+          <div id="studentFinancialDetail"></div>
+          <div id="studentCycleHistory"></div>
+          <p id="studentEventImpactText" class="student-event-impact">Los eventos que te afecten aparecerán en Noticias del ciclo y se reflejarán en estos resultados.</p>
+          <p id="studentConnectionStatus" class="lobby-welcome" role="status">Verificando conexión con la partida…</p>
+        </div>
+        <footer class="lobby-actions" aria-label="Acciones de la partida">
+          <button id="resumeWorldBtn" class="primary-gold lobby-start hidden" type="button">ENTRAR / VOLVER AL MUNDO 3D</button>
+          <button id="enterDecisionsBtn" class="primary-gold lobby-start hidden" type="button" disabled>ENTRAR AL MENÚ DE DECISIONES</button>
+          <div class="lobby-secondary-actions">
+            <button id="reopenTutorialBtn" class="tutorial-reopen-btn hidden" type="button"><span class="tutorial-reopen-icon">?</span><span><strong>VER TUTORIAL</strong><small>Repasar las 7 zonas</small></span></button>
+            <button id="backToProfiles" class="ghost-btn" type="button">VOLVER</button>
+          </div>
+          <small class="lobby-build">SIDE · v2026.09.22.2</small>
+        </footer>
+      </div>
+    </div>
+  </section>
+
+  <section id="characterSelection" class="screen character-selection-screen hidden" aria-labelledby="characterSelectionTitle" aria-hidden="true">
+    <div class="character-selection-bg" aria-hidden="true"></div>
+    <div class="character-selection-shell">
+      <header class="character-selection-header">
+        <img src="assets/side_logo.png" class="character-selection-logo" alt="SIDE">
+        <p class="character-selection-kicker">TU IDENTIDAD EN SIDE</p>
+        <h1 id="characterSelectionTitle">SELECCIONA TU PERSONAJE</h1>
+        <p>Elige quién te representará durante este ciclo de simulación.</p>
+      </header>
+
+      <div id="characterSelectionGrid" class="character-selection-grid" role="group" aria-label="Personajes disponibles">
+        <button class="character-card" type="button" data-character="miguel" aria-pressed="false" aria-describedby="characterHintMiguel">
+          <span class="character-card-portrait"><img src="assets/characters/thumbnails/chico2.webp" alt="Miguel, personaje jugable" draggable="false"></span>
+          <span class="character-card-copy"><strong>MIGUEL</strong><small id="characterHintMiguel">Seleccionar personaje</small></span>
+          <span class="character-card-check" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="character-card" type="button" data-character="gonzalo" aria-pressed="false" aria-describedby="characterHintGonzalo">
+          <span class="character-card-portrait"><img src="assets/characters/thumbnails/chico1.webp" alt="Gonzalo, personaje jugable" draggable="false"></span>
+          <span class="character-card-copy"><strong>GONZALO</strong><small id="characterHintGonzalo">Seleccionar personaje</small></span>
+          <span class="character-card-check" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="character-card" type="button" data-character="joel" aria-pressed="false" aria-describedby="characterHintJoel">
+          <span class="character-card-portrait"><img src="assets/characters/thumbnails/chico3.webp" alt="Joel, personaje jugable" draggable="false"></span>
+          <span class="character-card-copy"><strong>JOEL</strong><small id="characterHintJoel">Seleccionar personaje</small></span>
+          <span class="character-card-check" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="character-card" type="button" data-character="valeria" aria-pressed="false" aria-describedby="characterHintValeria">
+          <span class="character-card-portrait"><img src="assets/characters/thumbnails/mona.webp" alt="Valeria, personaje jugable" draggable="false"></span>
+          <span class="character-card-copy"><strong>VALERIA</strong><small id="characterHintValeria">Seleccionar personaje</small></span>
+          <span class="character-card-check" aria-hidden="true">&#10003;</span>
+        </button>
+      </div>
+
+      <footer class="character-selection-footer">
+        <p id="characterSelectionStatus" class="character-selection-status" role="status" aria-live="polite">
+          Personaje seleccionado: <strong>NINGUNO</strong>
+        </p>
+        <button id="confirmCharacterBtn" class="character-confirm-btn" type="button" disabled>
+          <span>ENTRAR AL MUNDO</span><span aria-hidden="true">&#8594;</span>
+        </button>
+      </footer>
+    </div>
+  </section>
+
+  <section id="simulationLoading" class="screen simulation-loading-screen hidden" aria-label="Cargando simulador 3D">
+    <div class="simulation-loading-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="simulation-loading-card">
+      <img src="assets/side_logo.png" class="simulation-loading-logo" alt="SIDE">
+      <span class="simulation-loading-kicker">SIDE · CIUDAD EMPRESARIAL</span>
+      <h1>PREPARANDO MUNDO 3D…</h1>
+      <p id="simulationLoadingText" role="status" aria-live="polite">Preparando escena y controles...</p>
+      <div class="simulation-loading-visual" aria-hidden="true">
+        <div class="loading-store"><span class="store-roof"></span><span class="store-door"></span><span class="store-window left"></span><span class="store-window right"></span></div>
+        <div class="loading-person p1"></div><div class="loading-person p2"></div><div class="loading-person p3"></div>
+      </div>
+      <div class="simulation-progress-meta"><strong id="simulationLoadingPercent"></strong><span id="simulationLoadingStage">Preparando escena y controles</span></div>
+      <button id="retryWorldBtn" class="primary-gold hidden" type="button">Reintentar carga</button>
+    </div>
+  </section>
+
+  <section id="simulator3d" class="screen simulator-screen hidden" aria-label="Simulador 3D de la empresa">
+    <canvas id="side3dCanvas" tabindex="0" aria-label="Mundo 3D interactivo de la tienda"></canvas>
+
+    <div class="sim3d-hud">
+      <div class="sim3d-top">
+        <div class="sim3d-brand"><img src="assets/side_logo.png" alt="SIDE"><div><span>SIMULADOR 3D</span><strong>TU EMPRESA</strong></div></div>
+        <div class="sim3d-stats">
+          <div class="sim3d-fun-notice">Modo diversión: no afecta tus ingresos</div>
+          <div class="sim3d-stat cash"><span>PUNTOS DISPONIBLES</span><strong id="simCash">100,000 pts</strong></div>
+          <div class="sim3d-stat revenue"><span>PUNTOS DEL TURNO</span><strong id="simNetProfit">0 pts</strong></div>
+          <div class="sim3d-stat lost"><span>CLIENTES PERDIDOS</span><strong id="simLostCustomers">0</strong></div>
+          <div class="sim3d-stat stock"><span>STOCK RECREATIVO</span><strong id="simTotalStock">0</strong></div>
+          <div class="sim3d-stat time"><span>TIEMPO</span><strong id="simTime">5:00</strong></div>
+          <div class="sim3d-stat rating"><span>SATISFACCIÓN</span><strong id="simRating">100%</strong></div>
+        </div>
+      </div>
+      <div class="sim3d-center"><div class="sim3d-crosshair" aria-hidden="true"></div><div id="sim3dPrompt" class="sim3d-prompt"></div></div>
+      <div class="sim3d-missions" aria-label="Misiones del día">
+        <div class="sim3d-missions-head"><span>MISIONES</span><strong id="simMissionHeadline">DÍA 1 · 0/3</strong><button id="simMissionToggle" type="button" aria-label="Minimizar misiones" aria-expanded="true">−</button></div>
+        <div id="simMissionList" class="sim3d-mission-list"></div>
+      </div>
+      <div class="sim3d-bottom"><div class="sim3d-objective"><span>OBJETIVO ACTUAL</span><strong>Disfruta tu tienda</strong><p id="simObjectiveText">Atiende clientes y mantén abastecida la exhibición.</p></div></div>
+    </div>
+
+    <div class="sim3d-actionbar">
+      <button id="sim3dDecisionsBtn" class="sim3d-btn primary" type="button">TABLET DE DECISIONES</button>
+      <button id="sim3dHubBtn" class="sim3d-btn" type="button" aria-label="Abrir directorio del barrio">DIRECTORIO</button>
+      <button id="sim3dCameraBtn" class="sim3d-btn" type="button" aria-label="Cambiar cámara entre primera y tercera persona" aria-pressed="true">CÁMARA · 3.ª</button>
+      <button id="sim3dMetricsBtn" class="sim3d-btn" type="button" aria-expanded="false">INDICADORES</button>
+      <button id="sim3dHelpBtn" class="sim3d-btn" type="button">AYUDA</button>
+      <button id="sim3dAudioBtn" class="sim3d-btn" type="button">AUDIO: ON</button>
+      <button id="sim3dLobbyBtn" class="sim3d-btn" type="button">VOLVER A SALA</button>
+    </div>
+    <div class="sim-world-location"><span>DISTRITO COMERCIAL · <b id="simHubCycle">CICLO 1</b></span><strong id="simWorldLocation">PLAZA SIDE · Miraflores</strong><div class="sim-world-route"><span id="simHubDirection" aria-hidden="true">↑</span><div><small id="simHubObjective" role="status">CONOCE TU EMPRESA · 0/3</small><b id="simHubDestination">Visita la tienda</b></div></div><small id="simHubOrder" class="sim-world-order" hidden></small><div id="simBusinessContext" class="sim-business-context" role="status" hidden></div></div>
+    <div class="sim-world-controls"><kbd>WASD</kbd> Mover / conducir <kbd>SHIFT</kbd> Correr <kbd>E</kbd> Interactuar <kbd>F</kbd> Auto <kbd>V</kbd> Cámara</div>
+    <div id="simDriveHud" class="sim-drive-hud" hidden><span>SIDE CRUISER · COSTA</span><div><b id="simDriveSpeed">00</b><small>KM/H</small><strong id="simDriveGear">N</strong></div><p>W / S acelerar y frenar · A / D girar<br>ESPACIO freno · F bajar</p></div>
+    <div id="simHubDirectory" class="sim-hub-directory hidden" role="dialog" aria-modal="true" aria-labelledby="simHubDirectoryTitle">
+      <div class="sim-hub-directory-card">
+        <button id="simHubDirectoryClose" class="sim-hub-close" type="button" aria-label="Cerrar directorio">×</button>
+        <span class="sim-hub-eyebrow">DIRECTORIO SIDE</span>
+        <h2 id="simHubDirectoryTitle">¿A dónde vamos?</h2>
+        <p>Elige el distrito de tu negocio. Recorre la ciudad para visitar sus locales.</p>
+        <div class="sim-hub-districts">
+          <button data-hub-district="miraflores" type="button" aria-pressed="true"><span>01</span><strong>MIRAFLORES</strong><i aria-hidden="true">↗</i></button>
+          <button data-hub-district="olivos" type="button" aria-pressed="false"><span>02</span><strong>LOS OLIVOS</strong><i aria-hidden="true">↗</i></button>
+          <button data-hub-district="sjl" type="button" aria-pressed="false"><span>03</span><strong>SAN JUAN DE LURIGANCHO</strong><i aria-hidden="true">↗</i></button>
+        </div>
+        <p id="simHubSelected" aria-live="polite">Destino: Miraflores</p>
+        <button id="simHubVisitStore" class="sim-hub-visit" type="button">MOSTRAR RUTA A PIE <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+    <div class="sim3d-touch-controls" aria-label="Controles táctiles">
+      <div class="sim3d-touch-pad">
+        <button data-touch-key="KeyW" class="up" type="button" aria-label="Avanzar">▲</button>
+        <button data-touch-key="KeyA" class="left" type="button" aria-label="Izquierda">◀</button>
+        <button data-touch-key="KeyS" class="down" type="button" aria-label="Retroceder">▼</button>
+        <button data-touch-key="KeyD" class="right" type="button" aria-label="Derecha">▶</button>
+      </div>
+      <div class="sim3d-touch-actions"><button id="simTouchDrive" type="button" aria-label="Subir o bajar del auto">F</button><button id="simTouchInteract" type="button">E</button><button id="simTouchJump" type="button" aria-label="Saltar o frenar">↥</button></div>
+    </div>
+    <div id="sim3dMessage" class="sim3d-message" aria-live="polite"></div>
+    <div id="sim3dReceipt" class="sim3d-receipt" aria-live="polite">
+      <div class="receipt-brand">TU EMPRESA</div>
+      <span id="receiptTicket">TICKET #0001</span>
+      <div><small>CLIENTE</small><b id="receiptCustomer">Premium</b></div>
+      <div><small>PRODUCTO</small><b id="receiptProduct">Bolso Premium</b></div>
+      <div class="receipt-total"><small>PUNTOS DE TIENDA</small><strong id="receiptPrice">125 pts</strong></div>
+      <em id="receiptDay">Día 1</em>
+    </div>
+
+    <div id="sim3dStart" class="sim3d-start">
+      <div class="sim3d-start-card">
+        <img src="assets/side_logo.png" alt="SIDE">
+        <span class="sim3d-start-kicker">PRIMER INGRESO</span>
+        <h2>Controles del simulador</h2>
+        <p>Recorre la tienda y la ciudad, atiende clientes y gana puntos de tienda. Modo diversión: no afecta tus ingresos, tu caja ni el resultado del ciclo. Usa la Tablet para tus decisiones económicas.</p>
+        <div class="sim3d-start-grid">
+          <div><strong>W A S D</strong><span>Caminar libremente</span></div>
+          <div><strong>MOUSE / ARRASTRE</strong><span>Mirar alrededor</span></div>
+          <div><strong>SHIFT</strong><span>Correr</span></div>
+          <div><strong>SPACE</strong><span>Saltar</span></div>
+          <div><strong>E</strong><span>Interactuar</span></div>
+          <div><strong>V</strong><span>Primera / tercera persona</span></div>
+          <div><strong>ESC</strong><span>Liberar el cursor</span></div>
+        </div>
+        <label class="sim3d-start-choice"><input id="sim3dNeverShowControls" type="checkbox" checked> No volver a mostrar para esta empresa</label>
+        <button id="sim3dStartBtn" type="button">ENTRAR AL SIMULADOR</button>
+      </div>
+    </div>
+
+    <aside id="sim3dMetricsDrawer" class="sim3d-metrics-drawer hidden" aria-label="Indicadores recreativos">
+      <div class="sim3d-drawer-head"><div><span>DIVERSIÓN DEL TURNO</span><strong id="simRound">Ciclo 1</strong></div><button id="sim3dMetricsClose" type="button" aria-label="Cerrar">×</button></div>
+      <div class="sim3d-drawer-grid">
+        <div><span>VISITANTES</span><strong id="simVisitors">0</strong></div>
+        <div><span>CLIENTES ATENDIDOS</span><strong id="simSales">0</strong></div>
+        <div><span>PUNTOS DE TIENDA</span><strong id="simRevenue">0 pts</strong></div>
+        <div><span>PRODUCCIÓN RECREATIVA</span><strong id="simProducedUnits">Sin registro</strong></div>
+        <div><span>CUMPLIMIENTO DE META</span><strong id="simProductionCompliance">—</strong></div>
+        <div><span>PUNTOS UTILIZADOS</span><strong id="simOperatingLosses">0 pts</strong></div>
+      </div>
+      <h3>Clientes perdidos</h3>
+      <div class="sim3d-loss-list"><span>Por cola <b id="lost-queue">0</b></span><span>Por falta de stock <b id="lost-stock">0</b></span><span>Por precio <b id="lost-price">0</b></span><span>Por falta de vendedores <b id="lost-staff">0</b></span></div>
+      <h3>Inventario recreativo</h3>
+      <div class="sim3d-inventory" aria-label="Inventario recreativo de la tienda">
+        <div><b>BÁSICO</b><strong id="stock-esencial">0</strong><small id="price-esencial">75 pts</small><em>Almacén <i id="reserve-esencial">0</i></em></div>
+        <div><b>MEJORADO</b><strong id="stock-urbano">0</strong><small id="price-urbano">95 pts</small><em>Almacén <i id="reserve-urbano">0</i></em></div>
+        <div><b>PREMIUM</b><strong id="stock-premium">0</strong><small id="price-premium">125 pts</small><em>Almacén <i id="reserve-premium">0</i></em></div>
+      </div>
+    </aside>
+
+    <div id="simNewsPanel" class="sim-news-panel hidden" role="dialog" aria-modal="true" aria-labelledby="simNewsTitle">
+      <div class="sim-news-card"><button id="simNewsClose" type="button" aria-label="Cerrar">×</button><span>NOTICIAS DE LA CIUDAD</span><h2 id="simNewsTitle">Eventos del ciclo</h2><div id="simNewsList"></div><small>ESC o × para cerrar</small></div>
+    </div>
+
+
+    <div id="simCheckout" class="sim-checkout hidden">
+      <div class="sim-checkout-card">
+        <button id="checkoutCloseBtn" class="sim-checkout-close" type="button" aria-label="Cerrar">×</button>
+        <span class="sim-checkout-kicker">POS · MODO DIVERSIÓN</span>
+        <h2>Atender cliente</h2>
+        <div class="sim-checkout-screen">
+          <div><small>CLIENTE</small><strong id="checkoutCustomer">Cliente</strong></div>
+          <div><small>PRODUCTO</small><strong id="checkoutProduct">Bolso</strong></div>
+          <div><small>PUNTOS DE TIENDA</small><strong id="checkoutPrice">0 pts</strong></div>
+        </div>
+        <p id="checkoutStatus">Producto pendiente de escaneo</p>
+        <div class="checkout-payment"><span>FORMA DE PAGO</span><div><button id="payCashBtn" type="button" class="active">EFECTIVO</button><button id="payCardBtn" type="button">TARJETA</button></div></div>
+        <div class="sim-checkout-actions">
+          <button id="checkoutScanBtn" type="button">1. ESCANEAR PRODUCTO</button>
+          <button id="checkoutChargeBtn" type="button" disabled>2. COBRAR</button>
+        </div>
+        <small class="sim-checkout-hint">También puedes usar E/Enter para continuar</small>
+      </div>
+    </div>
+
+    <div id="simProductInspect" class="sim-product-inspect hidden">
+      <div class="sim-product-card">
+        <button id="inspectCloseBtn" class="sim-product-close" type="button" aria-label="Cerrar">×</button>
+        <span class="sim-product-kicker">PRODUCTO EN EXHIBICIÓN</span>
+        <div class="sim-product-preview"><span id="inspectProductSwatch"></span><div class="bag-silhouette">👜</div></div>
+        <h2 id="inspectProductName">Bolso</h2>
+        <strong id="inspectProductPrice">0 pts</strong>
+        <p id="inspectProductDesc">Detalle del producto.</p>
+        <small id="inspectProductStock">0 en exhibición</small>
+        <div class="sim-product-hint">ESC o × para cerrar</div>
+      </div>
+    </div>
+
+
+    <div id="simMinimap" class="sim-minimap sim-city-map" role="region" aria-label="Mapa de la ciudad">
+      <div class="sim-city-map-head">
+        <span class="mini-title">Mapa de SIDE <small>Elige una zona</small></span>
+        <button id="simCityMapToggle" class="sim-city-map-toggle" type="button" aria-label="Ampliar mapa" aria-controls="simMinimap" aria-expanded="false" title="Ampliar mapa">⛶</button>
+      </div>
+      <div class="sim-city-map-content">
+        <div class="mini-map-area" id="simCityMapArea" role="group" aria-label="Zonas de la ciudad">
+          <b id="miniPlayer" class="mini-player" title="Tu posición" aria-label="Tu posición"></b>
+        </div>
+        <div id="simCityZoneList" class="sim-city-zone-list" role="group" aria-label="Elegir zona"></div>
+      </div>
+    </div>
+    <div id="simZoneLabels" class="sim-zone-labels" aria-hidden="true"></div>
+    <div id="simZoneBanner" class="sim-zone-banner" role="status" aria-live="polite" hidden></div>
+    <div id="simRouteMarker" class="sim-route-marker" aria-hidden="true" hidden><span>↗</span><b id="simRouteMarkerName">Objetivo</b></div>
+
+    <div id="simTutorial3d" class="sim-tutorial3d hidden">
+      <span id="tutorialStepLabel">TUTORIAL 1/6</span>
+      <strong id="tutorialStepTitle">Abre tu tienda</strong>
+      <p id="tutorialStepText">Recorre tu empresa y aprende las acciones principales.</p>
+      <button id="tutorialNextBtn" type="button">SIGUIENTE</button>
+    </div>
+
+    <div id="simEventToast" class="sim-event-toast hidden" aria-live="polite">
+      <span>EVENTO DEL DÍA</span><strong id="eventTitle">Evento</strong><p id="eventText">Descripción</p>
+    </div>
+
+    <div id="simAdmin" class="sim-admin hidden">
+      <div class="sim-admin-card">
+        <button id="adminCloseBtn" class="sim-admin-close" type="button">×</button>
+        <div class="admin-head"><div><span>COMPUTADORA DE ADMINISTRACIÓN</span><h2>Tu tienda · Panel recreativo</h2></div><strong id="adminReputation">Reputación 80%</strong></div>
+        <nav class="admin-tabs">
+          <button type="button" data-admin-tab="dashboard" class="active">Resumen</button>
+          <button type="button" data-admin-tab="prices">Precios</button>
+          <button type="button" data-admin-tab="stock">Stock / Proveedor</button>
+          <button type="button" data-admin-tab="staff">Personal</button>
+          <button type="button" data-admin-tab="expansion">Expansión</button>
+          <button type="button" data-admin-tab="settings">Gráficos</button>
+        </nav>
+        <div class="admin-pages">
+          <section data-admin-page="dashboard" class="active">
+            <div class="admin-metrics">
+              <div><span>PUNTOS DE TIENDA</span><strong id="adminRevenue">0 pts</strong></div>
+              <div><span>PUNTOS UTILIZADOS</span><strong id="adminExpenses">0 pts</strong></div>
+              <div><span>PUNTOS DEL TURNO</span><strong id="adminProfit">0 pts</strong></div>
+              <div><span>REPUTACIÓN</span><strong id="adminRepMetric">80%</strong></div>
+            </div>
+            <div id="adminFinancialPanel"></div>
+            <div class="admin-pipeline"><h3>Producción recreativa</h3><div><span>Materia prima</span><i></i><span>Corte</span><i></i><span>Ensamble</span><i></i><span>Acabado</span><i></i><span>Almacén</span></div><p id="adminProductionText">Producción activa.</p></div>
+            <div class="admin-log"><h3>Actividad reciente</h3><div id="adminLogList"></div></div>
+          </section>
+          <section data-admin-page="prices">
+            <h3>Valores recreativos</h3><p class="admin-note">Estos valores solo cambian la atención de clientes y los puntos de tienda del 3D.</p>
+            <div class="price-editor">
+              <label>Bolso Esencial <input id="price-esencial-input" type="number" min="40" max="250" step="5"></label>
+              <label>Bolso Urbano <input id="price-urbano-input" type="number" min="50" max="300" step="5"></label>
+              <label>Bolso Premium <input id="price-premium-input" type="number" min="70" max="450" step="5"></label>
+            </div><button id="savePricesBtn" class="admin-primary" type="button">GUARDAR PRECIOS</button>
+          </section>
+          <section data-admin-page="stock">
+            <h3>Proveedor e inventario recreativos</h3><div id="adminStockRows" class="admin-stock-rows"></div>
+            <div class="supplier-actions"><button id="orderStockBtn" class="admin-primary" type="button">PEDIR 12 UNIDADES · 360 pts</button><small>El pedido llega después de unos segundos. Un evento puede retrasarlo.</small></div>
+          </section>
+          <section data-admin-page="staff">
+            <h3>Tareas del personal</h3><div class="staff-tasks"><div><strong>Vendedores</strong><span>Atienden y apoyan caja automáticamente.</span></div><div><strong>Reponedores</strong><span>Pasan producto del almacén a exhibición.</span></div><div><strong>Operarios</strong><span>Mantienen activa la línea de producción.</span></div><div><strong>Jefatura</strong><span>Mejora paciencia y satisfacción.</span></div></div>
+          </section>
+          <section data-admin-page="expansion">
+            <h3>Expansión de tienda</h3><div class="upgrade-grid">
+              <button id="upgradeDisplayBtn" type="button"><strong>+ Exhibidor</strong><span>Capacidad +2 por modelo</span><small>650 pts</small></button>
+              <button id="upgradeCheckoutBtn" type="button"><strong>Segunda caja</strong><span>Atención automática más rápida</span><small>1,200 pts</small></button>
+              <button id="upgradeWarehouseBtn" type="button"><strong>Ampliar almacén</strong><span>Producción y reserva +25%</span><small>1,500 pts</small></button>
+            </div>
+          </section>
+          <section data-admin-page="settings">
+            <h3>Calidad gráfica</h3><div class="quality-grid"><button type="button" data-quality="low">BAJO</button><button type="button" data-quality="medium">MEDIO</button><button type="button" data-quality="high">ALTO</button><button type="button" data-quality="auto">AUTO</button></div><p class="admin-note">AUTO ajusta la resolución si detecta caída de FPS.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+    <div id="sim3dSummary" class="sim3d-summary hidden">
+      <div class="sim3d-summary-card">
+        <img src="assets/side_logo.png" alt="SIDE">
+        <span class="sim3d-summary-kicker">JORNADA RECREATIVA</span>
+        <h2 id="summaryTitle">Fin de la jornada</h2>
+        <p id="summarySubtitle">Tus logros de diversión no afectan el cierre económico.</p>
+        <div id="summaryStars" class="sim3d-summary-stars">★★★☆☆</div>
+        <div class="sim3d-summary-grid">
+          <div><span>PUNTOS DE TIENDA</span><strong id="summaryRevenue">0 / 0 pts</strong></div>
+          <div><span>CLIENTES ATENDIDOS</span><strong id="summaryServed">0</strong></div>
+          <div><span>CLIENTES PERDIDOS</span><strong id="summaryLost">0</strong></div>
+          <div><span>SATISFACCIÓN</span><strong id="summarySatisfaction">100%</strong></div>
+          <div><span>PUNTOS DEL TURNO</span><strong id="summaryProfit">0 pts</strong></div>
+          <div><span>REPUTACIÓN</span><strong id="summaryReputation">80%</strong></div>
+          <div><span>DEVOLUCIONES</span><strong id="summaryReturns">0</strong></div>
+        </div>
+        <ul id="summaryConsequences" class="sim-summary-consequences" aria-label="Logros recreativos frente al turno anterior" hidden></ul>
+        <div class="sim3d-summary-actions">
+          <button id="sim3dReplayBtn" type="button">JUGAR OTRO TURNO</button>
+          <button id="sim3dSummaryLobbyBtn" type="button" class="ghost">VOLVER A SALA</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="simFunFx" class="sim3d-fun-fx" aria-hidden="true"><span>★ 0</span></div>
+
+  <section id="decisionMenu" class="screen decision-screen hidden" aria-label="Decisiones del juego">
+    <div class="decision-bg"></div>
+    <div class="game-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+    <header id="decisionTopbar" class="decision-topbar">
+      <div class="decision-topbar-identity">
+      <button id="exitDecisions" class="game-back-btn" type="button" aria-label="Volver a la sala" title="Volver a la sala (Esc)"><img src="assets/icons/ui/back.svg" alt=""><span id="decisionReturnLabel">Volver a la sala</span></button>
+      <div class="game-title-mark">
+        <span class="mark-dot"></span>
+        <div><strong>DECISIONES</strong><small id="roundLabel">CICLO 1 · TU EMPRESA</small></div>
+      </div>
+      </div>
+      <div class="decision-topbar-metrics">
+      <div class="cash-hud" aria-label="Caja disponible">
+        <span>CAJA / EFECTIVO</span>
+        <strong id="cashBalance">S/ 100,000</strong>
+        <small id="cashMovement">Disponible para decidir</small>
+      </div>
+      <div class="student-top-timer"><span>TIEMPO DEL CICLO</span><strong id="decisionRoundTimer">--:--:--</strong></div>
+      </div>
+      <div class="decision-topbar-actions">
+      <div class="mission-meter" aria-label="Progreso de decisiones">
+        <div class="mission-label"><span>PROGRESO</span><strong id="decisionProgressText">0%</strong></div>
+        <div class="mission-track"><div id="decisionProgressBar"></div></div>
+        <small id="decisionProgressHint">Plan pendiente de confirmar</small>
+      </div>
+      <button id="topSubmitAllDecisions" class="top-submit-all" type="button"><span>✓</span> ENVIAR TODO</button>
+      </div>
+    </header>
+
+    <main class="decision-game-stage tabbed-stage">
+      <section class="decision-window" aria-label="Ventana de decisiones">
+        <p data-student-sync-status class="student-sync-status hidden" role="status"></p>
+        <nav id="decisionTabs" class="decision-tabs" aria-label="Secciones de decisión"></nav>
+        <div id="decisionDetail" class="decision-detail">
+          <div id="decisionStickyHead" class="decision-detail-head sticky-section-head">
+            <div class="detail-heading">
+              <img id="detailCategoryIcon" src="assets/icons/categories/infraestructura.svg" alt="">
+              <div><span id="categoryEyebrow">SECCIÓN DE DECISIÓN</span><h1 id="categoryTitle">Infraestructura</h1><p id="categoryDescription">Selecciona tus decisiones.</p></div>
+            </div>
+          </div>
+          <div id="decisionFormScroll" class="decision-form-scroll" tabindex="0" role="region" aria-label="Contenido de la sección de decisión">
+          <div id="decisionCards" class="decision-cards decision-list"></div>
+          <div class="section-save-bar">
+            <div><span>GASTADO / MOVIMIENTO DE ESTA PESTAÑA</span><strong id="sectionDraftCost">S/ 0</strong><small id="sectionSaveHint">El gasto se actualiza mientras eliges. El saldo cambia recién al guardar.</small></div>
+            <div class="decision-action-pair"><button id="saveDecisionSection" class="game-confirm-btn save-section-btn" type="button"><span class="save-disc">●</span><strong>GUARDAR BORRADOR</strong><small>Guardar toda la sección; puedes editar</small></button><button id="sendDecisionSection" class="game-confirm-btn submit-decisions-btn section-submit-btn" type="button"><span>✓</span><strong>ENVIAR DECISIÓN</strong><small>Confirmar; no editable en este ciclo</small></button></div>
+          </div>
+          <div id="simulationLaunch" class="simulation-launch hidden" aria-live="polite">
+            <div class="simulation-launch-badge"><span>100%</span><small>COMPLETADO</small></div>
+            <div class="simulation-launch-copy">
+              <span class="simulation-launch-kicker">TU EMPRESA ESTÁ LISTA</span>
+              <h2>Convierte tus decisiones en una tienda 3D</h2>
+              <p>Se construirán el local, la zona de producción, maquinaria, personal, stock y flujo de clientes según lo que elegiste.</p>
+            </div>
+            <div class="simulation-launch-actions"><button id="submitAllDecisionsBtn" class="submit-decisions-btn" type="button"><strong>ENVIAR DECISIONES</strong><small>Confirmar todo; editar en el próximo ciclo</small></button><button id="startSimulationBtn" class="start-simulation-btn hidden" type="button"><span>▶</span><strong>INICIAR JUEGO 3D</strong><small>Decisiones enviadas</small></button></div>
+          </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="cashFx" class="cash-fx" aria-hidden="true"><span>− S/ 0</span></div>
+    <div id="decisionSummary" class="decision-summary hidden">
+      <div class="summary-icon">★</div>
+      <div><span class="intro-kicker">CICLO GUARDADO</span><h2>¡DECISIONES REGISTRADAS!</h2><p>Puedes seguir revisando tus pestañas mientras el ciclo permanezca abierto.</p></div>
+      <div id="summaryStats" class="summary-stats"></div>
+      <button id="restartDecisionMenu" class="game-back-inline">VOLVER A DECISIONES</button>
+    </div>
+  </section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+<script src="vendor/supabase-js/supabase.js?v=2.117.3"></script>
+<script src="js/config.js?v=20261022-reversion"></script>
+<script src="services/supabase_client.js?v=20261013-connection"></script>
+<script src="services/partida_service.js?v=20261028-server-close"></script>
+<script src="services/empresa_service.js?v=20261028-auth"></script>
+<script src="services/decisiones_service.js?v=20261027-live-sales"></script>
+<script src="services/student_sync.js?v=20261027-implicit-prices"></script>
+<script src="services/finance_config.js?v=20261028-server-close"></script>
+<script src="js/side_rules.js?v=20261012-sesion-codigos"></script>
+<script src="js/icon_bank.js?v=20260910-2"></script>
+<script src="js/events_catalog.js?v=20260910-2"></script>
+<script src="js/decision_catalog.js?v=20261028-server-close"></script>
+<script src="services/credits_data.js?v=20260928-production"></script>
+<script src="js/tutorial.js?v=20261010-waiting-tutorial"></script>
+<script src="services/character_selection.js?v=20260927-selector"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/build/three.module.js",
+      "three/addons/": "./vendor/three/examples/jsm/",
+      "@recast-navigation/core": "./vendor/recast-core/dist/index.mjs",
+      "@recast-navigation/wasm": "./vendor/recast-wasm/dist/recast-navigation.wasm-compat.js",
+      "@recast-navigation/generators": "./vendor/recast-generators/dist/index.mjs"
+    }
+  }
+</script>
+<script src="js/shared/world_bridge.js?v=20261023"></script>
+<script src="js/simulator3d-config.js?v=20260922-npcs2"></script>
+<script src="js/simulator3d.js?v=20261024-npc-identity"></script>
+<script src="js/business_rules.js?v=20261027-md"></script>
+<script src="js/material_orders.js"></script>
+<script src="js/material_preview.js"></script>
+<script src="js/temporal_production.js"></script>
+<script src="js/production_model.js?v=20261028-dop-recursos"></script>
+<script src="js/decision_review_model.js?v=20261028-server-close"></script>
+<script src="js/production_dop.js?v=20261028-dop-recursos"></script>
+<script src="js/financial_model.js?v=20261028-server-close"></script>
+<script src="js/engine/config_excel.js?v=20261023-ingresos"></script>
+<script src="js/engine/mercado.js?v=20261023-ingresos"></script>
+<script src="js/engine/costos.js?v=20261023-ingresos"></script>
+<script src="js/engine/catalogo_excel.js?v=20261024-v19"></script>
+<script src="js/engine/config.js?v=20261027-md"></script>
+<script src="js/engine/cierre.js?v=20261028-materiales"></script>
+<script src="js/revenue_model.js?v=20261024-v19"></script>
+<script src="js/cycle_model.js?v=20261028-materiales"></script>
+<script src="js/student_financial_view.js?v=20261028-balance"></script>
+<script src="js/app.js?v=20261110-lite"></script>
+<script src="js/cycle_cost_notice.js?v=20261023-world-fun"></script>
+<script src="js/company_summary.js?v=20261028-materiales"></script>
+<script src="pages-notice.js?v=20261110-preview"></script>
+<script src="services/lite-game-service.js?v=20261110-lite"></script>
+<script src="js/lite-decisions.js?v=20261110-lite"></script>
+<script src="services/lite-student-entry.js?v=20261110-lite"></script>
+</body>
+</html>
+

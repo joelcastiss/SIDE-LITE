@@ -1,0 +1,15 @@
+SIDE city NPC assets (six models)
+
+Creator: Quaternius
+Packs: Ultimate Modular Women Pack and Ultimate Modular Men Pack
+License: Creative Commons CC0 1.0 Universal
+Official sources:
+https://quaternius.com/packs/ultimatemodularwomen.html
+https://quaternius.com/packs/ultimatemodularcharacters.html
+GitHub mirror used for the glTF files:
+https://github.com/agentkaerf/FreeModels
+License text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+The glTF sources were converted to self-contained GLB files by
+tools/model-pipeline/build_city_npcs.cjs. Geometry, rig, materials and
+the source animation clips remain in each released GLB.

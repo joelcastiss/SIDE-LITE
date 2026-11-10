@@ -1,0 +1,229 @@
+[
+  {
+    "id": "city_woman_casual",
+    "nombre": "Vecina",
+    "genero": "mujer",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-city/woman_casual.gltf",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Women",
+    "url": "https://github.com/agentkaerf/FreeModels/blob/main/Ultimate%20Modular%20Women%20-%20April%202022/Individual%20Characters/glTF/Casual.gltf"
+  },
+  {
+    "id": "city_man_casual",
+    "nombre": "Vecino",
+    "genero": "hombre",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-city/man_casual.gltf",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Men",
+    "url": "https://github.com/agentkaerf/FreeModels/blob/main/Ultimate%20Modular%20Men-%20Feb%202022/Individual%20Characters/glTF/Casual_2.gltf"
+  },
+  {
+    "id": "city_woman_suit",
+    "nombre": "Asesora",
+    "genero": "mujer",
+    "rol": "tienda",
+    "archivo": "assets/models/incoming/quaternius-city/woman_suit.gltf",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Women",
+    "url": "https://github.com/agentkaerf/FreeModels/blob/main/Ultimate%20Modular%20Women%20-%20April%202022/Individual%20Characters/glTF/Suit.gltf",
+    "roles": [
+      "oficina",
+      "banco",
+      "cajero"
+    ]
+  },
+  {
+    "id": "city_man_suit",
+    "nombre": "Asesor",
+    "genero": "hombre",
+    "rol": "tienda",
+    "archivo": "assets/models/incoming/quaternius-city/man_suit.gltf",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Men",
+    "url": "https://github.com/agentkaerf/FreeModels/blob/main/Ultimate%20Modular%20Men-%20Feb%202022/Individual%20Characters/glTF/Suit.gltf",
+    "roles": [
+      "oficina",
+      "banco",
+      "guardia"
+    ]
+  },
+  {
+    "id": "city_woman_worker",
+    "nombre": "Operaria",
+    "genero": "mujer",
+    "rol": "produccion",
+    "archivo": "assets/models/incoming/quaternius-city/woman_worker.gltf",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Women",
+    "url": "https://github.com/agentkaerf/FreeModels/blob/main/Ultimate%20Modular%20Women%20-%20April%202022/Individual%20Characters/glTF/Worker.gltf",
+    "roles": [
+      "almacen",
+      "proveedor"
+    ]
+  },
+  {
+    "id": "city_man_worker",
+    "nombre": "Operario",
+    "genero": "hombre",
+    "rol": "almacen",
+    "archivo": "assets/models/incoming/quaternius-city/man_worker.gltf",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Men",
+    "url": "https://github.com/agentkaerf/FreeModels/blob/main/Ultimate%20Modular%20Men-%20Feb%202022/Individual%20Characters/glTF/Worker.gltf",
+    "roles": [
+      "produccion",
+      "proveedor"
+    ]
+  },
+  {
+    "id": "city_woman_cardigan",
+    "nombre": "Vecina con cárdigan",
+    "genero": "mujer",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-animated/AQsd9ngvKU.glb",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Women Pack",
+    "url": "https://poly.pizza/m/AQsd9ngvKU",
+    "roles": [
+      "oficina"
+    ]
+  },
+  {
+    "id": "city_woman_tank",
+    "nombre": "Transeúnte deportiva",
+    "genero": "mujer",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-animated/XqzeZGB7iU.glb",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Women Pack",
+    "url": "https://poly.pizza/m/XqzeZGB7iU"
+  },
+  {
+    "id": "city_woman_green",
+    "nombre": "Cliente de polo verde",
+    "genero": "mujer",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-animated/jpKRgGDxhk.glb",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Women Pack",
+    "url": "https://poly.pizza/m/jpKRgGDxhk"
+  },
+  {
+    "id": "city_woman_dress",
+    "nombre": "Clienta de vestido",
+    "genero": "mujer",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-animated/zMyPlQXBzq.glb",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Women Pack",
+    "url": "https://poly.pizza/m/zMyPlQXBzq"
+  },
+  {
+    "id": "city_man_long_sleeves",
+    "nombre": "Vecino de manga larga",
+    "genero": "hombre",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-animated/DLptRuewTn.glb",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Men Pack",
+    "url": "https://poly.pizza/m/DLptRuewTn",
+    "roles": [
+      "proveedor"
+    ]
+  },
+  {
+    "id": "city_man_shorts",
+    "nombre": "Transeúnte de verano",
+    "genero": "hombre",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-animated/HMnuH5geEG.glb",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Men Pack",
+    "url": "https://poly.pizza/m/HMnuH5geEG"
+  },
+  {
+    "id": "city_man_maroon",
+    "nombre": "Vecino de polo granate",
+    "genero": "hombre",
+    "rol": "cliente",
+    "archivo": "assets/models/incoming/quaternius-animated/fjHyMd5Wxw.glb",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Men Pack",
+    "url": "https://poly.pizza/m/fjHyMd5Wxw"
+  },
+  {
+    "id": "city_man_office",
+    "nombre": "Oficinista",
+    "genero": "hombre",
+    "rol": "tienda",
+    "archivo": "assets/models/incoming/quaternius-animated/mQnGoME1ez.glb",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Animated Men Pack",
+    "url": "https://poly.pizza/m/mQnGoME1ez",
+    "roles": [
+      "oficina",
+      "banco",
+      "cajero"
+    ]
+  },
+  {
+    "id": "city_woman_formal",
+    "nombre": "Cajera",
+    "genero": "mujer",
+    "rol": "tienda",
+    "archivo": "assets/models/incoming/quaternius-city/woman_formal.gltf",
+    "altura": 1.68,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Women",
+    "url": "https://github.com/agentkaerf/FreeModels",
+    "roles": [
+      "oficina",
+      "banco",
+      "cajero"
+    ]
+  },
+  {
+    "id": "city_man_hoodie",
+    "nombre": "Repartidor",
+    "genero": "hombre",
+    "rol": "almacen",
+    "archivo": "assets/models/incoming/quaternius-city/man_hoodie.gltf",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Men",
+    "url": "https://github.com/agentkaerf/FreeModels",
+    "roles": [
+      "proveedor"
+    ]
+  },
+  {
+    "id": "city_man_farmer",
+    "nombre": "Proveedor de overol",
+    "genero": "hombre",
+    "rol": "almacen",
+    "roles": [
+      "proveedor"
+    ],
+    "archivo": "assets/models/incoming/quaternius-city/man_farmer.gltf",
+    "altura": 1.76,
+    "licencia": "CC0",
+    "fuente": "Quaternius Ultimate Modular Men",
+    "url": "https://github.com/agentkaerf/FreeModels/blob/main/Ultimate%20Modular%20Men-%20Feb%202022/Individual%20Characters/glTF/Farmer.gltf"
+  }
+]

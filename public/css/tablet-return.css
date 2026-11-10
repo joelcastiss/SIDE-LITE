@@ -1,0 +1,35 @@
+/* An explicit return action while the decision tablet is opened from the world. */
+#decisionReturnLabel { display: none; }
+#decisionMenu .decision-topbar:has(.returns-to-world) {
+  grid-template-columns: 138px minmax(140px, 1fr) minmax(150px, 210px) 130px auto 160px;
+}
+#decisionMenu #exitDecisions.returns-to-world {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 138px;
+  padding: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ui-yellow);
+}
+#decisionMenu #exitDecisions.returns-to-world img { flex: 0 0 24px; margin: 0; }
+#decisionMenu .returns-to-world #decisionReturnLabel { display: inline; }
+/* The grouped decision header keeps the world return explicit too. */
+#decisionMenu #decisionTopbar #exitDecisions.returns-to-world {
+  flex: 0 0 110px;
+  width: 110px;
+  min-width: 110px;
+  padding: 8px;
+  font-size: 10px;
+}
+#decisionMenu #decisionTopbar #exitDecisions.returns-to-world #decisionReturnLabel { display: inline; }
+@media (max-width: 1180px) {
+  #decisionMenu .decision-topbar:has(.returns-to-world) {
+    grid-template-columns: 110px minmax(0, 1fr) 120px;
+  }
+  #decisionMenu #exitDecisions.returns-to-world { width: 110px; font-size: 10px; gap: 4px; }
+  #decisionMenu #exitDecisions.returns-to-world img { flex-basis: 20px; width: 20px !important; height: 20px !important; }
+}

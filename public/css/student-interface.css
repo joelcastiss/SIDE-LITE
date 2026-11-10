@@ -1,0 +1,157 @@
+/* SIDE: acceso y sala del estudiante. El mundo, la Tablet y los avatares
+   conservan sus hojas y su comportamiento. Cargar después de styles.css. */
+
+/* La ilustración original es la portada; el pie sólo facilita comenzar. */
+#landing .landing-overlay {
+  display: block;
+  position: absolute;
+  inset: 62% 0 0;
+  background: linear-gradient(transparent, rgba(2,7,22,.92));
+  pointer-events: none;
+}
+/* Barra plateada original: styles.css y sus ajustes responsive conservados. */
+#landing .start-link {
+  min-height: 48px;
+  min-width: 180px;
+  padding: 12px 28px;
+  border: 1px solid var(--side-gold);
+  border-radius: var(--side-radius-control);
+  background: var(--side-panel);
+  color: var(--side-gold);
+  letter-spacing: 0;
+  font-size: 18px;
+  text-shadow: none;
+}
+#landing .start-link:not(:disabled):hover { transform: none; background: var(--side-panel-raised); }
+
+/* La ilustración de estudiante mantiene el protagonismo y el acceso docente. */
+#profiles .profile-main { gap: 20px; }
+#profiles .profile-title { margin: 0 0 24px; font-size: 20px; font-weight: 600; color: var(--side-text); }
+#profiles .student-hero {
+  border: 1px solid var(--side-line-control);
+  background: linear-gradient(155deg,#0b2755,var(--side-panel));
+  box-shadow: var(--side-shadow-card);
+  padding-bottom: 28px;
+  transition: border-color var(--side-transition);
+}
+#profiles .student-hero:hover { transform: none; border-color: var(--side-gold); box-shadow: var(--side-shadow-card); }
+#profiles .hero-eyebrow { font-size: 30px; letter-spacing: 0; color: var(--side-text-bright); }
+#profiles .profile-description { max-width: 34ch; color: var(--side-text-muted); font-size: 14px; line-height: var(--side-leading-body); }
+#profiles .hero-cta { min-height: 48px; padding: 12px 22px; font-size: 16px; letter-spacing: 0; }
+#profiles .teacher-mini { border-color: var(--side-line-control); background: var(--side-panel); backdrop-filter: none; }
+#profiles .teacher-mini:hover { transform: none; border-color: var(--side-gold); }
+#profiles .mini-eyebrow { color: var(--side-gold-light); letter-spacing: 0; }
+#profiles .teacher-mini-img { border-color: var(--side-line-control); }
+
+/* Formularios: escala compacta sin comprimir instrucciones ni foco. */
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) {
+  width: min(600px,calc(100% - 24px));
+  padding: 26px 32px;
+  max-height: calc(100dvh - 24px);
+  border: 1px solid var(--side-gold);
+  border-radius: var(--side-radius-modal);
+  background: var(--side-panel);
+  box-shadow: var(--side-shadow-modal);
+  scrollbar-color: var(--side-line-control) var(--side-panel);
+  overscroll-behavior: contain;
+}
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) .modal-side-logo {
+  width: 145px; height: 62px; margin: 0 auto 12px; object-fit: contain;
+}
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) h2 {
+  font-size: clamp(24px,4vw,30px); line-height: var(--side-leading-title);
+  letter-spacing: -.4px; margin: 6px 0 10px;
+}
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) .modal-lead {
+  color: var(--side-text-muted); font-size: 15px; line-height: var(--side-leading-body); margin: 0 0 24px;
+}
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) label {
+  color: var(--side-text); font-size: 14px; font-weight: var(--side-weight-label); letter-spacing: 0;
+}
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) input {
+  min-height: 48px; padding: 12px 14px; font-size: 16px;
+  background: var(--side-panel-inset); border: 1px solid var(--side-line-control);
+  border-radius: var(--side-radius-control); color: var(--side-text);
+}
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) input::placeholder { color: var(--side-text-muted); opacity: 1; }
+#studentModal .student-join-form { gap: 18px; }
+#studentModal .join-field { gap: 8px; }
+#studentModal .join-code-field input { border-color: var(--side-gold); box-shadow: none; }
+#studentModal .join-name-warning {
+  margin: 0; padding: 12px 14px; border-left: 3px solid var(--side-blue);
+  background: var(--side-panel-raised); color: var(--side-text-muted);
+  font-size: 13px; line-height: var(--side-leading-body);
+}
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) .primary-gold {
+  min-height: 48px; font-size: 16px; letter-spacing: 0;
+}
+#studentModal .join-submit { margin: 0; border-radius: var(--side-radius-control); box-shadow: var(--side-shadow-action); }
+#modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) .close-btn {
+  display: grid; place-items: center; width: 44px; height: 44px; top: 10px; right: 10px;
+  border-radius: var(--side-radius-control); font-size: 30px;
+}
+#modalRoot .switch-line { font-size: 14px; line-height: var(--side-leading-body); }
+#modalRoot .switch-line button { min-height: 44px; padding: 8px; }
+
+/* El estado de conexión y las cifras reales definen la jerarquía de la sala. */
+#studentLoading .game-loading-content h1,#studentWaiting h1 { letter-spacing: -.5px; line-height: 1.25; }
+#studentLoading .eyebrow,#studentWaiting .eyebrow { letter-spacing: 0; font-size: 14px; color: var(--side-gold); }
+#studentLoading #joinLoadingText,#studentWaiting #studentIntegrationNotice,#studentWaiting #waitingGameName {
+  color: var(--side-text-muted); font-size: 14px; line-height: var(--side-leading-body);
+}
+#studentWaiting .waiting-companies { background: var(--side-panel); color: var(--side-gold); border-color: var(--side-line-control); }
+#studentWaiting #waitingBackToProfiles { min-height: 44px; border-color: var(--side-line-control); }
+#studentLobby .lobby-card { background: var(--side-panel); border-color: var(--side-line-control); box-shadow: var(--side-shadow-card); }
+#studentLobby .lobby-content { scrollbar-color: var(--side-line-control) var(--side-panel); }
+#studentLobby :is(.student-cycle-clock,.student-finance-mini>div,.student-result-breakdown>div) { background: var(--side-panel-inset); }
+#studentLobby :is(.student-cycle-clock span,.student-cycle-clock small,.student-finance-mini span,.student-finance-mini small) {
+  color: var(--side-text-muted); font-size: 12px; letter-spacing: 0; line-height: 1.5;
+}
+#studentLobby .student-finance-mini strong { font-size: 20px; font-variant-numeric: tabular-nums; }
+#studentLobby .student-result-breakdown span { color: var(--side-text-muted); font-size: 13px; line-height: 1.5; }
+#studentLobby .student-result-breakdown b { color: var(--side-text); font-variant-numeric: tabular-nums; }
+#studentLobby :is(.lobby-welcome,.student-event-impact) { color: var(--side-text-muted); font-size: 13px; line-height: var(--side-leading-body); }
+#studentLobby .lobby-actions { background: var(--side-panel); border-color: var(--side-line-control); }
+#studentLobby :is(.lobby-start,.tutorial-reopen-btn,.ghost-btn) { min-height: 44px; letter-spacing: 0; }
+#studentLobby .lobby-start { font-size: 15px; }
+#studentLobby .ghost-btn { border-color: var(--side-line-control); }
+#studentLobby :is(.financial-details,.student-cycle-report) summary {
+  min-height: 44px; padding: 12px; font-size: 13px; line-height: 1.5;
+}
+#studentLobby #enterDecisionsBtn:disabled {
+  opacity: 1; filter: none; background: var(--side-panel-raised); color: var(--side-text-muted);
+  border: 1px solid var(--side-line-control); box-shadow: none;
+}
+
+/* Información financiera de la oficina: sólo presentación, sin cambios 3D. */
+.student-office-finance { border-color: var(--side-line-control); background: var(--side-panel-inset); color: var(--side-text); }
+.student-office-finance .student-office-grid>div { background: var(--side-panel-raised); }
+.student-office-finance .student-office-grid span { color: var(--side-text-muted); font-size: 13px; }
+.student-office-finance .student-office-grid strong { color: var(--side-gold-light); font-size: 18px; font-variant-numeric: tabular-nums; }
+.student-office-finance summary { min-height: 44px; font-size: 14px; line-height: 1.5; color: var(--side-gold-light); }
+.student-office-finance .student-statement-grid { grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr)); }
+.student-office-finance .student-statement h4 { font-size: 14px; color: var(--side-blue); }
+.student-office-finance .student-statement>div { font-size: 12px; line-height: 1.5; flex-wrap: wrap; }
+.student-office-finance .student-statement strong { white-space: normal; }
+
+:is(#landing,#profiles,#studentLoading,#studentLobby,#modalRoot) :is(button,input,summary,[tabindex]):focus-visible,
+.student-office-finance summary:focus-visible { outline: 3px solid var(--side-gold); outline-offset: 3px; }
+
+@media (max-width:600px) {
+  #profiles .profile-main { gap: 12px; }
+  #profiles .profile-title { font-size: 18px; margin-bottom: 24px; }
+  #profiles .hero-eyebrow { font-size: 25px; }
+  #profiles .hero-cta { padding-inline: 16px; font-size: 15px; }
+  #modalRoot :is(#studentModal,#teacherLoginModal,#teacherRegisterModal) { padding: 22px 18px; }
+  #studentModal .student-join-form { gap: 16px; }
+  #studentLobby .student-finance-mini { grid-template-columns: 1fr; text-align: left; }
+  #studentLobby .student-finance-mini>div { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 12px; padding: 12px; }
+  #studentLobby .student-finance-mini strong { grid-column: 2; grid-row: 1 / 3; align-self: center; overflow-wrap: anywhere; }
+  #studentLobby .student-finance-mini small { grid-column: 1; }
+}
+@media (prefers-reduced-motion:reduce) {
+  :is(#landing,#profiles,#studentLoading,#studentLobby) *,
+  :is(#landing,#profiles,#studentLoading,#studentLobby) *::before,
+  :is(#landing,#profiles,#studentLoading,#studentLobby) *::after { animation: none !important; transition: none !important; }
+}
+.student-podium{width:min(880px,calc(100% - 32px));margin:16px auto;position:relative;z-index:2}.student-podium[hidden]{display:none}.student-podium li{margin:8px 0}.student-podium p{overflow-wrap:anywhere}

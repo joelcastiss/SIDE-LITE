@@ -1,0 +1,82 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/player_controller.gd" id="1_player"]
+
+[sub_resource type="CapsuleShape3D" id="PlayerShape"]
+radius = 0.34
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="PlayerBody"]
+radius = 0.31
+height = 1.7
+radial_segments = 16
+rings = 8
+
+[sub_resource type="SphereMesh" id="PlayerHead"]
+radius = 0.26
+height = 0.52
+radial_segments = 16
+rings = 8
+
+[sub_resource type="StandardMaterial3D" id="PlayerMaterial"]
+albedo_color = Color(0.18, 0.38, 0.55, 1)
+roughness = 0.8
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+floor_snap_length = 0.3
+safe_margin = 0.01
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("PlayerShape")
+
+[node name="AvoidanceAgent" type="NavigationAgent3D" parent="."]
+radius = 0.38
+height = 1.8
+avoidance_enabled = true
+avoidance_layers = 2
+avoidance_mask = 1
+avoidance_priority = 1.0
+neighbor_distance = 3.0
+max_neighbors = 8
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0.85, 0)
+mesh = SubResource("PlayerBody")
+material_override = SubResource("PlayerMaterial")
+
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.64, 0)
+mesh = SubResource("PlayerHead")
+material_override = SubResource("PlayerMaterial")
+
+[node name="CameraPivot" type="Node3D" parent="."]
+position = Vector3(0, 1.5, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
+rotation = Vector3(-0.35, 0, 0)
+spring_length = 7.0
+collision_mask = 1
+margin = 0.2
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
+fov = 65.0
+near = 0.15
+far = 280.0
+
+[node name="Controls" type="CanvasLayer" parent="."]
+
+[node name="Help" type="Label" parent="Controls"]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 710.0
+offset_bottom = 56.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+text = "WASD / flechas: caminar · Mayús: correr · Espacio: saltar\nBotón derecho: girar cámara · Tab: vista del barrio"

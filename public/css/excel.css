@@ -1,0 +1,24 @@
+#companySummaryMount:has(.excel-resultados),#excelProductionMount{min-width:0;width:100%;max-width:100%}
+.excel-editor,.excel-resultados{box-sizing:border-box;min-width:0;width:100%;max-width:100%;overflow-wrap:anywhere;color:var(--side-text);font-family:var(--side-font);line-height:var(--side-leading-body);margin-block:var(--side-space-6);padding:var(--side-space-panel);border:1px solid var(--side-line);border-radius:var(--side-radius-card);background:var(--side-decision-panel)}
+.excel-editor header{display:flex;align-items:center;gap:var(--side-space-4)}
+.excel-editor header img{width:44px;height:44px}.excel-editor h2,.excel-resultados h3{margin:0;font-size:var(--side-text-lg);color:var(--side-text-bright)}
+.excel-editor p,.excel-resultados p{max-width:78ch}.excel-help{font-size:var(--side-text-sm);color:var(--side-text-muted)}
+.excel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:var(--side-space-4);margin-block:var(--side-space-4)}
+.excel-editor label{display:flex;flex-direction:column;gap:var(--side-space-2);font-size:var(--side-text-sm);font-weight:var(--side-weight-label)}
+.excel-editor label.excel-toggle{display:flex;flex-direction:row;align-items:center;gap:var(--side-space-3);padding-block:var(--side-space-3)}
+.excel-editor input,.excel-editor select{min-height:var(--side-touch-target);width:100%;min-width:0;padding:var(--side-space-2);border:1px solid var(--side-line-control);border-radius:var(--side-radius-sm);background:var(--side-panel-inset);color:var(--side-text);font:inherit}
+.excel-editor input[type=checkbox]{width:22px;height:22px;min-height:22px;accent-color:var(--side-gold)}
+.excel-editor :is(input,select,button,summary):focus-visible{outline:var(--side-focus-width) solid var(--side-gold);outline-offset:var(--side-focus-offset)}
+.excel-editor :disabled{opacity:.62}.excel-editor details,.excel-resultados details{border-top:1px solid var(--side-line);padding-block:var(--side-space-4)}
+.excel-editor summary,.excel-resultados summary{cursor:pointer;font-weight:var(--side-weight-label);min-height:var(--side-touch-target)}
+.excel-lote{border:1px solid var(--side-line-control);border-radius:var(--side-radius-production);padding:var(--side-space-4);margin-block:var(--side-space-5);min-width:0}
+.excel-lote legend{padding-inline:var(--side-space-2);font-weight:var(--side-weight-action);color:var(--side-gold)}
+.excel-feedback{border-left:3px solid var(--side-blue);padding-left:var(--side-space-3);font-size:var(--side-text-sm)}
+.excel-actions{display:flex;gap:var(--side-space-3);flex-wrap:wrap;margin-top:var(--side-space-5)}
+.excel-table-wrap{overflow-x:auto;max-width:100%;margin-block:var(--side-space-4)}
+.excel-table-wrap table{width:100%;border-collapse:collapse;font-size:var(--side-text-sm)}
+.excel-table-wrap :is(th,td){padding:var(--side-space-3);border-bottom:1px solid var(--side-line);text-align:left;white-space:nowrap}.excel-table-wrap input{min-width:72px}.excel-table-wrap caption{text-align:left;font-weight:var(--side-weight-label);padding-bottom:var(--side-space-3)}
+.excel-puntajes{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--side-space-4);margin-block:var(--side-space-4)}
+.excel-puntajes>div{border-left:3px solid var(--side-gold);padding-left:var(--side-space-3);display:flex;flex-direction:column}.excel-puntajes strong{font-size:var(--side-text-xl);font-variant-numeric:tabular-nums}.excel-puntajes small{color:var(--side-text-muted)}
+.excel-mensajes{padding-left:var(--side-space-5)}.excel-mensajes li{margin-block:var(--side-space-3)}
+@media(max-width:600px){.excel-editor,.excel-resultados{padding:var(--side-space-3)}.excel-editor header{align-items:flex-start}.excel-actions>*{flex:1 1 100%}}

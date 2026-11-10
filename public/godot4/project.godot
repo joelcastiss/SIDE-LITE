@@ -1,0 +1,28 @@
+config_version=5
+
+[application]
+
+config/name="SIDE Ciudad de Bolsos"
+run/main_scene="res://scenes/Main.tscn"
+config/features=PackedStringArray("4.4", "GL Compatibility")
+
+[physics]
+
+3d/physics_engine="GodotPhysics3D"
+3d/default_gravity=9.8
+common/physics_ticks_per_second=60
+common/max_physics_steps_per_frame=8
+common/physics_interpolation=true
+
+[layer_names]
+
+3d_physics/layer_1="Mundo"
+3d_physics/layer_2="NPC"
+3d_physics/layer_3="Jugador"
+3d_physics/layer_4="Triggers"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false

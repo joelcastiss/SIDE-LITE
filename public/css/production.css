@@ -1,0 +1,772 @@
+/* SIDE · Decisions shell and production presentation. Business rules live in the models. */
+#decisionMenu {
+  --ui-canvas: var(--side-decision-canvas, #061321);
+  --ui-panel: var(--side-decision-panel, #091c2f);
+  --ui-raised: var(--side-decision-raised, #0d263d);
+  --ui-inset: var(--side-panel-inset, #071726);
+  --ui-line: var(--side-line, #294358);
+  --ui-text: var(--side-text, #eef5fa);
+  --ui-muted: var(--side-text-muted, #a3b8c9);
+  --ui-yellow: var(--side-gold, #ffd329);
+  --ui-green: var(--side-success, #8be6b2);
+  --ui-blue: var(--side-blue, #84cfff);
+  --ui-radius: var(--side-radius-production, 14px);
+  --ui-space: var(--side-space-panel, clamp(16px, 2vw, 24px));
+  --ui-shadow: var(--side-shadow-soft, 0 8px 24px #00000020);
+  height: auto;
+  min-height: 100dvh;
+  max-height: none;
+  overflow: visible;
+  background: var(--ui-canvas);
+  color: var(--ui-text);
+  isolation: isolate;
+}
+#decisionMenu *, #decisionMenu *::before, #decisionMenu *::after { box-sizing: border-box; }
+#decisionMenu > .decision-bg, #decisionMenu > .game-particles { display: none; }
+#decisionMenu .decision-topbar, #decisionMenu .decision-topbar.compact {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 44px minmax(140px, 1fr) minmax(150px, 210px) 130px auto 160px;
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 16px;
+  padding: var(--ui-space);
+  background: var(--ui-canvas);
+  border-bottom: 1px solid var(--ui-line);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+#decisionMenu .decision-topbar > * { min-width: 0; max-width: 100%; }
+#decisionMenu .game-title-mark { width: auto; gap: 10px; }
+#decisionMenu .game-title-mark strong { font-size: clamp(16px, 1.8vw, 23px); }
+#decisionMenu .game-title-mark small { overflow-wrap: anywhere; }
+#decisionMenu .cash-hud, #decisionMenu .decision-topbar.compact .cash-hud {
+  grid-column: auto;
+  grid-row: auto;
+  height: auto;
+  min-height: 0;
+  padding: 12px;
+  width: 100%;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  background: var(--ui-panel);
+}
+#decisionMenu .cash-hud strong { font-size: 22px; overflow-wrap: anywhere; }
+#decisionMenu .cash-hud small { font-size: 11px; line-height: 1.4; }
+#decisionMenu .student-top-timer { display: block; grid-column: auto; grid-row: auto; width: auto; height: auto; padding: 12px; background: var(--ui-panel); }
+#decisionMenu .mission-meter { display: block; position: static; width: auto; grid-column: auto; grid-row: auto; }
+#decisionMenu .top-submit-all { display: block; min-height: 44px; width: 100%; margin: 0; white-space: normal; }
+#decisionMenu .tabbed-stage {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 0 var(--ui-space) var(--ui-space);
+  background: var(--ui-canvas);
+}
+#decisionMenu .decision-window {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  max-height: none;
+  min-width: 0;
+  overflow: visible;
+  background: var(--ui-panel);
+  border: 1px solid var(--ui-line);
+  border-top: 0;
+  border-radius: 0 0 var(--ui-radius) var(--ui-radius);
+  box-shadow: var(--ui-shadow);
+}
+#decisionMenu .decision-tabs,
+#decisionMenu .decision-topbar.compact ~ .decision-game-stage .decision-tabs {
+  position: relative;
+  top: auto;
+  z-index: auto;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: stretch;
+  overflow: visible;
+  gap: 8px;
+  margin: 0;
+  padding: 12px var(--ui-space) 0;
+  min-height: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--ui-line);
+  background: var(--ui-panel);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+#decisionMenu .decision-tab {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  align-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 78px;
+  padding: 12px 10px;
+  background: var(--ui-inset);
+  text-align: left;
+  letter-spacing: 0;
+  font-size: 13px;
+}
+#decisionMenu .decision-tab img { width: 24px; height: 24px; }
+#decisionMenu .decision-tab.active { background: #123959; }
+#decisionMenu .decision-tab:hover { background: #14324b; }
+#decisionMenu .tab-label { line-height: 1.35; overflow-wrap: anywhere; }
+#decisionMenu .decision-tab .tab-status {
+  grid-column: 1 / -1;
+  justify-self: start;
+  position: static;
+  margin: 0;
+  padding: 4px 6px;
+  border: 1px solid #39664e;
+  border-radius: 6px;
+  background: #123427;
+  color: #b9fbd3;
+  font-size: 11px;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 1;
+}
+#decisionMenu .decision-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space);
+  padding: 0 var(--ui-space) var(--ui-space);
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  background: var(--ui-panel);
+  animation: none;
+}
+#decisionMenu .sticky-section-head,
+#decisionMenu .decision-topbar.compact ~ .decision-game-stage .sticky-section-head {
+  position: relative;
+  z-index: auto;
+  top: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, auto);
+  align-items: center;
+  gap: var(--ui-space);
+  margin: 0;
+  padding: var(--ui-space) 0;
+  background: var(--ui-panel);
+  border-bottom: 1px solid var(--ui-line);
+  backdrop-filter: none;
+}
+#decisionMenu .detail-heading { min-width: 0; align-items: flex-start; }
+#decisionMenu .detail-heading > img { flex: 0 0 44px; width: 44px; height: 44px; }
+#decisionMenu .detail-heading > div { min-width: 0; }
+#decisionMenu .detail-heading h1 { font-size: clamp(22px, 2.5vw, 30px); }
+#decisionMenu .detail-heading p { display: block; max-width: 70ch; line-height: 1.55; font-size: 13px; color: var(--ui-muted); }
+#decisionMenu .decision-list { gap: var(--ui-space); min-width: 0; height: auto; max-height: none; overflow: visible; }
+#decisionMenu .decision-row { padding: var(--ui-space); background: var(--ui-inset); border-radius: var(--ui-radius); box-shadow: none; min-width: 0; }
+#decisionMenu .decision-row.locked { opacity: 1; }
+#decisionMenu .decision-row-head { gap: 16px; }
+#decisionMenu .decision-row-head > div { min-width: 0; }
+#decisionMenu .decision-row-head p { color: var(--ui-muted); line-height: 1.55; }
+#decisionMenu .event-clue { margin: 0; background: var(--ui-raised); border-radius: var(--ui-radius); min-width: 0; }
+#decisionMenu .section-save-bar {
+  position: static;
+  z-index: auto;
+  inset: auto;
+  transform: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--ui-space);
+  width: 100%;
+  margin: 0;
+  padding: var(--ui-space);
+  background: var(--ui-raised);
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+#decisionMenu .section-save-bar > div:first-child { display: grid; gap: 6px; }
+#decisionMenu .section-save-bar > div:first-child > span,
+#decisionMenu .section-save-bar > div:first-child > small { font-size: 11px; line-height: 1.5; letter-spacing: 0; }
+#decisionMenu .decision-action-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; gap: 12px; width: 100%; }
+#decisionMenu .decision-action-pair button { width: 100%; min-width: 0; min-height: 64px; height: auto; gap: 5px; padding: 12px; }
+#decisionMenu .decision-action-pair button strong { font-size: 12px; line-height: 1.35; }
+#decisionMenu .decision-action-pair button small { font-size: 11px; line-height: 1.35; margin: 0; }
+#decisionMenu button:focus-visible, #decisionMenu input:focus-visible { outline: 2px solid var(--ui-yellow); outline-offset: 3px; }
+#decisionMenu .production-calculator { gap: 16px; }
+#decisionMenu .production-calculator > header { padding: 18px; background: var(--ui-raised); border-color: var(--ui-line); }
+#decisionMenu .production-total { background: var(--ui-inset); border: 1px solid var(--ui-line); }
+#decisionMenu .mold-production-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 16px; }
+#decisionMenu .mold-production-card { height: 100%; gap: 14px; padding: 18px; background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: var(--ui-radius); }
+#decisionMenu .mold-production-card.is-available { border-color: #468268; }
+#decisionMenu .mold-production-title { flex-direction: column; gap: 8px; }
+#decisionMenu .mold-production-title > b { max-width: none; text-align: left; min-height: 2.6em; font-size: 11px; line-height: 1.3; }
+#decisionMenu .mold-production-card > label { line-height: 1.5; font-size: 13px; }
+#decisionMenu .mold-target-control { grid-template-columns: 48px minmax(0, 1fr) 48px; }
+#decisionMenu .mold-target-control button, #decisionMenu .mold-target-control input { height: 44px; }
+#decisionMenu .mold-suggestion { min-height: 44px; font-size: 12px; line-height: 1.4; }
+#decisionMenu .mold-suggestion:hover:enabled { background: #3a3219; }
+#decisionMenu .mold-requirements { padding: 12px; gap: 6px; background: var(--ui-inset); }
+#decisionMenu .mold-requirements span { font-size: 10px; line-height: 1.5; }
+#decisionMenu .mold-requirements b { font-size: 12px; }
+#decisionMenu .production-calculator > footer { padding: 14px; background: var(--ui-raised); line-height: 1.5; }
+#decisionMenu .production-dop-mount { grid-column: 1 / -1; width: 100%; min-width: 0; }
+
+/* DOP cards use normal grid flow. The only absolute layer is the measured SVG. */
+.production-dop.pd-panel { display: grid; gap: 20px; min-width: 0; width: 100%; margin: 0; padding: var(--ui-space); background: var(--ui-inset); border: 1px solid var(--ui-line); border-radius: var(--ui-radius); }
+.pd-panel p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--ui-muted); overflow-wrap: anywhere; }
+.pd-panel h3, .pd-panel h4 { margin: 0; line-height: 1.35; color: var(--ui-text); }
+.pd-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.pd-heading > div:first-child { flex: 1 1 320px; min-width: 0; display: grid; gap: 8px; }
+.pd-heading h3 { font-size: 22px; }
+.pd-eyebrow { display: block; color: var(--ui-blue); font-size: 11px; line-height: 1.5; font-weight: 800; letter-spacing: .06em; }
+.pd-legend { display: flex; flex-wrap: wrap; gap: 12px; }
+.pd-legend > span { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ui-muted); }
+.pd-symbol { display: inline-grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border: 2px solid var(--ui-yellow); color: var(--ui-yellow); font-style: normal; }
+.pd-operation { border-radius: 50%; }
+.pd-combined > span { display: grid; place-items: center; width: 80%; height: 80%; border: 1px solid currentColor; border-radius: 50%; }
+.pd-legend .pd-symbol { width: 20px; height: 20px; flex-basis: 20px; }
+.pd-legend .pd-combined { background: radial-gradient(circle, transparent 5px, var(--ui-yellow) 5px, var(--ui-yellow) 6px, transparent 6px); }
+.pd-plan { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding: 16px; border: 1px solid var(--ui-line); border-radius: var(--ui-radius); background: var(--ui-panel); }
+.pd-plan > div:first-child { flex: 1 1 280px; display: grid; gap: 6px; min-width: 0; }
+.pd-plan > div:last-child { display: grid; gap: 6px; }
+.pd-plan strong { color: var(--ui-yellow); font-size: 24px; }
+.pd-graph {
+  --pd-stacked: 0;
+  --pd-wire-gap: 32px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: 'accessories leather' 'classification cut' 'preparation assembly' '. finish' 'result result';
+  gap: var(--pd-wire-gap) clamp(24px, 4vw, 64px);
+  width: min(100%, 1000px);
+  margin-inline: auto;
+}
+.pd-connectors { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
+.pd-connectors path { fill: none; stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.pd-main-path { stroke: var(--ui-blue); }
+.pd-branch-path { stroke: var(--ui-yellow); }
+.pd-node { position: relative; z-index: 1; display: flex; flex-direction: column; align-self: stretch; align-items: flex-start; gap: 10px; min-width: 0; padding: 18px; border: 1px solid var(--ui-line); border-radius: var(--ui-radius); background: var(--ui-panel); }
+.pd-node-title { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; }
+.pd-node h4 { font-size: 16px; overflow-wrap: anywhere; }
+.pd-value { color: var(--ui-green); font-size: 16px; line-height: 1.4; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.pd-state { padding: 4px 8px; border: 1px solid #3b6158; background: #15352e; border-radius: 6px; font-size: 11px; line-height: 1.4; color: #b5e7ce; }
+.pd-leather { grid-area: leather; border-color: #497c9b; }
+.pd-accessories { grid-area: accessories; border-color: #8c7940; }
+.pd-classification { grid-area: classification; }
+.pd-preparation { grid-area: preparation; }
+.pd-cut { grid-area: cut; }
+.pd-assembly { grid-area: assembly; }
+.pd-finish { grid-area: finish; }
+.pd-result { grid-area: result; display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); align-items: stretch; gap: 0; padding: 0; border-color: #43765a; }
+.pd-yield, .pd-output { display: grid; align-content: start; gap: 10px; min-width: 0; padding: 20px; }
+.pd-yield { background: #292718; border-radius: var(--ui-radius) 0 0 var(--ui-radius); }
+.pd-yield .pd-eyebrow, .pd-yield > strong { color: var(--ui-yellow); }
+.pd-yield > strong { font-size: clamp(30px, 4vw, 44px); font-variant-numeric: tabular-nums; }
+.pd-output { background: #123d2c; border-radius: 0 var(--ui-radius) var(--ui-radius) 0; }
+.pd-output .pd-eyebrow { color: #b1f5cb; }
+.pd-output > strong { font-size: clamp(20px, 2.5vw, 28px); line-height: 1.35; overflow-wrap: anywhere; }
+.pd-output p { color: #b9d2c5; }
+.pd-mix { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.pd-mix > span { display: grid; gap: 3px; padding: 8px; background: #0d2c20; border-radius: 8px; font-size: 12px; }
+.pd-footer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 16px; border-top: 1px solid var(--ui-line); padding-top: 20px; }
+.pd-footer table { width: 100%; border-collapse: collapse; color: var(--ui-text); font-size: 12px; }
+.pd-footer caption { padding-bottom: 10px; color: var(--ui-muted); text-align: left; font-size: 13px; font-weight: 700; }
+.pd-footer th, .pd-footer td { text-align: left; border: 1px solid var(--ui-line); padding: 10px; }
+.pd-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.pd-metrics > div { min-width: 0; display: grid; align-content: center; gap: 8px; padding: 14px; background: var(--ui-panel); border: 1px solid var(--ui-line); border-radius: var(--ui-radius); }
+.pd-metrics span { font-size: 10px; line-height: 1.5; color: var(--ui-muted); }
+.pd-metrics strong { font-size: 19px; line-height: 1.4; color: var(--ui-yellow); overflow-wrap: anywhere; }
+
+@media (max-width: 1180px) {
+  #decisionMenu .decision-topbar, #decisionMenu .decision-topbar.compact { grid-template-columns: 44px minmax(0, 1fr) minmax(160px, 220px); }
+  #decisionMenu .student-top-timer { grid-column: 2; }
+  #decisionMenu .top-submit-all { grid-column: 3; }
+  #decisionMenu .mission-meter { grid-column: 2 / -1; }
+  #decisionMenu .decision-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #decisionMenu .mold-production-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #decisionMenu .section-save-bar { grid-template-columns: 1fr; }
+  .pd-footer { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  #decisionMenu .decision-topbar, #decisionMenu .decision-topbar.compact { grid-template-columns: 40px minmax(0, 1fr); gap: 12px; }
+  #decisionMenu .cash-hud, #decisionMenu .decision-topbar.compact .cash-hud { grid-column: 1 / -1; }
+  #decisionMenu .student-top-timer { grid-column: 1 / -1; }
+  #decisionMenu .top-submit-all { grid-column: 1 / -1; }
+  #decisionMenu .mission-meter { grid-column: 1 / -1; }
+  #decisionMenu .tabbed-stage { padding-inline: 0; }
+  #decisionMenu .decision-window { border-inline: 0; }
+  #decisionMenu .decision-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  #decisionMenu .decision-tab { min-height: 72px; font-size: 12px; }
+  #decisionMenu .sticky-section-head { grid-template-columns: 1fr; }
+  #decisionMenu .mold-production-grid { grid-template-columns: 1fr; }
+  #decisionMenu .production-calculator > header { flex-direction: column; padding: 14px; }
+  #decisionMenu .production-total { min-width: 0; width: 100%; text-align: left; }
+  #decisionMenu .decision-action-pair { grid-template-columns: 1fr; }
+  #decisionMenu .row-cost { white-space: normal; }
+  .pd-graph { --pd-stacked: 1; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'leather' 'cut' 'accessories' 'classification' 'preparation' 'assembly' 'finish' 'result'; padding-left: var(--pd-wire-gap); }
+  .pd-node { padding: 14px; }
+  .pd-result { grid-template-columns: 1fr; padding: 0; }
+  .pd-yield { border-radius: var(--ui-radius) var(--ui-radius) 0 0; }
+  .pd-output { border-radius: 0 0 var(--ui-radius) var(--ui-radius); }
+  .pd-metrics { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #decisionMenu * { scroll-behavior: auto; }
+}
+
+/* The page scrolls beneath a single, compact decision status bar. */
+body:has(#decisionMenu:not(.hidden)) { overflow-x: clip; }
+#decisionMenu { scroll-margin-top: var(--decision-top-height, 110px); }
+#decisionMenu .decision-row { scroll-margin-top: calc(var(--decision-top-height, 110px) + 16px); }
+@media (max-width: 1180px) {
+  #decisionMenu .decision-topbar, #decisionMenu .decision-topbar.compact {
+    grid-template-columns: 40px minmax(0, 1fr) 120px;
+    gap: 6px 10px;
+    padding: 8px 12px;
+  }
+  #decisionMenu .game-back-btn { grid-column: 1; grid-row: 1; width: 40px; height: 40px; padding: 8px; }
+  #decisionMenu .game-title-mark { grid-column: 2 / -1; grid-row: 1; }
+  #decisionMenu .game-title-mark small { display: block; font-size: 9px; }
+  #decisionMenu .cash-hud, #decisionMenu .decision-topbar.compact .cash-hud { grid-column: 1 / 3; grid-row: 2; padding: 5px 10px; }
+  #decisionMenu .cash-hud strong { font-size: 19px; }
+  #decisionMenu .cash-hud small { display: none; }
+  #decisionMenu .student-top-timer { grid-column: 3; grid-row: 2; padding: 6px; }
+  #decisionMenu .student-top-timer strong { font-size: 17px; }
+  #decisionMenu .student-top-timer span { font-size: 8px; }
+  #decisionMenu .top-submit-all { grid-column: 3; grid-row: 3; min-height: 30px; padding: 5px; font-size: 9px; }
+  #decisionMenu .mission-meter { display: block; grid-column: 1 / 3; grid-row: 3; }
+  #decisionMenu .mission-label { font-size: 9px; margin-bottom: 3px; }
+}
+
+/* Tablet SIDE: each item keeps its cost and rule together; drafts are saved per section. */
+#decisionMenu { font-family: var(--side-font, Montserrat, Arial, sans-serif); }
+#decisionMenu .cash-hud { border-color: var(--side-gold-edge); box-shadow: none; }
+#decisionMenu .cash-hud::before { display: none; }
+#decisionMenu .cash-hud span,
+#decisionMenu .cash-hud small,
+#decisionMenu .student-top-timer span,
+#decisionMenu .mission-label{ color: var(--ui-muted); letter-spacing: 0; }
+#decisionMenu .cash-hud strong { color: var(--ui-yellow); font-variant-numeric: tabular-nums; }
+#decisionMenu .cash-hud strong.danger{ color: var(--side-danger); }
+#decisionMenu .decision-tab { border: 1px solid var(--side-line-control); color: var(--ui-text); border-radius: var(--side-radius-control); transition: border-color var(--side-transition); }
+#decisionMenu .decision-tab.active { border-color: var(--ui-yellow); background: var(--ui-raised); box-shadow: inset 0 -3px var(--ui-yellow); }
+#decisionMenu .decision-tab.section-sent .tab-status { color: var(--ui-green); background: var(--ui-inset); border-color: var(--side-line-control); }
+#decisionMenu .decision-tab .tab-status { white-space: normal; font-size: 12px; }
+#decisionMenu .detail-heading span { color: var(--ui-blue); letter-spacing: 0; }
+#decisionMenu .row-state { display: inline-block; margin-bottom: 6px; color: var(--ui-blue); font-size: 12px; line-height: 1.5; letter-spacing: 0; }
+#decisionMenu .optional-row .row-state { color: var(--ui-muted); }
+#decisionMenu .saved .row-state { color: var(--ui-green); }
+#decisionMenu .locked .row-state { color: var(--ui-yellow); }
+#decisionMenu .decision-row.required-row { border-left: 3px solid var(--ui-yellow); }
+#decisionMenu .decision-row-head h3 { font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+#decisionMenu .row-cost { color: var(--ui-yellow); font-size: 14px; line-height: 1.5; font-variant-numeric: tabular-nums; white-space: normal; }
+#decisionMenu .choice-pill { background: var(--ui-panel); border-color: var(--side-line-control); color: var(--ui-text); }
+#decisionMenu .choice-pill:hover { transform: none; border-color: var(--ui-yellow); }
+#decisionMenu .choice-pill.selected { border-color: var(--ui-yellow); background: var(--ui-raised); box-shadow: none; }
+#decisionMenu .choice-pill:focus-within { outline: 3px solid var(--ui-yellow); outline-offset: 3px; }
+#decisionMenu .choice-pill p,
+#decisionMenu .choice-pill small,
+#decisionMenu .micro-caption,
+#decisionMenu .quantity-copy p,
+#decisionMenu .requirements span,
+#decisionMenu .requirements small,
+#decisionMenu .mold-requirements span,
+#decisionMenu .mold-production-title > b,
+#decisionMenu .production-calculator > footer small { color: var(--ui-muted); font-size: 13px; line-height: 1.55; }
+#decisionMenu .choice-pill em,
+#decisionMenu .quantity-copy small { color: var(--ui-yellow); }
+#decisionMenu .stepper button,
+#decisionMenu .stepper input,
+#decisionMenu .number-decision button,
+#decisionMenu .number-decision input,
+#decisionMenu .loan-control input[type=number] { min-height: 44px; height: auto; border-color: var(--side-line-control); color: var(--ui-text); font-size: 16px; }
+#decisionMenu .stepper button { min-width: 44px; width: 44px; }
+#decisionMenu .loan-control input[type=range] { min-height: 44px; }
+#decisionMenu .game-back-btn,
+#decisionMenu .top-submit-all { min-width: 44px; min-height: 44px; }
+#decisionMenu .section-save-bar > div:first-child > span,
+#decisionMenu .section-save-bar > div:first-child > small,
+#decisionMenu .decision-action-pair button small { color: var(--ui-muted); font-size: 13px; }
+#decisionMenu .decision-action-pair button strong { font-size: 14px; }
+#decisionMenu .decision-action-pair .submit-decisions-btn small { color: var(--side-gold-ink); opacity: 1; }
+#decisionMenu button:focus-visible,
+#decisionMenu input:focus-visible { outline: 3px solid var(--ui-yellow); outline-offset: 3px; }
+#decisionMenu button:disabled { cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) {
+  #decisionMenu .decision-tab,
+  #decisionMenu .choice-pill { transition: none; }
+}
+
+/* The status bar, section tabs and section heading form one stationary stack.
+   Only the form region below them owns vertical scrolling. */
+body:has(#decisionMenu:not(.hidden)) { overflow: hidden; }
+#decisionMenu {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+#decisionMenu .decision-topbar,
+#decisionMenu .decision-topbar.compact {
+  position: relative;
+  flex: 0 0 auto;
+  top: auto;
+  z-index: 3;
+}
+#decisionMenu .tabbed-stage {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+}
+#decisionMenu .decision-window {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+#decisionMenu .decision-tabs,
+#decisionMenu .decision-topbar.compact ~ .decision-game-stage .decision-tabs {
+  flex: 0 0 auto;
+  position: relative;
+  top: auto;
+  z-index: 2;
+}
+#decisionMenu .decision-detail {
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+#decisionMenu .sticky-section-head,
+#decisionMenu .decision-topbar.compact ~ .decision-game-stage .sticky-section-head {
+  position: relative;
+  flex: 0 0 auto;
+  top: auto;
+  z-index: 1;
+  background: var(--ui-panel);
+}
+#decisionMenu #decisionFormScroll {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  gap: var(--ui-space);
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  scroll-padding: 12px 0;
+  padding-bottom: var(--ui-space);
+}
+#decisionMenu #decisionFormScroll > * { flex: 0 0 auto; }
+#decisionMenu .decision-row { scroll-margin-top: 12px; }
+#decisionMenu #decisionFormScroll:focus-visible {
+  outline: 2px solid var(--ui-yellow);
+  outline-offset: -2px;
+}
+@media (max-width: 1180px) {
+  #decisionMenu .cash-hud small,
+  #decisionMenu .decision-topbar.compact .cash-hud small {
+    display: block;
+    font-size: 9px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  #decisionMenu .decision-tabs,
+  #decisionMenu .decision-topbar.compact ~ .decision-game-stage .decision-tabs {
+    display: flex;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 6px;
+    padding: 8px 10px;
+    scrollbar-width: thin;
+    scroll-padding-inline: 10px;
+  }
+  #decisionMenu .decision-tab {
+    flex: 0 0 auto;
+    min-width: 124px;
+    max-width: 185px;
+    min-height: 48px;
+    padding: 8px 10px;
+    font-size: 12px;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 4px 7px;
+  }
+  #decisionMenu .decision-tab img { width: 20px; height: 20px; }
+  #decisionMenu .decision-tab .tab-status { font-size: 11px; min-height: 24px; padding: 4px 6px; }
+  #decisionMenu .sticky-section-head {
+    grid-template-columns: minmax(0, 1fr) minmax(110px, auto);
+    gap: 10px;
+    padding-block: 10px;
+  }
+  #decisionMenu .detail-heading > img { flex-basis: 32px; width: 32px; height: 32px; }
+  #decisionMenu .detail-heading { gap: 8px; }
+  #decisionMenu .detail-heading h1 { font-size: 20px; line-height: 1.2; }
+  #decisionMenu .detail-heading p { display: block; font-size: 11px; line-height: 1.35; }
+}
+@media (max-width: 700px) {
+  #decisionMenu .detail-heading h1 { font-size: 17px; }
+  #decisionMenu .detail-heading span { font-size: 9px; }
+  #decisionMenu .sticky-section-head { gap: 8px; grid-template-columns: minmax(0, 1fr) 110px; }
+  #decisionMenu .tabbed-stage { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  #decisionMenu .decision-detail { gap: 10px; padding-inline: 10px; }
+  #decisionMenu .cash-hud span { font-size: 10px; }
+  #decisionMenu .mission-label { margin-bottom: 0; }
+  #decisionMenu .mission-track { margin-top: 3px; }
+}
+@media (max-height: 500px) and (max-width: 1180px) {
+  #decisionMenu .decision-topbar,
+  #decisionMenu .decision-topbar.compact {
+    padding-block: 5px;
+    gap: 4px 10px;
+  }
+  #decisionMenu .game-title-mark small { display: block; font-size: 9px; line-height: 1.2; }
+  #decisionMenu .cash-hud span { font-size: 9px; }
+  #decisionMenu .cash-hud strong { font-size: 17px; margin: 0; }
+  #decisionMenu .cash-hud,
+  #decisionMenu .decision-topbar.compact .cash-hud,
+  #decisionMenu .student-top-timer { padding-block: 3px; }
+  #decisionMenu .game-back-btn { height: 34px; min-height: 34px; }
+  #decisionMenu .game-title-mark strong { font-size: 16px; }
+  #decisionMenu .top-submit-all { min-height: 30px; }
+  #decisionMenu .decision-tabs { padding-block: 5px; }
+  #decisionMenu .decision-tab { min-height: 40px; padding-block: 5px; }
+  #decisionMenu .sticky-section-head { padding-block: 6px; }
+  #decisionMenu .detail-heading h1 { font-size: 17px; }
+  #decisionMenu .detail-heading span { font-size: 9px; }
+  #decisionMenu .tabbed-stage { padding-bottom: 5px; }
+  #decisionMenu .decision-detail { gap: 8px; }
+}
+@media (max-height: 500px) and (min-width: 600px) and (max-width: 1180px) {
+  #decisionMenu #decisionTopbar,
+  #decisionMenu #decisionTopbar.compact {
+    grid-template-columns: 44px minmax(0, 1fr) 120px 140px;
+    grid-template-rows: auto auto;
+  }
+  #decisionMenu #exitDecisions,
+  #decisionMenu #exitDecisions.returns-to-world {
+    grid-column: 1;
+    grid-row: 1;
+    width: 44px;
+    min-height: 40px;
+  }
+  #decisionMenu #exitDecisions #decisionReturnLabel { display: none; }
+  #decisionMenu #decisionTopbar .game-title-mark { grid-column: 2; grid-row: 1; }
+  #decisionMenu #decisionTopbar .student-top-timer { grid-column: 3; grid-row: 1; }
+  #decisionMenu #decisionTopbar .top-submit-all { grid-column: 4; grid-row: 1; min-height: 40px; }
+  #decisionMenu #decisionTopbar .cash-hud { grid-column: 1 / 3; grid-row: 2; }
+  #decisionMenu #decisionTopbar .mission-meter { grid-column: 3 / 5; grid-row: 2; }
+}
+/* Three independent zones keep cycle figures readable at every viewport.
+   Reset legacy grid placement on nested children when the shell compacts. */
+#decisionMenu #decisionTopbar,
+#decisionMenu #decisionTopbar.compact {
+  display: grid;
+  grid-template-columns: minmax(210px, 1fr) minmax(340px, 420px) minmax(290px, 1fr);
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+}
+#decisionMenu #decisionTopbar > div { min-width: 0; grid-column: auto; grid-row: auto; }
+#decisionMenu #decisionTopbar .decision-topbar-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#decisionMenu #decisionTopbar #exitDecisions {
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 10px;
+}
+#decisionMenu #decisionTopbar #decisionReturnLabel { display: none; }
+#decisionMenu #decisionTopbar .game-title-mark { min-width: 0; gap: 8px; }
+#decisionMenu #decisionTopbar .game-title-mark strong { font-size: 17px; letter-spacing: .3px; }
+#decisionMenu #decisionTopbar .game-title-mark small { display: block; font-size: 11px; line-height: 1.35; letter-spacing: 0; }
+#decisionMenu #decisionTopbar .decision-topbar-metrics {
+  display: grid;
+  grid-template-columns: minmax(175px, 1.35fr) minmax(145px, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+#decisionMenu #decisionTopbar .cash-hud,
+#decisionMenu #decisionTopbar .student-top-timer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  grid-column: auto;
+  grid-row: auto;
+  width: auto;
+  min-width: 0;
+  min-height: 70px;
+  height: auto;
+  padding: 9px 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-panel);
+}
+#decisionMenu #decisionTopbar .cash-hud > span,
+#decisionMenu #decisionTopbar .student-top-timer > span { font-size: 10px; line-height: 1.3; letter-spacing: .3px; }
+#decisionMenu #decisionTopbar .cash-hud strong { font-size: 21px; margin-block: 3px; overflow-wrap: normal; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#decisionMenu #decisionTopbar .cash-hud small { display: block; font-size: 10px; line-height: 1.3; }
+#decisionMenu #decisionTopbar #decisionRoundTimer {
+  display: block;
+  min-width: 8ch;
+  width: max-content;
+  max-width: none;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+  font-size: 22px;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+#decisionMenu #decisionTopbar .decision-topbar-actions { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(130px, auto); align-items: center; justify-self: end; width: min(100%, 350px); gap: 16px; }
+#decisionMenu #decisionTopbar .mission-meter { position: static; display: block; grid-column: auto; grid-row: auto; width: 100%; min-width: 0; }
+#decisionMenu #decisionTopbar .mission-label { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; justify-content: space-between; margin-bottom: 7px; font-size: 10px; letter-spacing: .3px; }
+#decisionMenu #decisionTopbar .mission-label strong { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#decisionMenu #decisionTopbar .mission-track { width: 100%; height: 8px; margin: 0; background: #1b354c; border-color: #42617a; }
+#decisionMenu #decisionTopbar #decisionProgressHint { display: block; margin-top: 5px; color: var(--ui-muted); font-size: 10px; line-height: 1.3; }
+#decisionMenu #decisionTopbar .top-submit-all { grid-column: auto; grid-row: auto; min-width: 130px; min-height: 44px; padding: 10px 14px; font-size: 12px; white-space: nowrap; }
+@media (max-width: 1080px) {
+  #decisionMenu #decisionTopbar,
+  #decisionMenu #decisionTopbar.compact { grid-template-columns: minmax(180px, 1fr) minmax(290px, 350px); gap: 12px 20px; padding: 10px 16px; }
+  #decisionMenu #decisionTopbar .decision-topbar-metrics { grid-column: 1 / -1; grid-row: 2; grid-template-columns: minmax(175px, 1fr) minmax(145px, 1fr); }
+  #decisionMenu #decisionTopbar .decision-topbar-actions { grid-column: 2; grid-row: 1; }
+  #decisionMenu #decisionTopbar .cash-hud,
+  #decisionMenu #decisionTopbar .student-top-timer { min-height: 64px; }
+}
+@media (max-width: 600px) {
+  #decisionMenu #decisionTopbar,
+  #decisionMenu #decisionTopbar.compact { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 8px 10px; }
+  #decisionMenu #decisionTopbar .decision-topbar-metrics { grid-column: 1; grid-row: 2; grid-template-columns: minmax(0, 1.2fr) minmax(120px, 1fr); gap: 8px; }
+  #decisionMenu #decisionTopbar .decision-topbar-actions { grid-column: 1; grid-row: 3; width: 100%; gap: 12px; }
+  #decisionMenu #decisionTopbar .cash-hud,
+  #decisionMenu #decisionTopbar .student-top-timer { min-height: 62px; padding: 6px 8px; }
+  #decisionMenu #decisionTopbar .game-title-mark strong { font-size: 15px; }
+  #decisionMenu #decisionTopbar .game-title-mark small { font-size: 10px; }
+  #decisionMenu #decisionTopbar .cash-hud > span,
+  #decisionMenu #decisionTopbar .student-top-timer > span { font-size: 9px; }
+  #decisionMenu #decisionTopbar .cash-hud strong { font-size: 18px; margin-block: 1px; }
+  #decisionMenu #decisionTopbar .cash-hud small { font-size: 9px; }
+  #decisionMenu #decisionTopbar #decisionRoundTimer { font-size: 18px; }
+}
+@media (max-height: 500px) and (min-width: 601px) {
+  #decisionMenu #decisionTopbar,
+  #decisionMenu #decisionTopbar.compact { grid-template-columns: minmax(130px, 1fr) minmax(260px, 1.5fr) minmax(220px, 1.2fr); gap: 8px; padding: 6px 10px; }
+  #decisionMenu #decisionTopbar .decision-topbar-identity { gap: 6px; }
+  #decisionMenu #decisionTopbar .game-title-mark .mark-dot { display: none; }
+  #decisionMenu #decisionTopbar .game-title-mark strong { font-size: 13px; }
+  #decisionMenu #decisionTopbar .game-title-mark small { font-size: 9px; }
+  #decisionMenu #decisionTopbar .decision-topbar-metrics { grid-column: auto; grid-row: auto; grid-template-columns: minmax(145px, 1.2fr) minmax(105px, 1fr); gap: 6px; }
+  #decisionMenu #decisionTopbar .cash-hud,
+  #decisionMenu #decisionTopbar .student-top-timer { padding: 6px; min-height: 64px; }
+  #decisionMenu #decisionTopbar .cash-hud > span,
+  #decisionMenu #decisionTopbar .student-top-timer > span { font-size: 8px; }
+  #decisionMenu #decisionTopbar .cash-hud strong { font-size: 18px; }
+  #decisionMenu #decisionTopbar .cash-hud small { font-size: 9px; }
+  #decisionMenu #decisionTopbar #decisionRoundTimer { font-size: 18px; }
+  #decisionMenu #decisionTopbar .decision-topbar-actions { grid-column: auto; grid-row: auto; grid-template-columns: minmax(94px, 1fr) 118px; gap: 8px; }
+  #decisionMenu #decisionTopbar .mission-label strong { font-size: 12px; }
+  #decisionMenu #decisionTopbar .top-submit-all { min-width: 118px; padding: 8px; font-size: 11px; }
+}
+/* Decisiones: tarjetas de elección del estudiante, con los tokens compartidos. */
+
+/* Keep the section title aligned across tabs without a duplicate balance. */
+#decisionMenu .sticky-section-head{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:16px}
+#decisionMenu .detail-heading>div>span{display:block}
+@media(max-width:600px){#decisionMenu .sticky-section-head{grid-template-columns:1fr;gap:8px}}
+
+/* One production workbench; the selector changes the view, not other mold targets. */
+#decisionMenu .production-calculator-single { border-radius: var(--ui-radius); }
+#decisionMenu .production-calculator-single > header { align-items: center; }
+#decisionMenu .production-calculator-single > header strong { font-size: 20px; color: var(--ui-text); }
+#decisionMenu .production-calculator-single .production-total { min-width: 180px; }
+#decisionMenu .production-calculator-fields { display: grid; grid-template-columns: minmax(180px,1fr) minmax(240px,1.4fr); gap: 14px 24px; padding: 20px; }
+#decisionMenu .production-calculator-fields > label,
+#decisionMenu .production-calculator-quantity { display: grid; align-content: start; gap: 8px; font-size: 14px; font-weight: 700; }
+#decisionMenu .production-calculator-fields select { width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; color: var(--ui-text); background: var(--ui-inset); border: 1px solid var(--ui-line); border-radius: 8px; font: inherit; }
+#decisionMenu .production-calculator-fields select:focus-visible { outline: 3px solid var(--ui-yellow); outline-offset: 3px; }
+#decisionMenu .production-calculator-single .mold-target-control { margin: 0; }
+#decisionMenu .production-calculator-availability { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ui-muted); }
+#decisionMenu .production-calculator-single .mold-suggestion { align-self: start; margin: 0; }
+#decisionMenu .production-calculator-single .mold-requirements { grid-column: 1/-1; display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 14px; background: var(--ui-inset); border: 1px solid var(--ui-line); border-radius: 8px; }
+#decisionMenu .production-calculator-single .mold-requirements > span { flex-basis: 100%; }
+#decisionMenu .production-calculator-single footer { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+#decisionMenu .production-calculator-single footer small { flex-basis: 100%; }
+@media(max-width:600px) {
+  #decisionMenu .production-calculator-fields { grid-template-columns: minmax(0,1fr); gap: 14px; padding: 14px; }
+  #decisionMenu .production-calculator-single .production-total { min-width: 0; }
+  #decisionMenu .production-calculator-single .mold-suggestion { width: 100%; }
+}
+
+/* The desired quantity leads the plan; stock comparison closes it. */
+#decisionMenu .production-calculator-single .production-calculator-fields { grid-template-columns: minmax(240px,1.4fr) minmax(180px,1fr); }
+#decisionMenu .production-calculator-single .production-calculator-quantity > label { color: var(--ui-yellow); font-size: 16px; }
+#decisionMenu .production-calculator-single .mold-target-control input { font-size: 24px; font-weight: 800; }
+#decisionMenu .production-calculator-reading { grid-column: 1/-1; margin: 0; color: var(--ui-muted); line-height: 1.5; font-size: 13px; }
+.pd-target-first .pd-process-requirements { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 14px; width: 100%; margin: 0; }
+.pd-target-first .pd-process-requirements > div { min-width: 0; }
+.pd-target-first dt { color: var(--ui-muted); font-size: 11px; line-height: 1.4; }
+.pd-target-first dd { margin: 3px 0 0; color: var(--ui-text); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.pd-target-first .pd-result { display: block; background: var(--ui-panel); }
+.pd-target-result { display: grid; gap: 10px; padding: 20px; }
+.pd-target-result > strong { color: var(--ui-yellow); font-size: clamp(24px,4vw,34px); }
+.pd-target-first .pd-table-scroll { max-width: 100%; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--ui-blue) var(--ui-inset); }
+.pd-target-first .pd-table-scroll:focus-visible { outline: 2px solid var(--ui-yellow); outline-offset: 2px; }
+.pd-target-first .pd-table-scroll table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 12px; }
+.pd-target-first .pd-table-scroll th,
+.pd-target-first .pd-table-scroll td { border: 1px solid var(--ui-line); padding: 10px 12px; text-align: left; line-height: 1.5; vertical-align: top; }
+.pd-target-first .pd-table-scroll th { color: var(--ui-text); background: var(--ui-inset); }
+.pd-target-first .pd-table-scroll td { color: var(--ui-muted); }
+.pd-target-first :is(.pd-requirements-table,.pd-target-costs,.pd-comparison) { min-width: 0; display: grid; gap: 12px; }
+.pd-target-first :is(.pd-requirements-table,.pd-target-costs,.pd-comparison) > h4 { color: var(--ui-text); font-size: 18px; margin: 0; }
+.pd-target-first .pd-cost-total { margin: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.pd-target-first .pd-cost-total > div { border-left: 3px solid var(--ui-yellow); padding-left: 12px; }
+.pd-target-first .pd-cost-total dd { font-size: 18px; font-weight: 700; }
+.pd-target-first .pd-unresolved { color: var(--ui-muted); font-size: 12px; line-height: 1.5; margin: 0; }
+.pd-target-first .pd-unresolved-details { color: var(--ui-muted); border-top: 1px solid var(--ui-line); padding-top: 12px; font-size: 13px; }
+.pd-target-first .pd-unresolved-details summary { color: var(--ui-blue); cursor: pointer; }
+.pd-target-first .pd-comparison { padding: 20px; border: 1px solid var(--ui-line); border-radius: var(--ui-radius); background: var(--ui-panel); }
+.pd-target-first .pd-comparison table { min-width: 740px; }
+.pd-target-first .pd-metrics { grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); }
+@media(max-width:600px) {
+  #decisionMenu .production-calculator-single .production-calculator-fields { grid-template-columns: minmax(0,1fr); }
+  .pd-target-first .pd-process-requirements,
+  .pd-target-first .pd-cost-total { grid-template-columns: minmax(0,1fr); }
+  .pd-target-first .pd-comparison { padding: 14px; }
+}
+
+.production-dop .pd-cover-option{display:block;white-space:normal;margin-block:4px}
+
+/* Keep wide comparison tables inside their own scroller on narrow screens. */
+.pd-target-first :is(.pd-requirements-table,.pd-target-costs,.pd-comparison){grid-template-columns:minmax(0,1fr)}
+.pd-target-first :is(.pd-requirements-table,.pd-target-costs,.pd-comparison) > *{min-width:0;max-width:100%}
+.pd-target-first .pd-table-scroll{min-width:0;width:100%}
+
+.production-dop .pd-stock-origin{display:block;margin-top:6px;font-size:11px;line-height:1.5;color:var(--ui-muted)}
+.production-prices{display:grid;gap:10px;grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr))}
+.production-prices>strong{grid-column:1/-1}
+.production-prices label{display:grid;gap:6px;min-width:0}
+.production-prices input{width:100%;min-width:0;padding:8px;border:1px solid #cbd5e1;border-radius:6px}
+.production-prices input:invalid{border-color:#b91c1c}
+.segment-sales{padding:10px 0;border-bottom:1px solid #cbd5e1}
+.segment-sales span{display:flex;justify-content:space-between;gap:12px}
+@media(max-width:600px){.production-prices{grid-template-columns:1fr}}

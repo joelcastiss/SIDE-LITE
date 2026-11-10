@@ -1,0 +1,122 @@
+/* Propuesta gráfica SIDE: web graficas.pdf, octubre 2026.
+   Cargar sólo en docente.html, después de los estilos de distribución. */
+@font-face { font-family: Poppins; src: url('../assets/fonts/poppins/Poppins-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: Poppins; src: url('../assets/fonts/poppins/Poppins-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: Poppins; src: url('../assets/fonts/poppins/Poppins-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: Poppins; src: url('../assets/fonts/poppins/Poppins-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: Poppins; src: url('../assets/fonts/poppins/Poppins-ExtraBold.ttf') format('truetype'); font-weight: 800 900; font-display: swap; }
+@font-face { font-family: Poppins; src: url('../assets/fonts/poppins/Poppins-ExtraBoldItalic.ttf') format('truetype'); font-weight: 800; font-style: italic; font-display: swap; }
+:root {
+  --side-canvas: #081a34;
+  --side-panel: #09182f;
+  --side-panel-raised: #023863;
+  --side-panel-inset: #09182f;
+  --side-line: #39d0ff;
+  --side-line-subtle: rgb(57 208 255 / 35%);
+  --side-line-control: #39d0ff;
+  --side-text: #f8feff;
+  --side-text-bright: #f8feff;
+  --side-text-muted: rgb(248 254 255 / 70%);
+  --side-blue: #39d0ff;
+  --side-blue-strong: #39d0ff;
+  /* Alias heredados para los componentes docentes compartidos. */
+  --side-gold: #39d0ff;
+  --side-gold-light: #8ce4ff;
+  --side-gold-deep: #023863;
+  --side-gold-ink: #f8feff;
+  --side-gold-edge: #39d0ff;
+  --side-font: Poppins, Arial, sans-serif;
+  --side-weight-title: 700;
+  --side-shadow-card: none;
+  --side-shadow-soft: none;
+  --faculty-line: rgb(57 208 255 / 65%);
+}
+body { background: var(--side-canvas); font-family: var(--side-font); font-size: 14px; line-height: 1.5; }
+/* Sustituye la antigua declaración tipográfica !important. */
+button, .nav-btn, .sidebar-link, .primary, .secondary, .mini { font-family: var(--side-font) !important; font-weight: 600; }
+.docente-bg { background: var(--side-canvas); }
+.docente-bg::before, .card::after, .hero-card::after, .nav-btn.active::after, .mark-dot { display: none; }
+.sidebar { background: #030712; border: 0; box-shadow: none; padding: 24px; }
+.sidebar .brand { justify-content: center; padding: 0 0 24px; border: 0; margin-bottom: 0; }
+.brand .faculty-wordmark, .faculty-wordmark { color: var(--side-text); font-family: var(--side-font); font-style: italic; font-weight: 800; font-size: 68px; letter-spacing: -4px; line-height: 1.2; }
+.faculty-wordmark-small { flex: 0 0 auto; font-size: 32px; letter-spacing: -2px; }
+.sidebar nav { gap: 12px; }
+.sidebar .nav-icon { display: none; }
+.sidebar .nav-btn { border: 1px solid transparent; padding: 14px 18px; color: var(--side-text); border-radius: 10px; justify-content: center; font-size: 16px; box-shadow: none; }
+.sidebar .nav-btn.active { background: #023863; border-color: var(--side-blue); box-shadow: inset 0 0 0 1px rgb(57 208 255 / 20%); }
+.sidebar .nav-btn:hover, .sidebar-link:hover { background: #09182f; border-color: var(--side-blue); color: var(--side-text); }
+.sidebar .nav-btn:focus-visible, .sidebar-link:focus-visible { outline: 3px solid var(--side-blue); outline-offset: 3px; }
+.sidebar-bottom { border: 0; }
+.sidebar-link { justify-content: center; background: #023863; border: 1px solid var(--faculty-line); color: var(--side-text); font-size: 15px; padding: 14px 10px; border-radius: 10px; }
+.faculty-back-arrow { display: inline-block; width: 28px; height: 28px; flex: 0 0 28px; background: currentColor; mask: url('../assets/icons/ui/arrow-circle-left.webp') center / 190.7% 231.36% no-repeat; }
+.content { padding: 24px 24px 48px; }
+.tab-panel.active { animation: none; }
+.topbar { align-items: flex-start; margin: -24px -24px 20px; padding: 24px; border-bottom: 1px solid var(--faculty-line); box-shadow: 0 3px 8px rgb(57 208 255 / 12%); row-gap: 16px; }
+.topbar h1 { background: none; color: var(--side-text); font-size: clamp(23px, 2.1vw, 30px); font-weight: 600; letter-spacing: 0; line-height: 1.35; }
+.eyebrow { color: var(--side-blue); font-size: 13px; font-weight: 600; letter-spacing: 0; }
+.top-actions { justify-content: flex-end; gap: 8px; }
+.top-actions > button { min-height: 44px; padding: 10px 14px; font-size: 13px; }
+#saveAll { background: #023863; border-color: var(--side-blue); }
+#saveAll:not(:disabled):hover { background: #07507e; }
+.code-badge, .secondary, .randomize, .mini { background: var(--side-panel); border: 1px solid var(--faculty-line); color: var(--side-text); box-shadow: none; }
+.code-badge { color: var(--side-blue); font-size: 14px; font-weight: 600; }
+.code-badge:empty { display: none; }
+.primary { background: #023863; color: var(--side-text); border: 1px solid var(--side-blue); box-shadow: none; }
+.primary:hover, .secondary:hover, .randomize:hover, .mini:hover { background: #023863; border-color: var(--side-blue); transform: none; }
+.secondary.danger { background: #b42332; border-color: #ff8b9a; color: #fff; }
+.secondary.danger:not(:disabled):hover { background: #941c29; border-color: #ffadb8; }
+.secondary.danger:focus-visible, #cancelGame:focus-visible { outline: 3px solid #ffadb8; outline-offset: 3px; }
+.card, .hero-card, .company-card, .stat, .config-start-footer, .event-picker, .modal-panel, .timer-box { background: var(--side-panel); border: 1px solid var(--faculty-line); box-shadow: none; }
+.card, .hero-card { padding: 20px; border-radius: 20px; }
+.card:hover, .company-card:hover { transform: none; border-color: var(--side-blue); }
+.hero-card { gap: 24px; }
+.hero-card h2 { color: var(--side-text); font-size: 14px; font-weight: 600; margin: 2px 0; }
+.hero-card p { font-size: 14px; color: var(--side-text-muted); line-height: 1.5; max-width: 72ch; }
+.card-title { margin-bottom: 12px; flex-wrap: wrap; }
+.card-title h3, .teacher-workspace .card-title h3 { color: var(--side-blue); text-transform: uppercase; font-size: 14px; font-weight: 600; line-height: 1.5; }
+.card-title > span { color: var(--side-blue); border: 1px solid var(--faculty-line); background: transparent; font-size: 11px; font-weight: 500; letter-spacing: 0; }
+label, .teacher-workspace label { color: var(--side-text); font-size: 14px; font-weight: 500; }
+input, select, textarea { background: var(--side-panel); color: var(--side-text); font-size: 14px; font-weight: 500; padding: 10px 12px; border: 1px solid var(--faculty-line); }
+input::placeholder, textarea::placeholder { color: var(--side-text-muted); opacity: 1; }
+.locked-input { background: var(--side-panel) !important; color: var(--side-text) !important; border-color: var(--faculty-line) !important; box-shadow: none; font-weight: 500; letter-spacing: 0; opacity: 1; }
+.hint, #academicCalendarHint, .teacher-workspace .hint, .hero-card p, .config-start-footer p { color: var(--side-text-muted); font-size: 14px; line-height: 1.5; }
+.hint, .config-start-footer p { max-width: 72ch; }
+.rule-box, .mode-disclaimer, .integration-note, .event-bank-help { background: rgb(2 56 99 / 70%); border: 1px solid var(--faculty-line); }
+.rule-box strong, .mode-disclaimer strong, .integration-note strong, .event-bank-help strong { color: var(--side-blue); font-size: 14px; font-weight: 600; }
+.rule-box span, .rule-box small, .mode-disclaimer span, .integration-note p, .event-bank-help span { color: var(--side-text-muted); font-size: 14px; line-height: 1.5; }
+.info-banner { background: var(--side-panel); border: 1px solid var(--faculty-line); color: var(--side-text-muted); font-size: 14px; }
+.native-choice-row label { border: 1px solid var(--faculty-line); background: var(--side-panel); padding: 9px 11px; }
+.native-choice-row label:has(input:checked) { border: 1px solid var(--side-blue); background: #023863; padding: 9px 11px; }
+.native-choice-row input, .event-table input { accent-color: var(--side-blue); }
+.native-choice-row label:has(input:checked)::after { display: none; }
+.segmented button.active { color: var(--side-text); background: #023863; }
+.config-lock-notice, #eventLockNotice { background: #023863; }
+.timer-box strong, .stat strong { color: var(--side-blue); }
+.toast { background: #023863; border: 1px solid var(--side-blue); color: var(--side-text); }
+.event-picker .event-table th { background: var(--side-panel); color: var(--side-blue); }
+.event-table td small { color: var(--side-text-muted); font-size: 12px; }
+button:disabled { opacity: .55; }
+@media (min-width: 1400px) { .sidebar { width: 300px; } .content { margin-left: 300px; width: calc(100% - 300px); } }
+@media (max-width: 820px) {
+  .sidebar { padding: max(12px, env(safe-area-inset-top)) 16px 12px; max-height: none; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; overflow: visible; }
+  .sidebar .brand { padding: 0; margin: 0; justify-content: flex-start; }
+  .brand .faculty-wordmark { font-size: 36px; letter-spacing: -2px; }
+  .sidebar nav { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0; overflow: visible; }
+  .app-shell .sidebar nav .nav-btn { width: 100%; min-width: 0; min-height: 44px; padding: 8px 6px; white-space: normal; }
+  .app-shell .sidebar nav .nav-btn span:last-child { white-space: normal; font-size: 12px; line-height: 1.35; }
+  .sidebar-bottom { grid-column: 2; grid-row: 1; display: block; padding: 0; margin: 0; }
+  .sidebar-link { width: auto; min-height: 44px; padding: 8px 10px; font-size: 12px; gap: 7px; }
+  .faculty-back-arrow { width: 22px; height: 22px; flex-basis: 22px; }
+  .content { padding: 20px 16px 48px; }
+  .topbar { margin: -20px -16px 20px; padding: 20px 16px; }
+  .top-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .top-actions > * { min-width: 0; width: 100%; }
+  .top-actions > button { padding: 10px 8px; font-size: 12px; }
+  .top-actions .code-badge, #saveAll, #cancelGame { grid-column: 1 / -1; }
+  .topbar h1 { font-size: clamp(23px, 4vw, 30px); }
+  .topbar-mark .eyebrow { font-size: 11px; }
+  .card, .hero-card { padding: 16px; }
+  .hero-card { gap: 12px; }
+  .faculty-wordmark-small { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
