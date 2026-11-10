@@ -1,7 +1,8 @@
 // Disposable local PostgreSQL only. Reproduces reviewed remote baseline + legacy tables.
 import pg from 'pg'; import assert from 'node:assert/strict'; import {readFile} from 'node:fs/promises';
 if(process.env.SIDE_INCREMENTAL_DISPOSABLE!=='YES')throw Error('Requiere clúster desechable');
-const db=new pg.Client({connectionString:'postgresql://postgres:local-test-only@127.0.0.1:56639/side_lite_incremental'});await db.connect();
+const port=process.env.SIDE_INCREMENTAL_TEST_PORT || '56639'; if(!/^\d{2,5}$/.test(port))throw Error('Puerto local inválido');
+const db=new pg.Client({connectionString:`postgresql://postgres:local-test-only@127.0.0.1:${port}/side_lite_incremental`});await db.connect();
 try{
  const init=await db.query("select exists(select 1 from pg_namespace where nspname='auth') present");if(init.rows[0].present)throw Error('La base no está vacía');
  await db.query(await readFile('supabase-side-lite/tests/postgres-auth-bootstrap.sql','utf8'));
@@ -11,6 +12,7 @@ try{
  // Reproduce the observed table ACL exactly, including insecure inherited defaults.
  const acls=JSON.parse(await readFile('supabase-side-lite/incremental/remote-acl.json','utf8'));
  for(const row of acls){if(!['public','side_lite_private'].includes(row.nspname)||!/^lite_[a-z_]+$/.test(row.relname)||!['anon','authenticated','service_role'].includes(row.role_name)||!['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'].includes(row.priv))throw Error('ACL inesperada');await db.query(`${row.allowed?'grant':'revoke'} ${row.priv} on ${row.nspname}.${row.relname} ${row.allowed?'to':'from'} ${row.role_name}`)}
+ await db.query(await readFile('supabase-side-lite/supabase/migrations/20261109204458_restrict_legacy_tables.sql','utf8'));
  const remoteConstraints=JSON.parse(await readFile('supabase-side-lite/incremental/remote-constraints.json','utf8'));
  const {rows:localConstraints}=await db.query(`select n.nspname,c.relname,con.conname,pg_get_constraintdef(con.oid) definition from pg_constraint con join pg_class c on c.oid=con.conrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','side_lite_private') and c.relname like 'lite_%'`);
  const constraintKey=x=>`${x.nspname}.${x.relname}.${x.conname}`;const constraintMap=new Map(localConstraints.map(x=>[constraintKey(x),x]));const constraintDifferences=remoteConstraints.filter(x=>!constraintMap.has(constraintKey(x))||constraintMap.get(constraintKey(x)).definition!==x.definition);assert.deepEqual(constraintDifferences,[],'Las restricciones de la copia no coinciden con el catálogo remoto');
