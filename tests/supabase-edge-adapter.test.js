@@ -20,7 +20,7 @@ test('la función conserva la verificación real del token y la identidad del se
   const project='https://hwwwoblfpsqqrkxvclag.supabase.co';
   const {privateKey,publicKey}=await generateKeyPair('ES256');
   const token=await new SignJWT({role:'authenticated',session_id:session}).setProtectedHeader({alg:'ES256'}).setSubject(user).setIssuer(project+'/auth/v1').setAudience('authenticated').setExpirationTime('5m').sign(privateKey);
-  const pool={query:async()=>({rows:[{id:user,display_name:'Ana',email_verified:true,teacher_authorized:false,session_active:true,banned:false}]}),connect:async()=>{throw Error('unexpected transaction')}};
+  const pool={query:async sql=>({rows:[/api_mfa_ready/.test(sql)?{allowed:true}:{id:user,display_name:'Ana',email_verified:true,teacher_authorized:false,session_active:true,banned:false}]}),connect:async()=>{throw Error('unexpected transaction')}};
   const handle=createEdgeHandler(createSideLiteApp({pool,projectUrl:project,keyResolver:async()=>publicKey}));
   const url='https://example.invalid/functions/v1/side-lite-api/api/me';
   assert.equal((await handle(new Request(url))).status,401);

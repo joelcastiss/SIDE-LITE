@@ -14,7 +14,9 @@ export function createTokenVerifier({projectUrl, keyResolver} = {}) {
   return async token => {
     const {payload} = await jwtVerify(token, keys, {issuer, audience: 'authenticated', algorithms: ['ES256', 'RS256']});
     if (payload.role !== 'authenticated' || typeof payload.sub !== 'string' || !UUID.test(payload.sub) || typeof payload.exp !== 'number' || typeof payload.session_id !== 'string' || !UUID.test(payload.session_id)) throw new Error('Identidad inválida');
-    return {id: payload.sub, sessionId: payload.session_id};
+    if (payload.aal !== undefined && !['aal1','aal2'].includes(payload.aal)) throw new Error('Nivel de autenticación inválido');
+    if (payload.is_anonymous !== undefined && typeof payload.is_anonymous !== 'boolean') throw new Error('Identidad inválida');
+    return {id: payload.sub, sessionId: payload.session_id, aal: payload.aal || 'aal1', isAnonymous: payload.is_anonymous === true};
   };
 }
 
@@ -31,7 +33,10 @@ export function createIdentityMiddleware({pool, verifyToken} = {}) {
     try {
       const {rows:[record]} = await pool.query('select * from side_lite_private.api_identity($1,$2)', [identity.id, identity.sessionId]);
       if (!record?.session_active || record.banned) return res.status(401).json({error:'Sesión inválida o vencida.'});
-      if (!record.email_verified) return res.status(403).json({error:'Verifica tu correo antes de continuar.'});
+      if ((identity.isAnonymous === true) !== (record.is_anonymous === true)) return res.status(401).json({error:'Sesión inválida o vencida.'});
+      if (!record.email_verified && !identity.isAnonymous) return res.status(403).json({error:'Verifica tu correo antes de continuar.'});
+      const {rows:[assurance]}=await pool.query('select side_lite_private.api_mfa_ready($1,$2,$3) as allowed',[identity.id,identity.sessionId,identity.aal || 'aal1']);
+      if (!assurance?.allowed) return res.status(403).json({error:'Se requiere completar la verificación multifactor.'});
       req.identity = {...identity, displayName: record.display_name || null, role: record.id ? (record.teacher_authorized ? 'teacher' : 'student') : null};
       next();
     } catch { return res.status(503).json({error:'No se pudo consultar la cuenta.'}); }

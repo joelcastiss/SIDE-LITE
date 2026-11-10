@@ -4,7 +4,7 @@ const app = document.querySelector('#app');
 const icons = 'assets/original/categories/';
 const sections = [
   ['lite-quality', 'Calidad', 'insumos.svg', 'Selecciona el nivel de calidad de tus productos.'],
-  ['lite-quantity', 'Cantidad', 'inversiones.svg', 'Decide cuántas unidades comprar para vender en este ciclo.'],
+  ['lite-quantity', 'Cantidad', 'inversiones.svg', 'Decide cuántas unidades producir en este ciclo.'],
   ['lite-price', 'Precio', 'canales_ventas.svg', 'Establece el precio de venta de cada producto.'],
   ['lite-marketing', 'Marketing', 'finanzas.svg', 'Elige cuánto invertir en publicidad.']
 ];

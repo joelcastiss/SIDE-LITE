@@ -6,10 +6,13 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const stack = path.join(os.tmpdir(), 'side-lite-supabase-stack-verify');
-const target = path.join(stack, 'side-lite-fixture');
+const useCodex = process.env.SIDE_TEST_STACK === 'codex-guest';
+const stackName=useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify';
+const apiPort=useCodex?56621:56521, dbPort=useCodex?56622:56522;
+const stack = path.join(os.tmpdir(), stackName);
+const target = path.join(stack, useCodex ? 'side-lite-fixture-integration' : 'side-lite-fixture');
 const config = await readFile(path.join(stack,'supabase','config.toml'),'utf8');
-if (!/^project_id\s*=\s*"side-lite-supabase-stack-verify"\s*$/m.test(config) || !/^port\s*=\s*56521\s*$/m.test(config) || !/^port\s*=\s*56522\s*$/m.test(config)) throw Error('Proyecto local o puertos inesperados');
+if (!config.includes(`project_id = "${stackName}"`) || !config.includes(`port = ${apiPort}`) || !config.includes(`port = ${dbPort}`)) throw Error('Proyecto local o puertos inesperados');
 const anon = process.env.SIDE_LITE_LOCAL_ANON_KEY;
 if (typeof anon !== 'string' || anon.length < 40 || !/^[A-Za-z0-9._-]+$/.test(anon)) throw Error('Defina SIDE_LITE_LOCAL_ANON_KEY del stack desechable');
 // mkdir without recursive fails if the fixture already exists: never overwrite it.
@@ -26,7 +29,7 @@ async function transform(file, replacements) {
   await writeFile(dest,source);
 }
 const productionUrl='https://hwwwoblfpsqqrkxvclag.supabase.co';
-const localUrl='http://127.0.0.1:56521';
+const localUrl=`http://127.0.0.1:${apiPort}`;
 const productionKey='sb_publishable_52fukw__BaCel-Igx5e0vg_RgsvhxiN';
 await transform('public/supabase-client.js',[[productionUrl,localUrl],[productionKey,anon]]);
 await transform('public/supabase-session.js',[
@@ -36,7 +39,7 @@ await transform('public/supabase-session.js',[
 await transform('supabase-side-lite/functions/side-lite-api/adapter.js',[["https://joelcastiss.github.io","http://127.0.0.1:4178"]]);
 const localValidator=`export function validateDatabaseTarget(raw) {
   const url = new URL(raw);
-  if (!['postgres:', 'postgresql:'].includes(url.protocol) || url.hostname !== 'host.docker.internal' || url.port !== '56522' || !url.username || !url.password || url.search || url.hash) throw Error('Solo PostgreSQL local aislado');
+  if (!['postgres:', 'postgresql:'].includes(url.protocol) || url.hostname !== 'host.docker.internal' || url.port !== '${dbPort}' || !url.username || !url.password || url.search || url.hash) throw Error('Solo PostgreSQL local aislado');
   return raw;
 }`;
 await writeFile(path.join(target,'supabase-side-lite/functions/database-target.js'),localValidator);
@@ -49,6 +52,6 @@ await transform('supabase-side-lite/functions/close-cycle/index.ts',[["ssl: 'ver
 // loopback URL, while Edge reaches the same local gateway via Docker's host alias.
 await transform('supabase-side-lite/api/identity.js',[
   ["url.protocol !== 'https:' || url.username || url.password || url.port || url.pathname !== '/' || url.search || url.hash || url.hostname !== 'hwwwoblfpsqqrkxvclag.supabase.co'",`url.origin !== '${localUrl}' || url.username || url.password || url.pathname !== '/' || url.search || url.hash`],
-  ["const keys = keyResolver || createRemoteJWKSet(new URL(`${issuer}/.well-known/jwks.json`));", "const keys = keyResolver || createRemoteJWKSet(new URL('http://host.docker.internal:56521/auth/v1/.well-known/jwks.json'));"],
+  ["const keys = keyResolver || createRemoteJWKSet(new URL(`${issuer}/.well-known/jwks.json`));", `const keys = keyResolver || createRemoteJWKSet(new URL('http://host.docker.internal:${apiPort}/auth/v1/.well-known/jwks.json'));`],
 ]);
 console.log(`Copia local creada en ${target}. No apta para desplegar.`);

@@ -27,7 +27,7 @@ if (location.hostname.toLowerCase() === 'joelcastiss.github.io' && new URLSearch
   banner.id = 'integration-preview-notice';
   banner.setAttribute('role', 'status');
   banner.style.cssText = 'padding:12px 18px;background:#fff4ce;color:#3c2900;text-align:center;font:600 14px Poppins,Arial,sans-serif';
-  banner.textContent = 'Integración en pruebas: el funcionamiento de las partidas reales todavía no se ha verificado.';
+  banner.textContent = 'Vista previa: el servidor de partidas todavía no está conectado. Usa ?static=1 para explorar con datos ficticios.';
   document.body.prepend(banner);
  };
  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showIntegrationNotice, {once:true}); else showIntegrationNotice();

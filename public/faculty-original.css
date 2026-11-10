@@ -131,3 +131,17 @@ button:disabled { opacity: .55; }
  .faculty-shell .sidebar { width: 100%; height: auto; position: static; }
  .faculty-shell .sidebar-bottom { display: flex; gap: 6px; }
 }
+/* Ajustes de la estructura de configuración de Lite a las tarjetas de SIDE. */
+@media(min-width:1400px){.faculty-shell .sidebar{width:300px;flex:0 0 300px}}
+.faculty-shell .topbar h1{font-size:clamp(23px,2.1vw,30px);line-height:1.35}
+.faculty-shell .hero-card,.faculty-shell .info-banner{background:#09182f;color:#adbcc9}
+.faculty-shell .teacher-config-card label{display:block;color:#f8feff;font-size:14px;margin:0 0 16px}
+.faculty-shell .teacher-config-card label input,.faculty-shell .teacher-config-card label select{display:block;box-sizing:border-box;width:100%;margin-top:7px;border-radius:10px}
+.faculty-shell .card-title>span{display:inline-block;border-radius:999px;padding:4px 9px;font-size:11px;color:#39d0ff}
+@media(max-width:820px){
+ .faculty-shell .sidebar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px 16px}
+ .faculty-shell .sidebar .brand{grid-column:1;grid-row:1;display:flex;justify-content:flex-start;padding:0;margin:0}
+ .faculty-shell .sidebar nav{grid-column:1 / -1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .faculty-shell .sidebar-bottom{grid-column:2;grid-row:1;display:flex;justify-content:flex-end;gap:6px}
+ .faculty-shell .sidebar-bottom .sidebar-link{width:auto;min-height:44px;padding:8px;font-size:11px;white-space:nowrap}
+}

@@ -6,18 +6,18 @@ const issuer='https://hwwwoblfpsqqrkxvclag.supabase.co/auth/v1';
 const user='c529fd8d-6cec-4c01-9c18-16c079112e23', session='773d8048-bdeb-4bfb-973b-a0a808183235';
 const {privateKey, publicKey}=await generateKeyPair('ES256');
 const verify=createTokenVerifier({projectUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',keyResolver:async()=>publicKey});
-async function token({iss=issuer,aud='authenticated',role='authenticated',sessionId=session,expiry='5m',metadata={}}={}) {
- return new SignJWT({role,session_id:sessionId,user_metadata:metadata}).setProtectedHeader({alg:'ES256'}).setSubject(user).setIssuer(iss).setAudience(aud).setIssuedAt().setExpirationTime(expiry).sign(privateKey);
+async function token({iss=issuer,aud='authenticated',role='authenticated',sessionId=session,expiry='5m',metadata={},anonymous}={}) {
+ return new SignJWT({role,session_id:sessionId,user_metadata:metadata,...(anonymous===undefined?{}:{is_anonymous:anonymous})}).setProtectedHeader({alg:'ES256'}).setSubject(user).setIssuer(iss).setAudience(aud).setIssuedAt().setExpirationTime(expiry).sign(privateKey);
 }
 async function withServer(record, callback){
- const calls=[];const pool={query:async(sql,params)=>(calls.push({sql,params}),{rows:record?[record]:[]})};
+ const calls=[];const pool={query:async(sql,params)=>(calls.push({sql,params}),{rows:/api_mfa_ready/.test(sql)?[{allowed:true}]:record?[record]:[]})};
  const app=createIdentityApp({pool,verifyToken:verify});const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
  try {await callback(`http://127.0.0.1:${server.address().port}`,calls)} finally {await new Promise(r=>server.close(r))}
 }
 const student={id:user,display_name:'Ana',email_verified:true,teacher_authorized:false,session_active:true,banned:false};
 test('requiere proyecto confirmado, firma, audiencia, emisor, vencimiento y sesión',async()=>{
  assert.throws(()=>createTokenVerifier({projectUrl:'https://otro.supabase.co'}));
- assert.deepEqual(await verify(await token()),{id:user,sessionId:session});
+ assert.deepEqual(await verify(await token()),{id:user,sessionId:session,aal:'aal1',isAnonymous:false});
  for(const t of [await token({iss:'https://otro.supabase.co/auth/v1'}),await token({aud:'anon'}),await token({role:'service_role'}),await token({sessionId:'invalid'}),await token({expiry:'-1m'})]) await assert.rejects(()=>verify(t));
  const foreign=await generateKeyPair('ES256');const forged=await new SignJWT({role:'authenticated',session_id:session}).setProtectedHeader({alg:'ES256'}).setSubject(user).setIssuer(issuer).setAudience('authenticated').setExpirationTime('5m').sign(foreign.privateKey);await assert.rejects(()=>verify(forged));
 });
@@ -38,18 +38,27 @@ test('alta de perfil usa solo ID verificado y exige cuenta y sesión activas',as
  await withServer({...student,id:null,teacher_authorized:false},async(base,calls)=>{
   const bearer=`Bearer ${await token({metadata:{role:'teacher'}})}`;
   const response=await fetch(base+'/api/profile',{method:'POST',headers:{authorization:bearer,'content-type':'application/json'},body:JSON.stringify({display_name:'  Ana  '})});
-  assert.equal(response.status,201);assert.deepEqual(calls[1].params,[user,session,'Ana']);assert.match(calls[1].sql,/side_lite_private\.api_create_profile/);
+  assert.equal(response.status,201);assert.deepEqual(calls[2].params,[user,session,'Ana']);assert.match(calls[2].sql,/side_lite_private\.api_create_profile/);
  });
 });
 test('alta rechaza roles y campos no autorizados antes de escribir',async()=>{
  await withServer({...student,id:null},async(base,calls)=>{
   const headers={authorization:`Bearer ${await token()}`,'content-type':'application/json'};
   for(const body of [{display_name:'Ana',role:'teacher'},{display_name:'A'},{}]){const r=await fetch(base+'/api/profile',{method:'POST',headers,body:JSON.stringify(body)});assert.equal(r.status,400)}
-  assert.equal(calls.length,3);assert.ok(calls.every(c=>!/^\s*insert/i.test(c.sql)));
+  assert.equal(calls.length,6);assert.ok(calls.every(c=>!/^\s*insert/i.test(c.sql)));
  });
 });
 test('correo no confirmado no puede crear un perfil',async()=>{
  await withServer({...student,id:null,email_verified:false},async(base,calls)=>{
   const r=await fetch(base+'/api/profile',{method:'POST',headers:{authorization:`Bearer ${await token()}`,'content-type':'application/json'},body:JSON.stringify({display_name:'Ana'})});assert.equal(r.status,403);assert.equal(calls.length,1);
  });
+});
+
+
+test('JWT anónimo solo se acepta si Auth confirma la misma identidad invitada',async()=>{
+ const guest={...student,email_verified:false,is_anonymous:true};
+ await withServer(guest,async(base)=>{const r=await fetch(base+'/api/me',{headers:{authorization:`Bearer ${await token({anonymous:true})}`}});assert.equal(r.status,200);assert.equal((await r.json()).role,'student')});
+ await withServer({...student,is_anonymous:false},async(base)=>{const r=await fetch(base+'/api/me',{headers:{authorization:`Bearer ${await token({anonymous:true})}`}});assert.equal(r.status,401)});
+ await withServer(guest,async(base)=>{const r=await fetch(base+'/api/me',{headers:{authorization:`Bearer ${await token()}`}});assert.equal(r.status,401)});
+ const malformed=await token({anonymous:'true'});await assert.rejects(()=>verify(malformed));
 });

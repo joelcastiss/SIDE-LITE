@@ -6,11 +6,12 @@ import {execFileSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
+const useCodex=process.env.SIDE_TEST_STACK==='codex-guest', stackName=useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify', dbPort=useCodex?'56622':'56522';
 const raw = process.env.SIDE_LOCAL_POSTGRES_URL;
 const url = new URL(raw);
-if (!['postgres:', 'postgresql:'].includes(url.protocol) || url.hostname !== '127.0.0.1' || url.port !== '56522' || url.pathname !== '/postgres' || url.search || url.hash) throw Error('Se requiere el stack Supabase local desechable confirmado');
-const mapped = execFileSync('docker',['port','supabase_db_side-lite-supabase-stack-verify','5432/tcp'],{encoding:'utf8'});
-if (!mapped.split(/\r?\n/).includes('0.0.0.0:56522')) throw Error('El puerto no corresponde al contenedor autorizado');
+if (!['postgres:', 'postgresql:'].includes(url.protocol) || url.hostname !== '127.0.0.1' || url.port !== dbPort || url.pathname !== '/postgres' || url.search || url.hash) throw Error('Se requiere el stack Supabase local desechable confirmado');
+const mapped = execFileSync('docker',['port',`supabase_db_${stackName}`,'5432/tcp'],{encoding:'utf8'});
+if (!mapped.split(/\r?\n/).some(line=>line.endsWith(':'+dbPort))) throw Error('El puerto no corresponde al contenedor autorizado');
 const apiPassword=randomBytes(32).toString('hex'), closerPassword=randomBytes(32).toString('hex'), secret=randomBytes(32).toString('hex');
 const db = new Client({connectionString:raw});
 await db.connect();
@@ -31,8 +32,8 @@ try {
     has_table_privilege('side_lite_closer_login','public.lite_results','insert') as closer_insert_result,
     has_table_privilege('side_lite_closer_login','public.lite_games','insert') as closer_insert_game`);
   if (rights.api_insert_result || !rights.closer_insert_result || rights.closer_insert_game) throw Error('Los roles locales no tienen la separación esperada');
-  const local=(name,password)=>`postgresql://${name}:${password}@host.docker.internal:56522/postgres`;
-  const envFile=path.join(os.tmpdir(),'side-lite-supabase-stack-verify','functions-local.env');
+  const local=(name,password)=>`postgresql://${name}:${password}@host.docker.internal:${dbPort}/postgres`;
+  const envFile=path.join(os.tmpdir(),stackName,'functions-local.env');
   await writeFile(envFile,`SIDE_API_DATABASE_URL=${local('side_lite_api_login',apiPassword)}\nSIDE_CLOSER_DATABASE_URL=${local('side_lite_closer_login',closerPassword)}\nSIDE_CLOSER_SECRET=${secret}\n`,{flag:'wx',mode:0o600});
   await db.query('commit');
   console.log('Roles locales aislados creados y privilegios comprobados.');

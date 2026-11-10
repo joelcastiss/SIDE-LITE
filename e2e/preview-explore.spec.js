@@ -16,8 +16,7 @@ for(const viewport of [{name:'escritorio',width:1440,height:900},{name:'móvil',
     for(const field of ['code','name','brand'])await expect(page.locator(`#student-entry [name=${field}]`)).toBeVisible();
     await page.locator('#student-auth-switch button').click();
    }
-   await expect(page.locator('#login')).toBeVisible();await page.locator('#show-register').click();await expect(page.locator('#register')).toBeVisible();
-   await page.locator('#explore-preview').click();
+   if(role==='teacher'){await expect(page.locator('#loginForm')).toBeVisible();await page.locator('#teacherLoginModal [data-switch=register]').click();await expect(page.locator('#registerForm')).toBeVisible();await page.locator('#teacherRegisterModal [data-switch=login]').click();await page.locator('#teacher-preview').click()}else{await expect(page.locator('#login')).toBeVisible();await page.locator('#show-register').click();await expect(page.locator('#register')).toBeVisible();await page.locator('#explore-preview').click()}
    await expect(page.getByRole('button',{name:'Partida de demostración',exact:true})).toBeVisible();
    await page.getByRole('button',{name:'Partida de demostración',exact:true}).click();
    if(role==='student'){

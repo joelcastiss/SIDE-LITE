@@ -21,6 +21,8 @@ async function transaction(pool, fn) {
 async function requireCurrentUser(c, identity, teacher = false) {
   const {rows:[user]} = await c.query('select side_lite_private.lock_active_identity($1,$2) as active', [identity.id,identity.sessionId]);
   if (!user?.active) throw fail(403,'Cuenta o sesión no autorizada.');
+  const {rows:[assurance]}=await c.query('select side_lite_private.api_mfa_ready($1,$2,$3) as allowed',[identity.id,identity.sessionId,identity.aal || 'aal1']);
+  if (!assurance?.allowed) throw fail(403,'Se requiere completar la verificación multifactor.');
   if (teacher) {
     // Lock the authoritative grant so revocation cannot race a game creation.
     const {rows:[grant]} = await c.query('select side_lite_private.api_lock_teacher($1,$2) as authorized',[identity.id,identity.sessionId]);
@@ -145,13 +147,16 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
       // enforced at the trusted edge; do not trust X-Forwarded-For directly.
       const allowed=await limitJoin({userId:req.identity.id});
       if (allowed !== true) throw fail(429,'Demasiados intentos. Inténtalo más tarde.');
-      const {code,name}=req.body || {};
-      if (typeof code !== 'string' || !/^[0-9a-f]{8}$/i.test(code) || typeof name !== 'string' || name.trim().length<2 || name.length>80) throw fail(400,'Datos inválidos.');
+      const {code,name,brand,recoverySecret:providedSecret}=req.body || {};
+      if (typeof code !== 'string' || !/^[0-9a-f]{8}$/i.test(code) || typeof name !== 'string' || name.trim().length<2 || name.length>80 || (req.identity.isAnonymous && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80)) || (brand !== undefined && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80))) throw fail(400,'Datos inválidos.');
+      if(req.identity.isAnonymous && (typeof providedSecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(providedSecret)))throw fail(400,'No se pudo preparar la recuperación de la empresa.');
+      const recoverySecret=req.identity.isAnonymous?providedSecret:null,recoveryHash=recoverySecret?crypto.createHash('sha256').update(recoverySecret).digest():null;
       const company=await transaction(pool,async c=>{
         await requireCurrentUser(c,req.identity);
         // Serialize with cycle start, which must also lock this game row first.
         const {rows:[game]}=await c.query('select id,capital_min,capital_max,ended_at from public.lite_games where code=$1 for update',[code.toUpperCase()]);
         if (!game) throw fail(404,'Código no encontrado.');
+        if(recoverySecret){const {rows:[previous]}=await c.query('select * from side_lite_private.api_find_guest_join($1,$2,$3,$4)',[req.identity.id,req.identity.sessionId,game.id,recoveryHash]);if(previous)return previous;}
         if (game.ended_at) throw fail(409,'La partida ha finalizado.');
         if ((await c.query('select 1 from public.lite_cycles where game_id=$1 limit 1',[game.id])).rowCount) throw fail(409,'La partida ya comenzó.');
         const {rows:stores}=await c.query('select id from public.lite_stores order by name');
@@ -159,14 +164,31 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         const store=stores[crypto.randomInt(stores.length)];
         const capital=game.capital_min+10000*crypto.randomInt((game.capital_max-game.capital_min)/10000+1);
         try {
-          const {rows:[result]}=await c.query(`insert into public.lite_companies(game_id,student_id,name,store_id,initial_capital,cash)
-            values($1,$2,$3,$4,$5,$5) returning id,game_id,student_id,name,store_id,initial_capital,cash,inventory`,
-            [game.id,req.identity.id,name.trim(),store.id,capital]);
+          const {rows:[result]}=await c.query(`insert into public.lite_companies(game_id,student_id,name,store_id,initial_capital,cash,brand_name)
+            values($1,$2,$3,$4,$5,$5,$6) returning id,game_id,student_id,name,brand_name,store_id,initial_capital,cash,inventory`,
+            [game.id,req.identity.id,name.trim(),store.id,capital,brand?.trim()||null]);
+          if(recoverySecret)await c.query('insert into side_lite_private.lite_guest_recovery(company_id,secret_hash) values($1,$2)',[result.id,recoveryHash]);
           return result;
         } catch(e) { if(e.code==='23505') throw fail(409,'Ya participas en esta partida.'); throw e; }
       });
-      return res.status(201).json(company);
+      return res.status(201).json(recoverySecret?{...company,recoverySecret}:company);
     } catch(e) { return next(e); }
+  });
+  app.post('/api/guest/recover',async(req,res,next)=>{
+    try {
+      if(!req.identity.isAnonymous)throw fail(403,'Se requiere una sesión de invitado.');
+      if(await limitJoin({userId:req.identity.id})!==true)throw fail(429,'Demasiados intentos. Inténtalo más tarde.');
+      const {code,recoverySecret,newRecoverySecret}=req.body||{};
+      if(typeof code!=='string'||!/^[0-9a-f]{8}$/i.test(code)||typeof recoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(recoverySecret)||typeof newRecoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(newRecoverySecret)||newRecoverySecret===recoverySecret)throw fail(400,'Datos de recuperación inválidos.');
+      const hash=crypto.createHash('sha256').update(recoverySecret).digest(),newHash=crypto.createHash('sha256').update(newRecoverySecret).digest();
+      const company=await transaction(pool,async c=>{
+        await requireCurrentUser(c,req.identity);
+        let company;try{({rows:[company]}=await c.query('select * from side_lite_private.api_recover_guest($1,$2,$3,$4,$5)',[req.identity.id,req.identity.sessionId,code.toUpperCase(),hash,newHash]))}catch(error){if(error.code==='23505')throw fail(409,'Esta sesión ya pertenece a otra empresa de la partida.');throw error}
+        if(!company)throw fail(403,'No se pudo recuperar la empresa.');
+        return company;
+      });
+      return res.json(company);
+    }catch(error){return next(error)}
   });
   app.post('/api/games/:id/start',async (req,res,next)=>{
     try {

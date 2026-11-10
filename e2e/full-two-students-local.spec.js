@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 
 // Requires the local server, its own local database and TEACHER_REGISTRATION_KEY.
 // Never use this test against Neon or any existing production database.
-const base='http://127.0.0.1:4178';
+const base=process.env.SIDE_TEST_BASE || 'http://127.0.0.1:4178';
 const password='solo-pruebas-locales-2026';
 const teacherKey=process.env.TEACHER_REGISTRATION_KEY||'side-lite-local-testing-key-2026';
 const nonce=`${Date.now()}-${Math.random().toString(36).slice(2,8)}`;

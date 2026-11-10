@@ -14,6 +14,8 @@ async function transaction(pool, fn) {
 async function lockAuthorizedGame(c,identity,id) {
   const {rows:[user]}=await c.query('select side_lite_private.lock_active_identity($1,$2) as active',[identity.id,identity.sessionId]);
   if (!user?.active) throw fail(403,'Cuenta o sesión no autorizada.');
+  const {rows:[mfa]}=await c.query('select side_lite_private.api_mfa_ready($1,$2,$3) as allowed',[identity.id,identity.sessionId,identity.aal || 'aal1']);
+  if (mfa?.allowed !== true) throw fail(403,'Verificación multifactor requerida.');
   const {rows:[grant]}=await c.query('select side_lite_private.api_lock_teacher($1,$2) as authorized',[identity.id,identity.sessionId]);
   if (!grant?.authorized) throw fail(403,'Docente no autorizado.');
   // Lock order: game then cycle. Decision and closer lock only cycle then companies.

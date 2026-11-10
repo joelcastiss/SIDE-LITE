@@ -126,3 +126,23 @@ test('retorno de Auth conserva únicamente selector local y elimina parámetros 
  assert.equal(recoveryRedirect({href:'https://joelcastiss.github.io/SIDE-LITE/public/?auth=supabase&next=x'}),'https://joelcastiss.github.io/SIDE-LITE/public/');
 
 });
+
+
+test('sesiones con MFA pendiente no llegan a la API',async()=>{
+ const x=fixture();x.auth.mfa={getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:'aal1',nextLevel:'aal2'}})};
+ await assert.rejects(()=>x.client.identity(),/multifactor/);await assert.rejects(()=>x.client.request('/games'),/multifactor/);assert.equal(x.requests.length,0);
+ x.auth.mfa.getAuthenticatorAssuranceLevel=async()=>({data:{currentLevel:'aal2',nextLevel:'aal2'}});await x.client.identity();assert.equal(x.requests.length,1);
+});
+
+test('MFA usa el factor verificado y no concede acceso con un código incorrecto',async()=>{
+ const x=fixture();let verified=false;
+ x.auth.mfa={getAuthenticatorAssuranceLevel:async()=>({data:{currentLevel:verified?'aal2':'aal1',nextLevel:'aal2'}}),listFactors:async()=>({data:{totp:[{id:'f1',status:'verified',friendly_name:'Teléfono'},{id:'f2',status:'unverified'}]}}),challenge:async v=>(x.calls.push(['challenge',v]),{data:{id:'c1'}}),verify:async v=>{x.calls.push(['verify-mfa',v]);if(v.code!=='123456')return {error:{message:'Código inválido'}};verified=true;return {data:{}}}};
+ assert.deepEqual(await x.client.mfaFactors(),[{id:'f1',name:'Teléfono'}]);await assert.rejects(()=>x.client.verifyMfa({factorId:'f1',code:'000000'}),/Código inválido/);await assert.rejects(()=>x.client.identity(),/multifactor/);assert.equal(x.requests.length,0);await x.client.verifyMfa({factorId:'f1',code:'123456'});await x.client.identity();assert.equal(x.requests.length,1);
+});
+
+test('identidad invitada usa Supabase y nunca sustituye una sesión permanente',async()=>{
+ const x=fixture();x.auth.getSession=async()=>({data:{session:null}});let created=0;x.auth.signInAnonymously=async()=>{created++;return {data:{user:{is_anonymous:true},session:{access_token:'anon-token',user:{is_anonymous:true}}}}};
+ assert.equal((await x.client.signInGuest()).access_token,'anon-token');assert.equal(created,1);
+ x.auth.getSession=async()=>({data:{session:{access_token:'existing',user:{is_anonymous:true}}}});assert.equal((await x.client.signInGuest()).access_token,'existing');assert.equal(created,1);
+ x.auth.getSession=async()=>({data:{session:{access_token:'permanent',user:{is_anonymous:false,email_confirmed_at:'yes'}}}});await assert.rejects(()=>x.client.signInGuest(),/Cierra tu sesión/);
+});

@@ -8,3 +8,23 @@
 .student-side .waiting-clock span{max-width:16ch;font-size:11px;font-weight:800;line-height:1.4}
 .student-side .waiting-clock strong{color:#ffd329;font-size:32px;font-weight:900;line-height:1}.student-side .waiting-clock small{grid-column:1/-1;font-size:11px}
 @media(max-width:650px){.student-side .waiting-header{align-items:flex-start;flex-direction:column;gap:10px}}
+/* Estructura y presentación de studentLobby de SIDE Original. */
+#studentLobby{position:relative;min-height:100vh;color:#edf5ff;background:#020817;text-align:center}
+#studentLobby[hidden]{display:none}
+#studentLobby .dashboard-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#14385e 0%,#020817 75%)}
+#studentLobby .dashboard-inner.lobby{position:relative;display:grid;place-items:center;min-height:100vh;width:min(1020px,calc(100% - 32px));margin:auto;padding:32px 0}
+#studentLobby .lobby-card{box-sizing:border-box;width:100%;padding:30px 24px 0;border-radius:22px;background:#061a35e8;border:1px solid #2d8cff77;box-shadow:0 25px 80px #000b}
+#studentLobby .dash-logo{width:150px;max-height:65px;object-fit:contain}
+#studentLobby .eyebrow{color:#70bfff;font-size:14px;letter-spacing:1px}
+#studentLobby h1{font-size:clamp(30px,4vw,46px);color:#ffd329;letter-spacing:5px;margin:4px 0;overflow-wrap:anywhere}
+#studentLobby h2{font-size:clamp(17px,2.2vw,22px);margin:4px 0}
+#studentLobby p{color:#c9d7e8}
+#studentLobby #lobbySegment{display:inline-block;margin:5px 0 9px;padding:6px 10px;border-radius:999px;border:1px solid #ffd32955;color:#ffd329;background:#ffd3290c;font-size:11px;font-weight:900;letter-spacing:1px}
+#studentLobby .student-cycle-clock{display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:center;margin:8px 0;padding:9px 12px;border:1px solid #5ab7ff38;border-radius:14px;background:#07182b}
+#studentLobby .student-cycle-clock span,#studentLobby .student-cycle-clock small{font-size:11px;color:#7894b1;font-weight:800;letter-spacing:.8px}
+#studentLobby .student-cycle-clock b{font-size:22px;color:#ffd550}#studentLobby .student-cycle-clock small{grid-column:1/-1}
+#studentLobby .student-news{margin:12px 0;text-align:left}#studentLobby .student-news>span{display:block;font-size:10px;letter-spacing:1.2px;color:#70bfff;font-weight:900}#studentLobby .student-news p{padding:9px 10px;border-radius:9px;background:#061521;border:1px solid #ffffff0d;font-size:10px}
+#studentLobby .student-finance-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}#studentLobby .student-finance-mini>div{padding:9px;border-radius:10px;background:#061421;border:1px solid #ffffff0d}#studentLobby .student-finance-mini span,#studentLobby .student-finance-mini small{display:block;font-size:8px;color:#778fa9;font-weight:800}#studentLobby .student-finance-mini strong{display:block;margin:4px 0;font-size:14px}
+#studentLobby .lobby-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 -24px;padding:12px 20px 8px;border-top:1px solid #39719666;border-radius:0 0 22px 22px;background:#06182d}
+#studentLobby .lobby-start{background:linear-gradient(#ffe985,#e7a800);color:#501800;font-weight:900}#studentLobby .ghost-btn{background:transparent;color:#c9d7e8;border:1px solid #5ab7ff38}
+@media(max-width:650px){#studentLobby .dashboard-inner.lobby{width:calc(100% - 20px);padding:20px 0}#studentLobby .lobby-card{padding:20px 12px 0}#studentLobby .lobby-actions{margin:0 -12px}#studentLobby .student-finance-mini{grid-template-columns:1fr}}

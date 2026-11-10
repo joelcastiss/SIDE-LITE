@@ -3,8 +3,9 @@ create role anon nologin;
 create role authenticated nologin;
 create role service_role nologin bypassrls;
 create schema auth;
-create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz, banned_until timestamptz, raw_user_meta_data jsonb);
-create table auth.sessions(id uuid primary key, user_id uuid not null references auth.users(id), not_after timestamptz);
+create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz, banned_until timestamptz, raw_user_meta_data jsonb, is_anonymous boolean not null default false);
+create table auth.sessions(id uuid primary key, user_id uuid not null references auth.users(id), not_after timestamptz, aal text);
+create table auth.mfa_factors(id uuid primary key, user_id uuid not null references auth.users(id), status text not null);
 create function auth.uid() returns uuid language sql stable as $$
   select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
 $$;

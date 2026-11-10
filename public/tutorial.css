@@ -1,0 +1,722 @@
+/* =========================================================
+   TUTORIAL SIDE — CARRUSEL DE LAS 7 ZONAS
+   ========================================================= */
+.tutorial-screen{
+  position:relative;
+  min-height:100vh;
+  overflow:hidden;
+  background:#020711;
+  color:#edf5ff;
+}
+.tutorial-screen:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 78% 12%,#244f9c55,transparent 30%),
+    radial-gradient(circle at 12% 88%,#5d2aa044,transparent 32%),
+    linear-gradient(135deg,#020711,#061426 55%,#020711);
+}
+.tutorial-screen:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.6;
+  background-image:
+    linear-gradient(#ffffff04 1px,transparent 1px),
+    linear-gradient(90deg,#ffffff04 1px,transparent 1px);
+  background-size:45px 45px;
+  mask-image:linear-gradient(to bottom,#000,transparent 92%);
+  pointer-events:none;
+}
+.tutorial-shell{
+  position:relative;
+  z-index:2;
+  width:min(1180px,94vw);
+  min-height:100vh;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  padding:22px 0 24px;
+}
+.tutorial-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.tutorial-brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.tutorial-brand img{
+  width:118px;
+  height:48px;
+  object-fit:contain;
+  filter:drop-shadow(0 6px 16px #000);
+}
+.tutorial-brand span{
+  color:#7892b1;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+.tutorial-skip{
+  border:1px solid #ffffff18;
+  border-radius:10px;
+  background:#07182dcc;
+  color:#a7b9ce;
+  padding:10px 14px;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:.2s;
+}
+.tutorial-skip:hover{
+  color:#ffd329;
+  border-color:#ffd32966;
+  transform:translateY(-1px);
+}
+.tutorial-progress{
+  height:4px;
+  border-radius:10px;
+  overflow:hidden;
+  margin:16px 0 12px;
+  background:#06162b;
+  border:1px solid #ffffff0b;
+}
+#tutorialProgressFill{
+  width:12.5%;
+  height:100%;
+  background:linear-gradient(90deg,#1688ff,#ffd329);
+  box-shadow:0 0 18px #ffd32955;
+  transition:width .35s ease;
+}
+.tutorial-carousel{
+  position:relative;
+  flex:1;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.tutorial-viewport{
+  width:100%;
+  overflow:hidden;
+  border:1px solid #ffffff12;
+  border-radius:26px;
+  background:#06172ae6;
+  box-shadow:0 28px 90px #000b,0 0 50px #1688ff12;
+  backdrop-filter:blur(8px);
+}
+.tutorial-track{
+  display:flex;
+  width:100%;
+  transition:transform .55s cubic-bezier(.22,.75,.2,1);
+}
+.tutorial-slide{
+  flex:0 0 100%;
+  min-height:clamp(470px,64vh,650px);
+  display:grid;
+  grid-template-columns:42% 58%;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+  padding:48px 68px;
+}
+.tutorial-slide:before{
+  content:"";
+  position:absolute;
+  width:360px;
+  height:360px;
+  border-radius:50%;
+  left:8%;
+  top:50%;
+  transform:translateY(-50%);
+  background:#1688ff14;
+  filter:blur(12px);
+}
+.tutorial-slide[data-zone="C"]:before{background:#7eff8014}
+.tutorial-slide[data-zone="D"]:before{background:#c789ff14}
+.tutorial-slide[data-zone="E"]:before{background:#ffd34d14}
+.tutorial-slide[data-zone="F"]:before{background:#ff718d14}
+.tutorial-slide[data-zone="G"]:before{background:#65efff14}
+.tutorial-art-wrap{
+  position:relative;
+  width:min(360px,90%);
+  aspect-ratio:1;
+  margin:auto;
+  display:grid;
+  place-items:center;
+  border:1px solid #ffffff12;
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 50% 45%,#123d70aa,transparent 62%),
+    linear-gradient(145deg,#0b2037,#04101e);
+  box-shadow:inset 0 0 45px #0007,0 20px 60px #0008;
+  transform:perspective(800px) rotateY(3deg);
+}
+.tutorial-art-wrap:after{
+  content:"";
+  position:absolute;
+  inset:16px;
+  border:1px solid #ffffff0c;
+  border-radius:21px;
+  pointer-events:none;
+}
+.tutorial-art-wrap img{
+  position:relative;
+  z-index:2;
+  width:58%;
+  max-height:58%;
+  object-fit:contain;
+  filter:drop-shadow(0 14px 24px #000b);
+  animation:tutorialFloat 3.6s ease-in-out infinite;
+}
+.tutorial-art-wrap.zone-a img{width:66%}
+.tutorial-letter{
+  position:absolute;
+  z-index:3;
+  top:18px;
+  left:22px;
+  font-size:34px;
+  font-weight:900;
+  color:#ffd329;
+  text-shadow:0 4px 18px #000;
+}
+.zone-c .tutorial-letter{color:#7eff80}
+.zone-d .tutorial-letter{color:#c789ff}
+.zone-e .tutorial-letter{color:#ffd34d}
+.zone-f .tutorial-letter{color:#ff718d}
+.zone-g .tutorial-letter{color:#65efff}
+.tutorial-copy{
+  padding:12px 12px 12px 42px;
+  max-width:590px;
+}
+.tutorial-kicker{
+  display:block;
+  color:#70bfff;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+.tutorial-slide[data-zone="C"] .tutorial-kicker{color:#7eff80}
+.tutorial-slide[data-zone="D"] .tutorial-kicker{color:#c789ff}
+.tutorial-slide[data-zone="E"] .tutorial-kicker{color:#ffd34d}
+.tutorial-slide[data-zone="F"] .tutorial-kicker{color:#ff718d}
+.tutorial-slide[data-zone="G"] .tutorial-kicker{color:#65efff}
+.tutorial-copy h2{
+  margin:0;
+  font-size:clamp(28px,3.4vw,48px);
+  line-height:1.05;
+  letter-spacing:.5px;
+}
+.tutorial-copy p{
+  color:#9db1c8;
+  font-size:16px;
+  line-height:1.75;
+  margin:18px 0 20px;
+  max-width:550px;
+}
+.tutorial-copy p strong{color:#eaf3ff}
+.tutorial-question{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:13px 15px;
+  border-radius:12px;
+  border:1px solid #ffd32925;
+  background:#ffd32908;
+  color:#c2d1e2;
+  font-size:15px;
+  line-height:1.5;
+}
+.tutorial-question span{
+  color:#ffd329;
+  font-size:16px;
+}
+.tutorial-arrow{
+  flex:0 0 48px;
+  width:48px;
+  height:48px;
+  border:1px solid #ffffff1a;
+  border-radius:50%;
+  background:#071a30dd;
+  color:#fff;
+  font-size:36px;
+  line-height:1;
+  cursor:pointer;
+  z-index:4;
+  transition:.2s;
+  box-shadow:0 10px 30px #0007;
+}
+.tutorial-arrow:hover:not(:disabled){
+  transform:scale(1.08);
+  border-color:#ffd32977;
+  color:#ffd329;
+}
+.tutorial-arrow:disabled{
+  opacity:.25;
+  cursor:default;
+}
+.tutorial-bottom{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:20px;
+  padding-top:16px;
+}
+.tutorial-dots{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.tutorial-dot{
+  width:7px;
+  height:7px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#526b88;
+  cursor:pointer;
+  transition:.25s;
+}
+.tutorial-dot.active{
+  width:25px;
+  border-radius:10px;
+  background:#ffd329;
+  box-shadow:0 0 14px #ffd32966;
+}
+.tutorial-counter{
+  color:#68819e;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.tutorial-counter strong{color:#ffd329;font-size:17px}
+.tutorial-continue{
+  justify-self:end;
+  border:0;
+  border-radius:11px;
+  padding:13px 20px;
+  background:linear-gradient(#ffe985,#e7a800);
+  color:#501800;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:1px;
+  cursor:pointer;
+  box-shadow:0 4px 0 #8c5100,0 8px 25px #0006;
+  transition:.2s;
+}
+.tutorial-continue:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 0 #8c5100,0 12px 30px #0007;
+}
+.tutorial-intro{
+  grid-template-columns:1fr;
+  text-align:center;
+  justify-items:center;
+  align-content:center;
+  padding:45px 100px;
+}
+.tutorial-intro:before{
+  left:50%;
+  top:44%;
+  transform:translate(-50%,-50%);
+  width:500px;
+  height:500px;
+  background:#1688ff16;
+}
+.tutorial-intro-logo{
+  width:min(280px,55vw);
+  max-height:110px;
+  object-fit:contain;
+  filter:drop-shadow(0 12px 28px #000);
+  margin-bottom:18px;
+}
+.tutorial-intro h1{
+  margin:0;
+  font-size:clamp(34px,5vw,62px);
+  line-height:.95;
+  letter-spacing:2px;
+}
+.tutorial-intro h1 em{
+  font-style:normal;
+  color:#ffd329;
+}
+.tutorial-intro p{
+  max-width:720px;
+  margin:18px auto;
+  color:#9db1c8;
+  font-size:16px;
+  line-height:1.7;
+}
+.tutorial-hints{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:12px;
+}
+.tutorial-hints span{
+  padding:9px 12px;
+  border-radius:10px;
+  background:#071a30;
+  border:1px solid #ffffff10;
+  color:#7e97b4;
+  font-size:14px;
+  letter-spacing:.8px;
+}
+.tutorial-hints b{color:#ffd329;font-size:16px;margin-right:4px}
+.tutorial-leaving .tutorial-shell{
+  animation:tutorialOut .26s ease both;
+}
+@keyframes tutorialFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-9px)}
+}
+@keyframes tutorialOut{
+  to{opacity:0;transform:translateY(8px) scale(.99)}
+}
+@media(max-width:850px){
+  .tutorial-shell{width:94vw;padding-top:16px}
+  .tutorial-slide{
+    grid-template-columns:1fr;
+    min-height:540px;
+    padding:30px 30px 34px;
+    text-align:center;
+  }
+  .tutorial-art-wrap{
+    width:min(250px,62vw);
+    margin:0 auto 22px;
+  }
+  .tutorial-copy{padding:0;max-width:none}
+  .tutorial-copy p{margin-left:auto;margin-right:auto}
+  .tutorial-question{text-align:left}
+  .tutorial-arrow{position:absolute;top:42%;width:42px;height:42px;font-size:31px}
+  .tutorial-arrow-left{left:7px}
+  .tutorial-arrow-right{right:7px}
+  .tutorial-intro{padding:30px 30px}
+  .tutorial-intro-logo{width:220px}
+  .tutorial-bottom{grid-template-columns:1fr auto;gap:10px}
+  .tutorial-dots{order:2;justify-content:flex-end}
+  .tutorial-counter{order:1}
+  .tutorial-continue{grid-column:1/-1;justify-self:stretch}
+}
+@media(max-width:480px){
+  .tutorial-brand img{width:95px;height:40px}
+  .tutorial-brand span{font-size:13px}
+  .tutorial-skip{font-size:13px;padding:9px 10px}
+  .tutorial-slide{min-height:520px;padding:25px 22px 28px}
+  .tutorial-copy h2{font-size:29px}
+  .tutorial-copy p{font-size:15px;line-height:1.6}
+  .tutorial-art-wrap{width:210px}
+  .tutorial-arrow{top:35%;width:38px;height:38px}
+}
+
+
+/* =========================================================
+   TUTORIAL — CARRUSEL AUTOMÁTICO + BORDE NEÓN + REAPERTURA
+   ========================================================= */
+.tutorial-viewport{
+  position:relative;
+  border-color:#2f9bff55;
+  box-shadow:
+    0 28px 90px #000b,
+    0 0 28px #1688ff20,
+    0 0 0 1px #ffd32912;
+  animation:tutorialFrameGlow 3.2s ease-in-out infinite;
+}
+.tutorial-viewport:before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:27px;
+  pointer-events:none;
+  z-index:5;
+  border:1px solid transparent;
+  background:linear-gradient(115deg,#1688ff00,#1688ff88,#ffd329cc,#1688ff00) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  animation:tutorialBorderSweep 4.2s linear infinite;
+}
+.tutorial-slide.active .tutorial-art-wrap{
+  animation:tutorialCardGlow 2.8s ease-in-out infinite;
+}
+.tutorial-slide.active .tutorial-art-wrap:after{
+  border-color:#ffd32938;
+  box-shadow:inset 0 0 22px #1688ff12;
+}
+.tutorial-slide.active .tutorial-copy{
+  animation:tutorialCopyIn .55s ease both;
+}
+.tutorial-slide.active .tutorial-letter{
+  text-shadow:0 0 10px currentColor,0 4px 18px #000;
+}
+.tutorial-track{
+  will-change:transform;
+}
+.tutorial-reopen-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:min(390px,100%);
+  margin:16px auto 12px;
+  padding:11px 16px;
+  border:1px solid #ffd32955;
+  border-radius:12px;
+  background:linear-gradient(135deg,#071c37e8,#0a2445e8);
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 0 20px #ffd32910,inset 0 0 20px #1688ff0b;
+  transition:.22s ease;
+}
+.tutorial-reopen-btn:hover{
+  transform:translateY(-2px);
+  border-color:#ffd329bb;
+  box-shadow:0 0 25px #ffd32925,0 0 45px #1688ff16,inset 0 0 22px #ffd3290d;
+}
+.tutorial-reopen-icon{
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  border:1px solid #ffd32988;
+  color:#ffd329;
+  font-size:19px;
+  font-weight:900;
+  box-shadow:0 0 12px #ffd32922;
+}
+.tutorial-reopen-btn span:last-child{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  text-align:left;
+}
+.tutorial-reopen-btn strong{
+  color:#ffd329;
+  font-size:15px;
+  letter-spacing:1.3px;
+}
+.tutorial-reopen-btn small{
+  color:#8fa8c6;
+  font-size:14px;
+  margin-top:2px;
+}
+@keyframes tutorialFrameGlow{
+  0%,100%{
+    border-color:#2f9bff55;
+    box-shadow:0 28px 90px #000b,0 0 28px #1688ff20,0 0 0 1px #ffd32912;
+  }
+  50%{
+    border-color:#ffd32988;
+    box-shadow:0 28px 90px #000b,0 0 42px #1688ff35,0 0 0 1px #ffd32928;
+  }
+}
+@keyframes tutorialBorderSweep{
+  from{transform:translateX(-8%);opacity:.35}
+  50%{opacity:1}
+  to{transform:translateX(8%);opacity:.35}
+}
+@keyframes tutorialCardGlow{
+  0%,100%{box-shadow:inset 0 0 45px #0007,0 20px 60px #0008,0 0 14px #1688ff12}
+  50%{box-shadow:inset 0 0 45px #0007,0 20px 60px #0008,0 0 32px #ffd32920}
+}
+@keyframes tutorialCopyIn{
+  from{opacity:.35;transform:translateX(16px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@media(max-width:600px){
+  .tutorial-reopen-btn{margin-top:12px}
+}
+
+/* =========================================================
+   TUTORIAL — AUTO AVANCE
+   El carrusel no se pausa al pasar el mouse.
+   ========================================================= */
+.tutorial-track {
+  will-change: transform;
+}
+
+.tutorial-slide.active .tutorial-art-wrap {
+  animation: tutorialCardPulse 4.8s ease-in-out;
+}
+
+@keyframes tutorialCardPulse {
+  0% { box-shadow: inset 0 0 45px #0007, 0 20px 60px #0008, 0 0 0 rgba(255,211,41,0); }
+  18% { box-shadow: inset 0 0 45px #0007, 0 20px 60px #0008, 0 0 28px rgba(255,211,41,.22); }
+  70% { box-shadow: inset 0 0 45px #0007, 0 20px 60px #0008, 0 0 38px rgba(22,136,255,.18); }
+  100% { box-shadow: inset 0 0 45px #0007, 0 20px 60px #0008, 0 0 0 rgba(255,211,41,0); }
+}
+
+
+#studentWaiting{position:fixed;height:100dvh;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);place-items:stretch;background:#020817;color:#edf5ff}
+#studentWaiting .game-loading-bg{overflow:hidden}
+#studentWaiting .student-waiting-content{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;width:min(1240px,100%);min-width:0;height:100%;max-height:none;margin:auto;padding:18px max(18px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));text-align:left}
+#studentWaiting .waiting-header{display:flex;align-items:center;justify-content:space-between;gap:20px;flex:none}
+#studentWaiting .waiting-heading{min-width:0}
+#studentWaiting .waiting-heading .eyebrow{margin:0 0 4px;color:#ffd329;font-size:12px;letter-spacing:1.5px}
+#studentWaiting .waiting-heading h1{margin:0;font-size:clamp(21px,2.5vw,32px);line-height:1.12;letter-spacing:.3px}
+#studentWaiting #waitingGameName{margin:5px 0 0;font-size:13px;line-height:1.25;color:#9db1c8;overflow-wrap:anywhere}
+#studentWaiting .waiting-status{display:flex;align-items:center;justify-content:flex-end;gap:20px;flex:none}
+#studentWaiting .waiting-clock{display:grid;grid-template-columns:auto auto;align-items:center;column-gap:12px;color:#a9bed5}
+#studentWaiting .waiting-clock>span{max-width:16ch;font-size:11px;font-weight:800;line-height:1.4}
+#studentWaiting #waitingCountdown{font-variant-numeric:tabular-nums;color:#ffd329;font-size:32px;font-weight:900;line-height:1}
+#studentWaiting #waitingCountdownNote{grid-column:1/-1;font-size:11px;line-height:1.35;margin-top:5px}
+#studentWaiting #waitingCompanies{min-width:0;margin:0;padding:9px 12px;font-size:14px;line-height:1.3;text-align:center;max-width:21ch}
+#studentWaiting .waiting-tutorial-mount{flex:1;min-height:0;min-width:0;display:flex}
+#studentWaiting .tutorial-shell{display:flex;flex-direction:column;width:100%;min-width:0;height:100%;min-height:0;margin:0;padding:0}
+#studentWaiting .tutorial-top{flex:none;gap:12px;padding:0}
+#studentWaiting .tutorial-brand{gap:10px}
+#studentWaiting .tutorial-brand img{width:84px;height:34px}
+#studentWaiting .tutorial-brand span{font-size:12px;letter-spacing:1px}
+#studentWaiting .tutorial-required{padding:6px 10px;font-size:10px;letter-spacing:.5px}
+#studentWaiting .tutorial-progress{flex:none;margin:8px 0}
+#studentWaiting .tutorial-progress>div{height:100%;background:linear-gradient(90deg,#1688ff,#ffd329);box-shadow:0 0 18px #ffd32955;transition:width .35s ease}
+#studentWaiting #integrationCountdown,#studentWaiting #integrationWaitSuffix{display:none}
+#studentWaiting .tutorial-carousel{align-items:stretch;gap:10px;min-height:0}
+#studentWaiting .tutorial-viewport{min-width:0;min-height:0;height:100%;animation:none}
+#studentWaiting .tutorial-track{height:100%;min-height:0}
+#studentWaiting .tutorial-slide{min-width:0;min-height:0;height:100%;padding:clamp(16px,3dvh,34px) 36px;grid-template-columns:36% minmax(0,1fr);gap:24px;text-align:left}
+#studentWaiting .tutorial-art-wrap{width:min(280px,100%,36dvh);margin:auto}
+#studentWaiting .tutorial-copy{min-width:0;max-width:660px;padding:0}
+#studentWaiting .tutorial-kicker{font-size:12px;margin:0 0 8px;letter-spacing:1px}
+#studentWaiting .tutorial-copy h2{font-size:clamp(23px,2.8vw,38px);line-height:1.12}
+#studentWaiting .tutorial-copy p{font-size:15px;line-height:1.55;margin:12px 0;max-width:none}
+#studentWaiting .tutorial-question{padding:10px 12px;font-size:13px;line-height:1.45}
+#studentWaiting .tutorial-arrow{position:static;align-self:center;flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px}
+#studentWaiting .tutorial-arrow img{width:26px;height:26px;margin:auto}
+#studentWaiting .tutorial-bottom{flex:none;display:flex;justify-content:center;gap:20px;padding:8px 0 0;min-height:30px}
+#studentWaiting .tutorial-dots{order:0;justify-content:center;gap:3px}
+#studentWaiting .tutorial-dot{width:28px;height:24px;min-height:24px;background:radial-gradient(circle,#526b88 0 3px,transparent 4px);box-shadow:none;border-radius:4px}
+#studentWaiting .tutorial-dot.active{width:28px;background:radial-gradient(circle,#ffd329 0 5px,transparent 6px)}
+#studentWaiting .tutorial-counter{order:0;font-size:12px}
+#studentWaiting .tutorial-intro{grid-template-columns:1fr;gap:0;text-align:center;justify-items:center;align-content:center;padding:20px 48px}
+#studentWaiting .tutorial-intro-glow{display:none}
+#studentWaiting .tutorial-intro-logo{grid-row:auto;width:min(210px,28dvh);max-height:75px;margin:0 0 12px}
+#studentWaiting .tutorial-intro h1{font-size:clamp(25px,3.3vw,44px);line-height:1.05;letter-spacing:.5px}
+#studentWaiting .tutorial-intro p{font-size:15px;line-height:1.5;margin:12px auto;max-width:760px}
+#studentWaiting .tutorial-hints{gap:8px;margin:0}
+#studentWaiting .tutorial-hints span{font-size:12px;padding:7px 10px;letter-spacing:0}
+#studentWaiting .waiting-footer{flex:none;display:flex;align-items:center;justify-content:space-between;gap:18px}
+#studentWaiting #studentIntegrationNotice{max-width:none;margin:0;color:#b3c7dc;font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+#studentWaiting #waitingBackToProfiles{flex:none;margin:0 0 0 auto;min-height:40px;padding:8px 14px;font-size:12px}
+#studentWaiting button:focus-visible{outline:2px solid #ffd329;outline-offset:2px}
+.result-warning{margin:10px 0;padding:12px;border-left:4px solid #ff747d;background:#321820;color:#ffe4e6;border-radius:6px;line-height:1.5}.result-warning p{margin:6px 0}.student-segment-result{padding:10px 0;border-top:1px solid #52647a}.student-segment-result h5{margin:0 0 4px;color:#ffe080;font-size:14px}.student-segment-result p{margin:4px 0;line-height:1.55;overflow-wrap:anywhere}
+
+@media(max-width:650px){#studentWaiting{overflow:auto;position:relative;min-height:100dvh;height:auto}#studentWaiting .student-waiting-content{height:auto;min-height:100dvh}#studentWaiting .waiting-header,#studentWaiting .waiting-status{flex-wrap:wrap}#studentWaiting .tutorial-slide{min-height:480px;grid-template-columns:1fr;padding:20px}#studentWaiting .tutorial-art-wrap{width:130px}}
+#studentWaiting{inset:0;z-index:100;overflow-y:auto}#studentWaiting *{box-sizing:border-box}#studentWaiting .tutorial-viewport{flex:1;min-width:0}#studentWaiting .tutorial-slide{flex:0 0 100%}@media(max-width:650px){#studentWaiting{position:fixed;height:100dvh}#studentWaiting .waiting-status{width:100%;justify-content:space-between}#studentWaiting #waitingCompanies{white-space:normal;max-width:10em}}
+
+/* Sala y ajustes responsivos procedentes de SIDE Original. */
+#studentWaiting .game-loading-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,#123d70 0%,#06162c 35%,#020817 72%)}
+#studentWaiting .game-loading-bg:before,#studentWaiting .game-loading-bg:after{content:"";position:absolute;border:1px solid #2f9bff33;border-radius:50%;width:70vw;height:70vw;left:15vw;top:15vh;animation:sideWaitSpin 16s linear infinite}#studentWaiting .game-loading-bg:after{width:45vw;height:45vw;left:27.5vw;top:27vh;border-color:#ffd32933;animation-direction:reverse;animation-duration:11s}@keyframes sideWaitSpin{to{transform:rotate(360deg)}}
+#studentWaiting .waiting-heading h1{color:#edf5ff;letter-spacing:.3px}#studentWaiting .waiting-companies{display:inline-block;min-width:15ch;border:1px solid #ffd32966;border-radius:999px;background:#0b2845;color:#ffd329;font-weight:800}
+/* Carrusel dentro de la espera: ajustar la composición antes de reducir texto. */
+#studentWaiting .waiting-footer #studentIntegrationNotice{margin:0;font-size:12px;line-height:1.35}
+#studentWaiting .waiting-heading #waitingGameName{margin:5px 0 0;font-size:13px;line-height:1.25}
+@media(max-width:700px){
+  #studentWaiting .student-waiting-content{gap:8px;padding:12px max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+  #studentWaiting .waiting-header{gap:10px;align-items:flex-start}
+  #studentWaiting .waiting-heading{flex:1}
+  #studentWaiting .waiting-heading .eyebrow{font-size:10px;margin-bottom:3px}
+  #studentWaiting .waiting-heading h1{font-size:21px;line-height:1.15}
+  #studentWaiting .waiting-heading #waitingGameName{font-size:11px;margin-top:3px}
+  #studentWaiting .waiting-status{flex-direction:column;align-items:flex-end;gap:5px;max-width:44%}
+  #studentWaiting .waiting-clock{column-gap:6px}
+  #studentWaiting .waiting-clock>span{font-size:9px;max-width:13ch}
+  #studentWaiting #waitingCountdown{font-size:26px}
+  #studentWaiting #waitingCountdownNote{font-size:9px;margin-top:3px}
+  #studentWaiting #waitingCompanies{font-size:11px;padding:5px 7px;max-width:none}
+  #studentWaiting .tutorial-brand img{width:64px;height:27px}
+  #studentWaiting .tutorial-brand span{font-size:10px;letter-spacing:.5px}
+  #studentWaiting .tutorial-required{max-width:17ch;text-align:center;font-size:9px;line-height:1.25;padding:4px 7px}
+  #studentWaiting .tutorial-progress{margin:6px 0}
+  #studentWaiting .tutorial-carousel{display:block;padding-bottom:44px}
+  #studentWaiting .tutorial-viewport{border-radius:18px}
+  #studentWaiting .tutorial-slide{grid-template-columns:1fr;align-content:center;justify-items:center;gap:12px;padding:16px 18px;text-align:left}
+  #studentWaiting .tutorial-art-wrap{width:min(150px,18dvh);margin:0 auto}
+  #studentWaiting .tutorial-letter{font-size:23px;top:10px;left:12px}
+  #studentWaiting .tutorial-copy h2{font-size:25px;line-height:1.12}
+  #studentWaiting .tutorial-copy p{font-size:14px;line-height:1.45;margin:10px 0}
+  #studentWaiting .tutorial-question{font-size:12px;line-height:1.4;padding:9px 10px;gap:7px}
+  #studentWaiting .tutorial-kicker{font-size:10px;margin-bottom:6px}
+  #studentWaiting .tutorial-arrow{position:absolute;top:auto;bottom:0;width:44px;height:40px;min-height:40px}
+  #studentWaiting .tutorial-arrow-left{left:3px}
+  #studentWaiting .tutorial-arrow-right{right:3px}
+  #studentWaiting .tutorial-bottom{position:relative;margin-top:-40px;padding:0 50px;min-height:40px;gap:6px;pointer-events:none}
+  #studentWaiting .tutorial-dots{gap:0;pointer-events:auto}
+  #studentWaiting .tutorial-dot,#studentWaiting .tutorial-dot.active{width:24px;min-width:24px;height:32px}
+  #studentWaiting .tutorial-counter{font-size:10px;white-space:nowrap}
+  #studentWaiting .tutorial-counter strong{font-size:13px}
+  #studentWaiting .tutorial-intro{gap:0;text-align:center;padding:16px 18px}
+  #studentWaiting .tutorial-intro-logo{width:min(165px,30vw);max-height:65px;margin:0 0 12px}
+  #studentWaiting .tutorial-intro h1{font-size:27px;line-height:1.05}
+  #studentWaiting .tutorial-intro p{font-size:14px;line-height:1.45;margin:12px auto}
+  #studentWaiting .tutorial-hints{gap:5px;flex-wrap:wrap}
+  #studentWaiting .tutorial-hints span{font-size:10px;padding:6px 7px}
+  #studentWaiting .tutorial-hints b{font-size:12px}
+  #studentWaiting .waiting-footer{gap:10px}
+  #studentWaiting .waiting-footer #studentIntegrationNotice{font-size:10px;line-height:1.3}
+  #studentWaiting .waiting-footer #waitingBackToProfiles{min-height:40px;padding:6px 9px;font-size:10px}
+}
+@media(max-width:700px) and (max-height:730px){
+  #studentWaiting .tutorial-art-wrap{display:none}
+  #studentWaiting .tutorial-copy h2{font-size:23px}
+  #studentWaiting .tutorial-copy p{font-size:13px;margin:8px 0}
+  #studentWaiting .tutorial-question{font-size:12px;padding:8px}
+  #studentWaiting .tutorial-intro-logo{display:none}
+  #studentWaiting .tutorial-intro h1{font-size:25px}
+  #studentWaiting .tutorial-intro p{font-size:13px;margin:9px auto}
+}
+@media(max-height:500px) and (min-width:600px){
+  #studentWaiting .student-waiting-content{gap:6px;padding:8px 12px}
+  #studentWaiting .waiting-header{gap:12px}
+  #studentWaiting .waiting-heading h1{font-size:19px}
+  #studentWaiting .waiting-heading .eyebrow{font-size:9px;margin-bottom:2px}
+  #studentWaiting .waiting-heading #waitingGameName{font-size:10px;margin-top:2px}
+  #studentWaiting .waiting-status{flex-direction:row;align-items:center;gap:12px;max-width:none}
+  #studentWaiting .waiting-clock>span{font-size:9px}
+  #studentWaiting #waitingCountdown{font-size:24px}
+  #studentWaiting #waitingCountdownNote{font-size:9px;margin-top:2px}
+  #studentWaiting #waitingCompanies{font-size:11px;padding:5px 8px}
+  #studentWaiting .tutorial-top{display:none}
+  #studentWaiting .tutorial-progress{margin:2px 0 6px}
+  #studentWaiting .tutorial-carousel{display:flex;padding:0;gap:8px}
+  #studentWaiting .tutorial-slide{grid-template-columns:minmax(80px,.28fr) minmax(0,1fr);gap:18px;padding:10px 16px;text-align:left}
+  #studentWaiting .tutorial-art-wrap{display:grid;width:min(135px,30dvh)}
+  #studentWaiting .tutorial-copy h2{font-size:21px}
+  #studentWaiting .tutorial-kicker{font-size:10px;margin-bottom:4px}
+  #studentWaiting .tutorial-copy p{font-size:12px;line-height:1.4;margin:6px 0}
+  #studentWaiting .tutorial-question{font-size:11px;line-height:1.35;padding:6px 8px}
+  #studentWaiting .tutorial-arrow{position:static;min-height:40px}
+  #studentWaiting .tutorial-bottom{position:static;margin:0;padding:0;min-height:24px;gap:12px}
+  #studentWaiting .tutorial-dot,#studentWaiting .tutorial-dot.active{height:24px}
+  #studentWaiting .tutorial-intro{grid-template-columns:120px minmax(0,1fr);column-gap:20px;row-gap:0;justify-items:start;align-content:center}
+  #studentWaiting .tutorial-intro-logo{display:block;grid-column:1;grid-row:1/5;max-height:60px;width:120px;margin:0}
+  #studentWaiting .tutorial-intro>.tutorial-kicker,#studentWaiting .tutorial-intro>h1,#studentWaiting .tutorial-intro>p,#studentWaiting .tutorial-intro>.tutorial-hints{grid-column:2}
+  #studentWaiting .tutorial-intro h1{font-size:25px;text-align:left}
+  #studentWaiting .tutorial-intro p{font-size:12px;line-height:1.35;margin:6px 0;text-align:left}
+  #studentWaiting .tutorial-hints{gap:5px;justify-content:flex-start}
+  #studentWaiting .tutorial-hints span{font-size:10px;padding:4px 6px}
+  #studentWaiting .waiting-footer #studentIntegrationNotice{font-size:10px;line-height:1.25}
+  #studentWaiting .waiting-footer #waitingBackToProfiles{min-height:34px;padding:5px 10px;font-size:10px}
+}
+
+@media(max-width:700px){#studentWaiting .student-waiting-content{height:100dvh;min-height:0}#studentWaiting .waiting-header{flex-wrap:nowrap}#studentWaiting .waiting-status{width:auto;justify-content:flex-start}#studentWaiting .tutorial-slide{min-height:0}#studentWaiting .waiting-companies{min-width:0}}
+/* Evita que las reglas generales de Lite alteren la espera original. */
+#studentWaiting .waiting-header{background:transparent;border:0;padding:0;box-shadow:none}
+#studentWaiting .waiting-heading .eyebrow{color:#ffd329}
+#studentWaiting .tutorial-intro h1{color:#edf5ff;letter-spacing:.5px}
+#studentWaiting .tutorial-intro h1 em{color:#ffd329}
+#studentWaiting .tutorial-required{font-weight:900;color:#ffd44f;border:1px solid #ffd44f33;border-radius:999px;background:#ffd44f0b}
+#studentWaiting .tutorial-arrow img{display:block;filter:brightness(0) invert(1)}
+#studentWaiting .waiting-companies{background:#09182f;color:#39d0ff;border-color:#39d0ff}
+#studentWaiting .waiting-footer #waitingBackToProfiles{width:auto;border:1px solid #39d0ff;background:#081a34;color:#f8feff}
+#studentLobby #studentWaiting .waiting-heading .eyebrow{color:#ffd329}
+@media(max-width:600px){#studentWaiting .tutorial-brand span{display:none}}
