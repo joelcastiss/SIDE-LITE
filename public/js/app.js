@@ -669,8 +669,9 @@ function openTeacherPanel(){closeModal();window.location.href='docente.html?v=20
 let teacherSessionPromise;
 function teacherSession(){
   if(!supabaseClient)throw new Error('No se pudo conectar con el servicio de acceso.');
-  return teacherSessionPromise ||= Promise.all([
-    import('../supabase-session.js'), import('../turnstile-provider.js'), import('../captcha-config.js')
+  if(teacherSessionPromise)return teacherSessionPromise;
+  teacherSessionPromise=Promise.all([
+    import('../supabase-session.js'), import('../turnstile-provider.js?v=20261110-login-fast1'), import('../captcha-config.js')
   ]).then(([{createSupabaseSession},{createTurnstileProvider},{turnstileSiteKey,teacherCaptchaEnabled}])=>{
     const captcha=teacherCaptchaEnabled ? createTurnstileProvider({siteKey:turnstileSiteKey}) : null;
     if(teacherCaptchaEnabled&&!captcha)throw new Error('No está disponible la verificación de acceso.');
@@ -678,7 +679,8 @@ function teacherSession(){
     // is still requested fresh and verified by Supabase when submitting.
     if(captcha?.preload)void captcha.preload().catch(()=>{});
     return createSupabaseSession(supabaseClient,fetch,{captchaTokenProvider:captcha});
-  });
+  }).catch(error=>{teacherSessionPromise=null;throw error;});
+  return teacherSessionPromise;
 }
 async function teacherIdentity(session){
   let identity;
