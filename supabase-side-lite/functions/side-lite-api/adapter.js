@@ -4,7 +4,8 @@ import {EventEmitter} from 'node:events';
 
 const ORIGIN = 'https://joelcastiss.github.io';
 const HEADERS = 'authorization, content-type, apikey';
-const METHODS = new Set(['GET', 'POST', 'PUT']);
+const METHODS = new Set(['GET', 'POST', 'PUT', 'DELETE']);
+const podiumDeletePath = pathname => /^(?:\/functions\/v1)?\/side-lite-api\/api\/games\/[0-9a-f-]{36}\/podium$/i.test(pathname);
 
 // Express replaces req/res prototypes; keep the adapter's HTTP methods as own
 // properties so its header and body state still backs Express responses.
@@ -28,10 +29,10 @@ export function createEdgeHandler(app) {
     if (request.method === 'OPTIONS') {
       const method = request.headers.get('access-control-request-method');
       const requested = (request.headers.get('access-control-request-headers') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-      if (!origin || !METHODS.has(method) || requested.some(h => !HEADERS.split(', ').includes(h))) return new Response(null, {status: 403, headers: cors});
-      return new Response(null, {status: 204, headers: {...cors, 'Access-Control-Allow-Methods':'GET, POST, PUT', 'Access-Control-Allow-Headers':HEADERS, 'Access-Control-Max-Age':'600'}});
+      if (!origin || !METHODS.has(method) || (method==='DELETE' && !podiumDeletePath(new URL(request.url).pathname)) || requested.some(h => !HEADERS.split(', ').includes(h))) return new Response(null, {status: 403, headers: cors});
+      return new Response(null, {status: 204, headers: {...cors, 'Access-Control-Allow-Methods':'GET, POST, PUT, DELETE', 'Access-Control-Allow-Headers':HEADERS, 'Access-Control-Max-Age':'600'}});
     }
-    if (!METHODS.has(request.method)) return new Response(null, {status:405, headers:cors});
+    if (!METHODS.has(request.method) || (request.method==='DELETE' && !podiumDeletePath(new URL(request.url).pathname))) return new Response(null, {status:405, headers:cors});
     const input = new URL(request.url);
     const match = /^(?:\/functions\/v1)?\/side-lite-api(\/api(?:\/[^?#]*)?)$/.exec(input.pathname);
     if (!match) return new Response(null, {status:404, headers:cors});

@@ -1,6 +1,8 @@
 import {staticPreview,enterPreview,previewRequest} from './preview-mode.js';
 import {createNeonSession} from './neon-session.js';
 import {createSupabaseSession,recoveryRedirect} from './supabase-session.js';
+import {createTurnstileProvider} from './turnstile-provider.js';
+import {turnstileSiteKey} from './captcha-config.js';
 import {campaignFor,eventDescription} from './campaign.js';
 import {renderLaboratory} from './laboratory.js';
 import {renderTeacherHistory} from './teacher-history.js';
@@ -10,7 +12,7 @@ const app=document.querySelector('#app'), error=document.querySelector('#error')
 const useSupabase=!staticPreview && (location.hostname.toLowerCase()==='joelcastiss.github.io' || new URLSearchParams(location.search).get('auth')==='supabase');
 let authClient=window.sideLiteSupabaseClient;
 if(!authClient && useSupabase){const {createSideLiteClient}=await import('./supabase-client.js');authClient=createSideLiteClient();}
-const supabase=authClient ? createSupabaseSession(authClient) : null;
+const supabase=authClient ? createSupabaseSession(authClient,fetch,{captchaTokenProvider:createTurnstileProvider({siteKey:turnstileSiteKey})}) : null;
 const neon=!supabase && window.sideLiteNeonClient ? createNeonSession(window.sideLiteNeonClient) : null;
 const managed=supabase || neon;
 if(managed)document.querySelector('.badge').textContent=supabase?'SIDE Lite':'Integración de prueba';

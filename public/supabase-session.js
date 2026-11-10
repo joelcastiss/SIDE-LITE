@@ -7,7 +7,7 @@ export function recoveryRedirect(location) {
 }
 
 /** Supabase Auth adapter. Authorization is performed by the server, never by user metadata. */
-export function createSupabaseSession(client, fetcher = fetch) {
+export function createSupabaseSession(client, fetcher = fetch, {captchaTokenProvider = null} = {}) {
   if (!client?.auth) throw new TypeError('Cliente de Supabase Auth no disponible.');
   let projectUrl;
   try { projectUrl = new URL(client.supabaseUrl); } catch { throw new TypeError('URL de Supabase no válida.'); }
@@ -16,6 +16,7 @@ export function createSupabaseSession(client, fetcher = fetch) {
     if (result?.error) throw new Error(result.error.message || 'No se pudo completar el acceso.');
     return result?.data;
   };
+  async function captcha() { if(!captchaTokenProvider)return {}; const token=await captchaTokenProvider(); if(typeof token!=='string'||!token)throw new Error('No se pudo verificar el acceso.'); return {captchaToken:token}; }
   async function requireCompletedMfa() {
     // Supabase supplies AAL2 only after the enrolled factor is verified. Never
     // treat a password-only AAL1 session as sufficient when AAL2 is required.
@@ -27,16 +28,16 @@ export function createSupabaseSession(client, fetcher = fetch) {
   return {
     async register({email, password, name, firstName, lastName, course, redirectTo}) {
       const data = {display_name: name, ...(firstName ? {nombre:firstName} : {}), ...(lastName ? {apellido:lastName} : {}), ...(course ? {curso:course} : {})};
-      return unwrap(await client.auth.signUp({email, password, options: {data, ...(redirectTo ? {emailRedirectTo: redirectTo} : {})}}));
+      return unwrap(await client.auth.signUp({email, password, options: {data, ...(redirectTo ? {emailRedirectTo: redirectTo} : {}), ...await captcha()}}));
     },
     async verifyEmail({email, otp}) {
-      return unwrap(await client.auth.verifyOtp({email, token: otp, type: 'signup'}));
+      return unwrap(await client.auth.verifyOtp({email, token: otp, type: 'signup', ...((captchaTokenProvider) ? {options:await captcha()} : {})}));
     },
     async resendCode({email, redirectTo}) {
-      return unwrap(await client.auth.resend({type: 'signup', email, ...(redirectTo ? {options: {emailRedirectTo: redirectTo}} : {})}));
+      return unwrap(await client.auth.resend({type: 'signup', email, ...((redirectTo||captchaTokenProvider) ? {options: {...(redirectTo ? {emailRedirectTo: redirectTo} : {}), ...await captcha()}} : {})}));
     },
-    async signIn({email, password}) { return unwrap(await client.auth.signInWithPassword({email, password})); },
-    async signInGuest() { const existing=unwrap(await client.auth.getSession())?.session; if(existing?.user?.is_anonymous === true)return existing; if(existing)throw new Error('Cierra tu sesión actual antes de entrar como invitado.'); const data=unwrap(await client.auth.signInAnonymously()); if(data?.user?.is_anonymous!==true || !data?.session?.access_token)throw new Error('No se pudo crear la sesión de invitado.'); return data.session; },
+    async signIn({email, password}) { return unwrap(await client.auth.signInWithPassword({email, password, ...(captchaTokenProvider ? {options:await captcha()} : {})})); },
+    async signInGuest() { const existing=unwrap(await client.auth.getSession())?.session; if(existing?.user?.is_anonymous === true)return existing; if(existing)throw new Error('Cierra tu sesión actual antes de entrar como invitado.'); const data=unwrap(await client.auth.signInAnonymously(captchaTokenProvider ? {options:await captcha()} : undefined)); if(data?.user?.is_anonymous!==true || !data?.session?.access_token)throw new Error('No se pudo crear la sesión de invitado.'); return data.session; },
     async identity() {
       const session = unwrap(await client.auth.getSession())?.session;
       if (!session?.access_token) throw Object.assign(new Error('Tu sesión terminó. Vuelve a iniciar sesión.'), {status: 401});
@@ -59,7 +60,7 @@ export function createSupabaseSession(client, fetcher = fetch) {
     async signOut() { unwrap(await client.auth.signOut({scope: 'local'})); },
     async session() { return unwrap(await client.auth.getSession()); },
     async resetPassword({email, redirectTo}) {
-      return unwrap(await client.auth.resetPasswordForEmail(email, redirectTo ? {redirectTo} : undefined));
+      return unwrap(await client.auth.resetPasswordForEmail(email, (redirectTo||captchaTokenProvider) ? {...(redirectTo ? {redirectTo} : {}), ...await captcha()} : undefined));
     },
     onPasswordRecovery(handler) {
       if (typeof handler !== 'function' || typeof client.auth.onAuthStateChange !== 'function') return null;

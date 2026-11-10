@@ -1,0 +1,200 @@
+[
+  {
+    "nspname": "public",
+    "table_name": "lite_auth_limits",
+    "index_name": "lite_auth_limits_expiry_idx",
+    "definition": "CREATE INDEX lite_auth_limits_expiry_idx ON public.lite_auth_limits USING btree (expires_at)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_auth_limits",
+    "index_name": "lite_auth_limits_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_auth_limits_pkey ON public.lite_auth_limits USING btree (key_hash)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_companies",
+    "index_name": "lite_companies_game_id_id_key",
+    "definition": "CREATE UNIQUE INDEX lite_companies_game_id_id_key ON public.lite_companies USING btree (game_id, id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_companies",
+    "index_name": "lite_companies_game_id_student_id_key",
+    "definition": "CREATE UNIQUE INDEX lite_companies_game_id_student_id_key ON public.lite_companies USING btree (game_id, student_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_companies",
+    "index_name": "lite_companies_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_companies_pkey ON public.lite_companies USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_companies",
+    "index_name": "lite_companies_student_game",
+    "definition": "CREATE INDEX lite_companies_student_game ON public.lite_companies USING btree (student_id, game_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_companies",
+    "index_name": "lite_company_game_idx",
+    "definition": "CREATE INDEX lite_company_game_idx ON public.lite_companies USING btree (game_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_cycles",
+    "index_name": "lite_cycles_due_idx",
+    "definition": "CREATE INDEX lite_cycles_due_idx ON public.lite_cycles USING btree (ends_at) WHERE (status = 'open'::text)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_cycles",
+    "index_name": "lite_cycles_game_id_id_key",
+    "definition": "CREATE UNIQUE INDEX lite_cycles_game_id_id_key ON public.lite_cycles USING btree (game_id, id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_cycles",
+    "index_name": "lite_cycles_game_id_number_key",
+    "definition": "CREATE UNIQUE INDEX lite_cycles_game_id_number_key ON public.lite_cycles USING btree (game_id, number)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_cycles",
+    "index_name": "lite_cycles_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_cycles_pkey ON public.lite_cycles USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_cycles",
+    "index_name": "lite_due_cycles",
+    "definition": "CREATE INDEX lite_due_cycles ON public.lite_cycles USING btree (ends_at, id) WHERE ((status = 'open'::text) AND (paused_at IS NULL))"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_cycles",
+    "index_name": "lite_one_open_cycle",
+    "definition": "CREATE UNIQUE INDEX lite_one_open_cycle ON public.lite_cycles USING btree (game_id) WHERE (status = 'open'::text)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_decisions",
+    "index_name": "lite_decisions_cycle_id_company_id_key",
+    "definition": "CREATE UNIQUE INDEX lite_decisions_cycle_id_company_id_key ON public.lite_decisions USING btree (cycle_id, company_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_decisions",
+    "index_name": "lite_decisions_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_decisions_pkey ON public.lite_decisions USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_events",
+    "index_name": "lite_events_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_events_pkey ON public.lite_events USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_games",
+    "index_name": "lite_games_code_key",
+    "definition": "CREATE UNIQUE INDEX lite_games_code_key ON public.lite_games USING btree (code)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_games",
+    "index_name": "lite_games_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_games_pkey ON public.lite_games USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_games",
+    "index_name": "lite_games_teacher",
+    "definition": "CREATE INDEX lite_games_teacher ON public.lite_games USING btree (teacher_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_products",
+    "index_name": "lite_products_game_id_quality_key",
+    "definition": "CREATE UNIQUE INDEX lite_products_game_id_quality_key ON public.lite_products USING btree (game_id, quality)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_products",
+    "index_name": "lite_products_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_products_pkey ON public.lite_products USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_profiles",
+    "index_name": "lite_profiles_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_profiles_pkey ON public.lite_profiles USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_results",
+    "index_name": "lite_results_company",
+    "definition": "CREATE INDEX lite_results_company ON public.lite_results USING btree (company_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_results",
+    "index_name": "lite_results_company_idx",
+    "definition": "CREATE INDEX lite_results_company_idx ON public.lite_results USING btree (company_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_results",
+    "index_name": "lite_results_cycle_id_company_id_key",
+    "definition": "CREATE UNIQUE INDEX lite_results_cycle_id_company_id_key ON public.lite_results USING btree (cycle_id, company_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_results",
+    "index_name": "lite_results_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_results_pkey ON public.lite_results USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_sessions",
+    "index_name": "lite_sessions_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_sessions_pkey ON public.lite_sessions USING btree (id_hash)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_stores",
+    "index_name": "lite_stores_name_key",
+    "definition": "CREATE UNIQUE INDEX lite_stores_name_key ON public.lite_stores USING btree (name)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_stores",
+    "index_name": "lite_stores_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_stores_pkey ON public.lite_stores USING btree (id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_teacher_grades",
+    "index_name": "lite_teacher_grades_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_teacher_grades_pkey ON public.lite_teacher_grades USING btree (game_id, company_id)"
+  },
+  {
+    "nspname": "public",
+    "table_name": "lite_teacher_podium",
+    "index_name": "lite_teacher_podium_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_teacher_podium_pkey ON public.lite_teacher_podium USING btree (game_id)"
+  },
+  {
+    "nspname": "side_lite_private",
+    "table_name": "lite_cycle_secrets",
+    "index_name": "lite_cycle_secrets_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_cycle_secrets_pkey ON side_lite_private.lite_cycle_secrets USING btree (cycle_id)"
+  },
+  {
+    "nspname": "side_lite_private",
+    "table_name": "lite_teacher_grants",
+    "index_name": "lite_teacher_grants_pkey",
+    "definition": "CREATE UNIQUE INDEX lite_teacher_grants_pkey ON side_lite_private.lite_teacher_grants USING btree (user_id)"
+  }
+]

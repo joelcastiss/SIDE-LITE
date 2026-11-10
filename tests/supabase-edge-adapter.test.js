@@ -39,5 +39,8 @@ test('Edge restringe CORS, preflight, rutas y métodos', async () => {
   assert.equal((await handle(new Request(url,{headers:{origin:'https://evil.example'}}))).status,403);
   assert.equal((await handle(new Request(url,{method:'OPTIONS',headers:{origin:'https://joelcastiss.github.io','access-control-request-method':'DELETE'}}))).status,403);
   assert.equal((await handle(new Request(url,{method:'DELETE'}))).status,405);
+  const podium='https://example.invalid/side-lite-api/api/games/00000000-0000-4000-8000-000000000001/podium';
+  assert.equal((await handle(new Request(podium,{method:'OPTIONS',headers:{origin:'https://joelcastiss.github.io','access-control-request-method':'DELETE'}}))).status,204);
+  assert.equal((await handle(new Request(podium,{method:'DELETE'}))).status,200);
   assert.equal((await handle(new Request('https://example.invalid/other/api/games'))).status,404);
 });

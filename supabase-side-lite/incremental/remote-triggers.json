@@ -1,0 +1,14 @@
+[
+  {
+    "nspname": "auth",
+    "relname": "users",
+    "tgname": "lite_create_student_profile",
+    "definition": "CREATE TRIGGER lite_create_student_profile AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION side_lite_private.create_student_profile()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "tgname": "lite_cycle_initialize",
+    "definition": "CREATE TRIGGER lite_cycle_initialize BEFORE INSERT ON public.lite_cycles FOR EACH ROW EXECUTE FUNCTION side_lite_private.initialize_cycle()"
+  }
+]

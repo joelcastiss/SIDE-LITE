@@ -1,0 +1,112 @@
+[
+  {
+    "schemaname": "public",
+    "tablename": "lite_companies",
+    "policyname": "companies_private_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "((student_id = ( SELECT auth.uid() AS uid)) OR side_lite_private.is_approved_teacher(game_id))",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_cycles",
+    "policyname": "cycles_member_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(side_lite_private.is_approved_teacher(game_id) OR side_lite_private.is_game_student(game_id))",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_decisions",
+    "policyname": "decisions_private_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(side_lite_private.owns_company(company_id) OR side_lite_private.is_approved_teacher(game_id))",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_events",
+    "policyname": "events_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "true",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_games",
+    "policyname": "games_member_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(side_lite_private.is_approved_teacher(id) OR side_lite_private.is_game_student(id))",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_products",
+    "policyname": "products_member_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(side_lite_private.is_approved_teacher(game_id) OR side_lite_private.is_game_student(game_id))",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_profiles",
+    "policyname": "profile_self_insert",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": "",
+    "with_check": "(id = ( SELECT auth.uid() AS uid))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_profiles",
+    "policyname": "profile_self_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(id = ( SELECT auth.uid() AS uid))",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_profiles",
+    "policyname": "profile_self_update",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(id = ( SELECT auth.uid() AS uid))",
+    "with_check": "(id = ( SELECT auth.uid() AS uid))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_results",
+    "policyname": "results_private_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(side_lite_private.owns_company(company_id) OR side_lite_private.is_approved_teacher(game_id))",
+    "with_check": ""
+  },
+  {
+    "schemaname": "public",
+    "tablename": "lite_stores",
+    "policyname": "stores_read",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "true",
+    "with_check": ""
+  }
+]

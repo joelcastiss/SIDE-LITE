@@ -10,7 +10,7 @@ const useCodex = process.env.SIDE_TEST_STACK === 'codex-guest';
 const stackName=useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify';
 const apiPort=useCodex?56621:56521, dbPort=useCodex?56622:56522;
 const stack = path.join(os.tmpdir(), stackName);
-const target = path.join(stack, useCodex ? 'side-lite-fixture-integration' : 'side-lite-fixture');
+const target = path.join(stack, useCodex ? 'side-lite-fixture-final2' : 'side-lite-fixture');
 const config = await readFile(path.join(stack,'supabase','config.toml'),'utf8');
 if (!config.includes(`project_id = "${stackName}"`) || !config.includes(`port = ${apiPort}`) || !config.includes(`port = ${dbPort}`)) throw Error('Proyecto local o puertos inesperados');
 const anon = process.env.SIDE_LITE_LOCAL_ANON_KEY;

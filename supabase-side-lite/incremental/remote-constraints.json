@@ -1,0 +1,440 @@
+[
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "conname": "lite_auth_limits_attempts_check",
+    "definition": "CHECK ((attempts > 0))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "conname": "lite_auth_limits_key_hash_check",
+    "definition": "CHECK ((length(key_hash) = 64))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "conname": "lite_auth_limits_pkey",
+    "definition": "PRIMARY KEY (key_hash)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_cash_check",
+    "definition": "CHECK ((cash >= 0))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_game_id_fkey",
+    "definition": "FOREIGN KEY (game_id) REFERENCES lite_games(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_game_id_id_key",
+    "definition": "UNIQUE (game_id, id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_game_id_student_id_key",
+    "definition": "UNIQUE (game_id, student_id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_initial_capital_check",
+    "definition": "CHECK ((((initial_capital >= 10000) AND (initial_capital <= 1000000)) AND ((initial_capital % 10000) = 0)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_inventory_check",
+    "definition": "CHECK ((jsonb_typeof(inventory) = 'array'::text))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_name_check",
+    "definition": "CHECK (((char_length(btrim(name)) >= 1) AND (char_length(btrim(name)) <= 80)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_store_id_fkey",
+    "definition": "FOREIGN KEY (store_id) REFERENCES lite_stores(id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "conname": "lite_companies_student_id_fkey",
+    "definition": "FOREIGN KEY (student_id) REFERENCES lite_profiles(id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_check",
+    "definition": "CHECK ((ends_at > starts_at))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_check1",
+    "definition": "CHECK (((status <> 'closed'::text) OR (paused_at IS NULL)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_event_id_fkey",
+    "definition": "FOREIGN KEY (event_id) REFERENCES lite_events(id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_game_id_fkey",
+    "definition": "FOREIGN KEY (game_id) REFERENCES lite_games(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_game_id_id_key",
+    "definition": "UNIQUE (game_id, id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_game_id_number_key",
+    "definition": "UNIQUE (game_id, number)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_number_check",
+    "definition": "CHECK (((number >= 1) AND (number <= 6)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "conname": "lite_cycles_status_check",
+    "definition": "CHECK ((status = ANY (ARRAY['open'::text, 'closed'::text])))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_cycle_id_company_id_key",
+    "definition": "UNIQUE (cycle_id, company_id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_game_id_company_id_fkey",
+    "definition": "FOREIGN KEY (game_id, company_id) REFERENCES lite_companies(game_id, id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_game_id_cycle_id_fkey",
+    "definition": "FOREIGN KEY (game_id, cycle_id) REFERENCES lite_cycles(game_id, id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_marketing_amount_check",
+    "definition": "CHECK (((marketing_amount = 0) OR ((marketing_amount >= 200) AND (marketing_amount <= 10000))))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_price_check",
+    "definition": "CHECK (((price >= 1) AND (price <= 100000)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_quality_check",
+    "definition": "CHECK ((quality = ANY (ARRAY['basic'::text, 'standard'::text, 'premium'::text])))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "conname": "lite_decisions_quantity_check",
+    "definition": "CHECK (((quantity >= 0) AND (quantity <= 100000)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "conname": "lite_events_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_capital_min_check",
+    "definition": "CHECK ((((capital_min >= 10000) AND (capital_min <= 1000000)) AND ((capital_min % 10000) = 0)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_check",
+    "definition": "CHECK ((((capital_max >= capital_min) AND (capital_max <= 1000000)) AND ((capital_max % 10000) = 0)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_code_check",
+    "definition": "CHECK ((code ~ '^[A-F0-9]{8}$'::text))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_code_key",
+    "definition": "UNIQUE (code)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_costs_check",
+    "definition": "CHECK ((jsonb_typeof(costs) = 'object'::text))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_cycle_count_check",
+    "definition": "CHECK ((cycle_count = ANY (ARRAY[3, 6])))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_duration_seconds_check",
+    "definition": "CHECK ((duration_seconds = 120))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_enabled_events_check",
+    "definition": "CHECK ((jsonb_typeof(enabled_events) = 'array'::text))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_name_check",
+    "definition": "CHECK (((char_length(btrim(name)) >= 2) AND (char_length(btrim(name)) <= 80)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "conname": "lite_games_teacher_id_fkey",
+    "definition": "FOREIGN KEY (teacher_id) REFERENCES lite_profiles(id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "conname": "lite_products_game_id_fkey",
+    "definition": "FOREIGN KEY (game_id) REFERENCES lite_games(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "conname": "lite_products_game_id_quality_key",
+    "definition": "UNIQUE (game_id, quality)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "conname": "lite_products_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "conname": "lite_products_quality_check",
+    "definition": "CHECK ((quality = ANY (ARRAY['basic'::text, 'standard'::text, 'premium'::text])))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "conname": "lite_products_unit_cost_check",
+    "definition": "CHECK ((unit_cost > 0))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "conname": "lite_profiles_display_name_check",
+    "definition": "CHECK (((char_length(btrim(display_name)) >= 2) AND (char_length(btrim(display_name)) <= 80)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "conname": "lite_profiles_id_fkey",
+    "definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "conname": "lite_profiles_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "conname": "lite_results_cycle_id_company_id_key",
+    "definition": "UNIQUE (cycle_id, company_id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "conname": "lite_results_game_id_company_id_fkey",
+    "definition": "FOREIGN KEY (game_id, company_id) REFERENCES lite_companies(game_id, id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "conname": "lite_results_game_id_cycle_id_fkey",
+    "definition": "FOREIGN KEY (game_id, cycle_id) REFERENCES lite_cycles(game_id, id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "conname": "lite_results_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "conname": "lite_results_result_check",
+    "definition": "CHECK ((jsonb_typeof(result) = 'object'::text))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "conname": "lite_sessions_pkey",
+    "definition": "PRIMARY KEY (id_hash)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "conname": "lite_sessions_user_id_fkey",
+    "definition": "FOREIGN KEY (user_id) REFERENCES lite_profiles(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "conname": "lite_stores_name_key",
+    "definition": "UNIQUE (name)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "conname": "lite_stores_pkey",
+    "definition": "PRIMARY KEY (id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "conname": "lite_teacher_grades_company_id_fkey",
+    "definition": "FOREIGN KEY (company_id) REFERENCES lite_companies(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "conname": "lite_teacher_grades_game_id_fkey",
+    "definition": "FOREIGN KEY (game_id) REFERENCES lite_games(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "conname": "lite_teacher_grades_grade_check",
+    "definition": "CHECK (((grade >= (0)::numeric) AND (grade <= (20)::numeric)))"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "conname": "lite_teacher_grades_pkey",
+    "definition": "PRIMARY KEY (game_id, company_id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "conname": "lite_teacher_podium_game_id_fkey",
+    "definition": "FOREIGN KEY (game_id) REFERENCES lite_games(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "conname": "lite_teacher_podium_pkey",
+    "definition": "PRIMARY KEY (game_id)"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "conname": "lite_teacher_podium_reason_check",
+    "definition": "CHECK ((length(reason) <= 1000))"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "conname": "lite_cycle_secrets_cycle_id_fkey",
+    "definition": "FOREIGN KEY (cycle_id) REFERENCES lite_cycles(id) ON DELETE CASCADE"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "conname": "lite_cycle_secrets_pkey",
+    "definition": "PRIMARY KEY (cycle_id)"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "conname": "lite_teacher_grants_approved_email_check",
+    "definition": "CHECK (((approved_email = lower(btrim(approved_email))) AND (approved_email ~ '^[^@[:space:]]+@upch[.]pe$'::text)))"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "conname": "lite_teacher_grants_granted_by_fkey",
+    "definition": "FOREIGN KEY (granted_by) REFERENCES auth.users(id) ON DELETE SET NULL"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "conname": "lite_teacher_grants_lock_guard_check",
+    "definition": "CHECK (lock_guard)"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "conname": "lite_teacher_grants_pkey",
+    "definition": "PRIMARY KEY (user_id)"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "conname": "lite_teacher_grants_user_id_fkey",
+    "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+  }
+]

@@ -1,0 +1,650 @@
+[
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "attname": "attempts",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "attname": "expires_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "attname": "key_hash",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "cash",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "game_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "initial_capital",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "inventory",
+    "typ": "jsonb",
+    "attnotnull": true,
+    "def": "'[]'::jsonb"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "name",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "store_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "attname": "student_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "close_requested_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": false,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "ends_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "event_id",
+    "typ": "text",
+    "attnotnull": false,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "game_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "number",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "paused_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": false,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "starts_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "attname": "status",
+    "typ": "text",
+    "attnotnull": true,
+    "def": "'open'::text"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "company_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "confirmed",
+    "typ": "boolean",
+    "attnotnull": true,
+    "def": "false"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "cycle_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "game_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "marketing_amount",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "price",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "quality",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "quantity",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "attname": "updated_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "attname": "category",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "attname": "effect",
+    "typ": "jsonb",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "attname": "id",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "attname": "label",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "capital_max",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "capital_min",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "code",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "costs",
+    "typ": "jsonb",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "created_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "cycle_count",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "duration_seconds",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": "120"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "enabled_events",
+    "typ": "jsonb",
+    "attnotnull": true,
+    "def": "'[]'::jsonb"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "name",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "attname": "teacher_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "attname": "game_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "attname": "quality",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "attname": "unit_cost",
+    "typ": "integer",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "attname": "created_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "attname": "display_name",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "attname": "company_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "attname": "created_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "attname": "cycle_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "attname": "game_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "attname": "result",
+    "typ": "jsonb",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "attname": "expires_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "attname": "id_hash",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "attname": "user_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "attname": "description",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "attname": "id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "attname": "name",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "attname": "company_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "attname": "game_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "attname": "grade",
+    "typ": "numeric(4,2)",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "attname": "updated_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "attname": "created_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "attname": "game_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "attname": "published_snapshot",
+    "typ": "jsonb",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "attname": "reason",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "attname": "scheduled_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "attname": "cycle_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "attname": "seed",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": "gen_random_uuid()"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "attname": "approved_email",
+    "typ": "text",
+    "attnotnull": true,
+    "def": ""
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "attname": "granted_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": true,
+    "def": "now()"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "attname": "granted_by",
+    "typ": "uuid",
+    "attnotnull": false,
+    "def": ""
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "attname": "lock_guard",
+    "typ": "boolean",
+    "attnotnull": true,
+    "def": "true"
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "attname": "revoked_at",
+    "typ": "timestamp with time zone",
+    "attnotnull": false,
+    "def": ""
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "attname": "user_id",
+    "typ": "uuid",
+    "attnotnull": true,
+    "def": ""
+  }
+]

@@ -1,0 +1,2207 @@
+[
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_auth_limits",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_companies",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_cycles",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_decisions",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_events",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_games",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_products",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_profiles",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_results",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_sessions",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_stores",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_grades",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "public",
+    "relname": "lite_teacher_podium",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_cycle_secrets",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "anon",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "anon",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "anon",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "anon",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "anon",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "anon",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "anon",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "authenticated",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "authenticated",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "authenticated",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "authenticated",
+    "priv": "SELECT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "authenticated",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "authenticated",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "authenticated",
+    "priv": "UPDATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "service_role",
+    "priv": "DELETE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "service_role",
+    "priv": "INSERT",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "service_role",
+    "priv": "REFERENCES",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "service_role",
+    "priv": "SELECT",
+    "allowed": true
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "service_role",
+    "priv": "TRIGGER",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "service_role",
+    "priv": "TRUNCATE",
+    "allowed": false
+  },
+  {
+    "nspname": "side_lite_private",
+    "relname": "lite_teacher_grants",
+    "role_name": "service_role",
+    "priv": "UPDATE",
+    "allowed": false
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "nspname": "side_lite_private",
+    "proname": "create_student_profile",
+    "args": "",
+    "definition": "CREATE OR REPLACE FUNCTION side_lite_private.create_student_profile()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\r\ndeclare profile_name text;\r\nbegin\r\n  profile_name := btrim(coalesce(new.raw_user_meta_data ->> 'display_name', ''));\r\n  if char_length(profile_name) < 2 or char_length(profile_name) > 80 then\r\n    profile_name := 'Estudiante';\r\n  end if;\r\n  insert into public.lite_profiles (id, display_name) values (new.id, profile_name)\r\n  on conflict (id) do nothing;\r\n  return new;\r\nend $function$\n"
+  },
+  {
+    "nspname": "side_lite_private",
+    "proname": "initialize_cycle",
+    "args": "",
+    "definition": "CREATE OR REPLACE FUNCTION side_lite_private.initialize_cycle()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO ''\nAS $function$\r\ndeclare max_cycles integer;\r\nbegin\r\n  select g.cycle_count into max_cycles from public.lite_games g where g.id = new.game_id for update;\r\n  if max_cycles is null or new.number > max_cycles then\r\n    raise exception 'Invalid cycle number' using errcode = '23514';\r\n  end if;\r\n  new.starts_at := clock_timestamp();\r\n  new.ends_at := new.starts_at + interval '120 seconds';\r\n  return new;\r\nend $function$\n"
+  },
+  {
+    "nspname": "side_lite_private",
+    "proname": "is_approved_teacher",
+    "args": "p_game uuid",
+    "definition": "CREATE OR REPLACE FUNCTION side_lite_private.is_approved_teacher(p_game uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\r\n  select auth.uid() is not null and exists (\r\n    select 1 from public.lite_games g\r\n    join side_lite_private.lite_teacher_grants t on t.user_id = g.teacher_id\r\n    join auth.users u on u.id = t.user_id\r\n    where g.id = p_game and g.teacher_id = auth.uid() and t.revoked_at is null\r\n      and u.email_confirmed_at is not null and lower(u.email) = t.approved_email\r\n  )\r\n$function$\n"
+  },
+  {
+    "nspname": "side_lite_private",
+    "proname": "is_game_student",
+    "args": "p_game uuid",
+    "definition": "CREATE OR REPLACE FUNCTION side_lite_private.is_game_student(p_game uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\r\n  select auth.uid() is not null and exists (\r\n    select 1 from public.lite_companies c where c.game_id = p_game and c.student_id = auth.uid()\r\n  )\r\n$function$\n"
+  },
+  {
+    "nspname": "side_lite_private",
+    "proname": "owns_company",
+    "args": "p_company uuid",
+    "definition": "CREATE OR REPLACE FUNCTION side_lite_private.owns_company(p_company uuid)\n RETURNS boolean\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO ''\nAS $function$\r\n  select auth.uid() is not null and exists (\r\n    select 1 from public.lite_companies c where c.id = p_company and c.student_id = auth.uid()\r\n  )\r\n$function$\n"
+  }
+]

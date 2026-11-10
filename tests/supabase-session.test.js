@@ -146,3 +146,11 @@ test('identidad invitada usa Supabase y nunca sustituye una sesión permanente',
  x.auth.getSession=async()=>({data:{session:{access_token:'existing',user:{is_anonymous:true}}}});assert.equal((await x.client.signInGuest()).access_token,'existing');assert.equal(created,1);
  x.auth.getSession=async()=>({data:{session:{access_token:'permanent',user:{is_anonymous:false,email_confirmed_at:'yes'}}}});await assert.rejects(()=>x.client.signInGuest(),/Cierra tu sesión/);
 });
+
+test('CAPTCHA se exige y entrega a Supabase para las solicitudes de Auth',async()=>{
+ const x=fixture(),calls=[];let n=0;x.auth.signInAnonymously=async v=>{calls.push(['guest',v]);return {data:{user:{is_anonymous:true},session:{access_token:'t'}}}};x.auth.getSession=async()=>({data:{session:null}});
+ const guarded=createSupabaseSession({supabaseUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',auth:x.auth},async()=>{}, {captchaTokenProvider:async()=>`token-${++n}`});
+ await guarded.signInGuest();await guarded.signIn({email:'ana@upch.pe',password:'clave'});await guarded.register({email:'ana@upch.pe',password:'clave',name:'Ana'});await guarded.resetPassword({email:'ana@upch.pe',redirectTo:'https://example.test'});await guarded.resendCode({email:'ana@upch.pe'});await guarded.verifyEmail({email:'ana@upch.pe',otp:'123456'});
+ assert.deepEqual(calls,[['guest',{options:{captchaToken:'token-1'}}]]);assert.deepEqual(x.calls[0],['login',{email:'ana@upch.pe',password:'clave',options:{captchaToken:'token-2'}}]);assert.equal(x.calls[1][1].options.captchaToken,'token-3');assert.equal(x.calls[2][2].captchaToken,'token-4');assert.equal(x.calls[3][1].options.captchaToken,'token-5');assert.equal(x.calls[4][1].options.captchaToken,'token-6');
+});
+test('si falla CAPTCHA no se envía la autenticación',async()=>{const x=fixture();const guarded=createSupabaseSession({supabaseUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',auth:x.auth},fetch,{captchaTokenProvider:async()=>{throw Error('captcha falló')}});await assert.rejects(()=>guarded.signIn({email:'a@upch.pe',password:'x'}),/captcha falló/);assert.equal(x.calls.length,0)});
