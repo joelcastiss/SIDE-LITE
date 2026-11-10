@@ -1,6 +1,6 @@
 import {staticPreview,enterPreview,previewRequest} from './preview-mode.js';
 import {createNeonSession} from './neon-session.js';
-import {createSupabaseSession,recoveryRedirect} from './supabase-session.js';
+import {createSupabaseSession,recoveryRedirect} from './supabase-session.js?v=20261110-auth2';
 import {createTurnstileProvider} from './turnstile-provider.js';
 import {turnstileSiteKey} from './captcha-config.js';
 import {campaignFor,eventDescription} from './campaign.js';
