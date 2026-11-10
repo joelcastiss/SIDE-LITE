@@ -16,8 +16,18 @@ do $$ begin
  if exists (select 1 from public.lite_profiles where id in ('00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005') and display_name <> 'Estudiante') then raise exception 'invalid metadata fallback failed'; end if;
  if exists (select 1 from side_lite_private.lite_teacher_grants where user_id in ('00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005')) then raise exception 'registration granted teacher'; end if;
 end $$;
-insert into side_lite_private.lite_teacher_grants(user_id,approved_email)
- values ('00000000-0000-0000-0000-000000000003','teacher@upch.pe');
+do $$ begin
+ begin
+  insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values ('00000000-0000-0000-0000-000000000003','teacher@upch.pe');
+  raise exception 'unattributed approval accepted';
+ exception when check_violation then null; end;
+ begin
+  insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by) values ('00000000-0000-0000-0000-000000000003','teacher@upch.pe','00000000-0000-0000-0000-000000000003');
+  raise exception 'self-approval accepted';
+ exception when check_violation then null; end;
+end $$;
+insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by)
+ values ('00000000-0000-0000-0000-000000000003','teacher@upch.pe','00000000-0000-0000-0000-000000000001');
 -- BYPASSRLS does not imply table write privileges: the runtime can verify a
 -- grant, but cannot promote or revoke teachers even with its server credential.
 set local role service_role;

@@ -16,6 +16,7 @@ const fixture=await fetch('http://127.0.0.1:4178/supabase-session.js');
 if(!fixture.ok||!(await fixture.text()).includes("projectUrl.origin !== 'http://127.0.0.1:56521'"))throw Error('La interfaz no es la copia preparada para el stack local.');
 const base='http://127.0.0.1:4178', mail='http://127.0.0.1:56524',auth='http://127.0.0.1:56521';
 const suffix=randomUUID(),password=`L-${randomUUID()}-prueba!`;
+const adminId=randomUUID();
 const mobile=process.env.SIDE_TEST_MOBILE==='YES',accelerated=process.env.SIDE_TEST_ACCELERATED==='YES';
 const browser=await chromium.launch({headless:true});
 const contexts=[];
@@ -35,7 +36,7 @@ async function confirm(email){
 }
 function grantTeacher(email){
  if(!/^teacher-[a-f0-9-]+@upch\.pe$/.test(email))throw Error('Correo de prueba inesperado');
- const sql=`insert into side_lite_private.lite_teacher_grants(user_id,approved_email) select id,email from auth.users where email='${email}' and email_confirmed_at is not null returning user_id`;
+ const sql=`insert into auth.users(id,email,email_confirmed_at) values ('${adminId}','admin-${adminId}@example.test',now()); insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by) select id,email,'${adminId}'::uuid from auth.users where email='${email}' and email_confirmed_at is not null returning user_id`;
  const result=spawnSync('docker',['exec',`supabase_db_${project}`,'psql','-U','postgres','-d','postgres','-tAc',sql],{encoding:'utf8'});
  if(result.status!==0||!/[a-f0-9-]{36}/.test(result.stdout))throw Error('No se concedió el permiso docente aislado.');
 }
@@ -101,4 +102,8 @@ try{
   console.log(`PASS: partida de ${count} ciclos con Edge y Auth reales locales (${mobile?'móvil':'escritorio'}, ${accelerated?'todos los vencimientos acelerados':'un vencimiento real en la partida de tres'}).`);
   for(const person of [teacher,a,b]){await person.page.locator(person===teacher?'#teacher-home':'#back').click()}
  }
-} finally {await Promise.allSettled(contexts.map(c=>c.close()));await browser.close()}
+} finally {
+ await Promise.allSettled(contexts.map(c=>c.close()));await browser.close();
+ const cleanup=spawnSync('docker',['exec',`supabase_db_${project}`,'psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-c',`update side_lite_private.lite_teacher_grants set revoked_at=now() where granted_by='${adminId}'::uuid; delete from auth.users where id='${adminId}'::uuid`],{encoding:'utf8'});
+ if(cleanup.status!==0){console.error('No se limpió el administrador local:',cleanup.stderr);process.exitCode=1;}
+}

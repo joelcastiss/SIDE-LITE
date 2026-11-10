@@ -10,7 +10,9 @@ const useCodex = process.env.SIDE_TEST_STACK === 'codex-guest';
 const stackName=useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify';
 const apiPort=useCodex?56621:56521, dbPort=useCodex?56622:56522;
 const stack = path.join(os.tmpdir(), stackName);
-const target = path.join(stack, useCodex ? 'side-lite-fixture-final2' : 'side-lite-fixture');
+const fixtureName = process.env.SIDE_TEST_FIXTURE_NAME || (useCodex ? 'side-lite-fixture-final2' : 'side-lite-fixture');
+if (!/^side-lite-fixture(?:-[a-z0-9]+)*$/.test(fixtureName)) throw Error('Nombre de copia local inválido');
+const target = path.join(stack, fixtureName);
 const config = await readFile(path.join(stack,'supabase','config.toml'),'utf8');
 if (!config.includes(`project_id = "${stackName}"`) || !config.includes(`port = ${apiPort}`) || !config.includes(`port = ${dbPort}`)) throw Error('Proyecto local o puertos inesperados');
 const anon = process.env.SIDE_LITE_LOCAL_ANON_KEY;
@@ -47,7 +49,10 @@ await transform('supabase-side-lite/functions/side-lite-api/index.ts',[
   ["ssl:{rejectUnauthorized:true}, ",""],
   ["projectUrl:`https://${ref}.supabase.co`",`projectUrl:'${localUrl}'`],
 ]);
-await transform('supabase-side-lite/functions/close-cycle/index.ts',[["ssl: 'verify-full', ",""]]);
+await transform('supabase-side-lite/functions/close-cycle/index.ts',[
+  ["ssl: {ca: caCertificate, rejectUnauthorized: true}, ",""],
+  ["validateCloserConfig(dbUrl, cronSecret, caCertificate);", "validateCloserConfig(dbUrl, cronSecret, '-----BEGIN CERTIFICATE-----\\nlocal-only\\n-----END CERTIFICATE-----');"],
+]);
 // Local Auth signs with an asymmetric key. Its issuer is the browser-visible
 // loopback URL, while Edge reaches the same local gateway via Docker's host alias.
 await transform('supabase-side-lite/api/identity.js',[

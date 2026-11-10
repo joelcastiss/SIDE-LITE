@@ -2,14 +2,16 @@
 import postgres from 'npm:postgres@3.4.7';
 import { closeOne, sweep } from './worker.js';
 import { validateDatabaseTarget } from '../database-target.js';
+import { validateCloserConfig } from './config.js';
 
-const dbUrl = Deno.env.get('SIDE_CLOSER_DATABASE_URL');
-const cronSecret = Deno.env.get('SIDE_CLOSER_SECRET');
+const dbUrl = Deno.env.get('SIDE_CLOSER_DATABASE_URL') ?? '';
+const cronSecret = Deno.env.get('SIDE_CLOSER_SECRET') ?? '';
+const caCertificate = Deno.env.get('SIDE_CLOSER_CA_CERT') ?? '';
 // A dedicated, high-entropy scheduler secret and a dedicated least-privilege
 // database role are required. Never use this secret in the browser.
-if (!dbUrl || !cronSecret || cronSecret.length < 32) throw new Error('Missing closer configuration');
+validateCloserConfig(dbUrl, cronSecret, caCertificate);
 validateDatabaseTarget(dbUrl);
-const sql = postgres(dbUrl, { ssl: 'verify-full', max: 1, prepare: false, idle_timeout: 10, connect_timeout: 10 });
+const sql = postgres(dbUrl, { ssl: {ca: caCertificate, rejectUnauthorized: true}, max: 1, prepare: false, idle_timeout: 10, connect_timeout: 10 });
 const encoder = new TextEncoder();
 const key = await crypto.subtle.importKey('raw', encoder.encode(cronSecret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
 

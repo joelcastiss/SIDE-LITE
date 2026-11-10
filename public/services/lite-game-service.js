@@ -105,7 +105,18 @@
       activeRole = 'student';
       return {...snapshot.company, game_id: previous.id};
     }
-    const saved = rememberedCompany(code);
+    let saved = rememberedCompany(code);
+    // A join can commit even when its response is lost. If the anonymous
+    // session is subsequently lost too, try its pending secret before making
+    // another company. Retain rotation candidates across interrupted retries.
+    if (!saved) {
+      const pending = global.localStorage.getItem('side-lite-guest-join-' + code);
+      if (/^[A-Za-z0-9_-]{43}$/.test(pending || '')) {
+        const key = 'side-lite-guest-pending-' + code;
+        saved = {key, code, secret: pending, pendingJoin: true};
+        global.localStorage.setItem(key, JSON.stringify(saved));
+      }
+    }
     if (saved) {
       // A timeout can follow a committed rotation. Retain each possible secret
       // until a response confirms which one is current, including across reloads.
@@ -114,7 +125,7 @@
       if (candidates.length > 8) throw new Error('No se pudo confirmar la recuperación. Contacta al docente.');
       for (const current of [...candidates]) {
         const next = freshSecret();
-        global.localStorage.setItem(saved.key, JSON.stringify({code, secret: saved.secret, candidates: [...candidates, next]}));
+        global.localStorage.setItem(saved.key, JSON.stringify({code, secret: saved.secret, pendingJoin: !!saved.pendingJoin, candidates: [...candidates, next]}));
         let company;
         try {
           company = await request('/guest/recover', 'POST', {code, recoverySecret: current, newRecoverySecret: next}, 'student');
@@ -123,17 +134,20 @@
           throw error;
         }
         if (!company?.game_id) throw new Error('El servidor no confirmó la recuperación.');
-        global.localStorage.setItem(saved.key, JSON.stringify({code, secret: next}));
+        global.localStorage.setItem('side-lite-guest-' + company.game_id, JSON.stringify({code, secret: next}));
+        if (saved.key !== 'side-lite-guest-' + company.game_id) global.localStorage.removeItem(saved.key);
+        global.localStorage.removeItem('side-lite-guest-join-' + code);
         activeRole = 'student';
         return company;
       }
-      throw new Error('No se pudo recuperar la empresa. Comprueba el código o contacta al docente.');
+      if (!saved.pendingJoin) throw new Error('No se pudo recuperar la empresa. Comprueba el código o contacta al docente.');
     }
     const secret = recoverySecret(code);
     const company = await request('/join', 'POST', {code, name, brand, recoverySecret: secret}, 'student');
     if (company.recoverySecret !== secret || !company.game_id) throw new Error('El servidor no confirmó el acceso.');
     try {
       global.localStorage.setItem('side-lite-guest-' + company.game_id, JSON.stringify({code, secret}));
+      global.localStorage.removeItem('side-lite-guest-pending-' + code);
       global.localStorage.removeItem('side-lite-guest-join-' + code);
     } catch { /* Pending secret remains available for safe retry. */ }
     activeRole = 'student';

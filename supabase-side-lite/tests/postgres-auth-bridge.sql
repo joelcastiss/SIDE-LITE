@@ -5,8 +5,25 @@ insert into auth.users(id,email,email_confirmed_at) values
  ('10000000-0000-0000-0000-000000000002','student@example.test',now()),
  ('10000000-0000-0000-0000-000000000003','pending@example.test',null);
 insert into auth.sessions(id,user_id) select id,id from auth.users where id::text like '10000000-%';
-insert into side_lite_private.lite_teacher_grants(user_id,approved_email)
- values ('10000000-0000-0000-0000-000000000001','teacher@upch.pe');
+insert into auth.users(id,is_anonymous) values ('10000000-0000-0000-0000-000000000004',true);
+insert into auth.sessions(id,user_id) values ('10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000004');
+-- Exercise the documented administrative procedure with distinct fixtures.
+insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by)
+select teacher.id,lower(btrim(teacher.email)),administrator.id
+from auth.users teacher join auth.users administrator
+ on administrator.id='10000000-0000-0000-0000-000000000002'
+where teacher.id='10000000-0000-0000-0000-000000000001'
+ and teacher.id<>administrator.id and teacher.is_anonymous is false
+ and teacher.email_confirmed_at is not null
+ and (teacher.banned_until is null or teacher.banned_until<=clock_timestamp())
+ and administrator.is_anonymous is false and administrator.email_confirmed_at is not null
+ and (administrator.banned_until is null or administrator.banned_until<=clock_timestamp());
+do $$ begin
+ if not exists(select 1 from side_lite_private.lite_teacher_grants
+  where user_id='10000000-0000-0000-0000-000000000001'
+    and granted_by='10000000-0000-0000-0000-000000000002' and revoked_at is null)
+ then raise exception 'administrative grant was not recorded'; end if;
+end $$;
 delete from public.lite_profiles where id='10000000-0000-0000-0000-000000000002';
 do $$ begin
  if has_schema_privilege('side_lite_api','auth','USAGE') then raise exception 'API can access Auth schema directly'; end if;
@@ -22,10 +39,24 @@ do $$ declare rec record; begin
  if not side_lite_private.api_lock_teacher('10000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001') then raise exception 'teacher lock failed'; end if;
  if side_lite_private.api_lock_teacher('10000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000002') then raise exception 'foreign session accepted'; end if;
  if side_lite_private.api_lock_teacher('10000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002') then raise exception 'student promoted'; end if;
+ select * into rec from side_lite_private.api_identity('10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000004');
+ if not rec.is_anonymous or rec.teacher_authorized or side_lite_private.api_lock_teacher('10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000004') then raise exception 'anonymous student promoted'; end if;
  if exists(select 1 from side_lite_private.api_create_profile('10000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000001','Student')) then raise exception 'foreign session created profile'; end if;
  if exists(select 1 from side_lite_private.api_create_profile('10000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000003','Pending')) then raise exception 'unverified email created profile'; end if;
  if not exists(select 1 from side_lite_private.api_create_profile('10000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','Student')) then raise exception 'valid profile creation failed'; end if;
  if exists(select 1 from side_lite_private.api_create_profile('10000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','Changed')) then raise exception 'existing profile overwritten'; end if;
+end $$;
+reset role;
+-- Anonymous Auth users use the authenticated database role, not anon.
+set local role authenticated;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000004',true);
+select set_config('request.jwt.claims','{"session_id":"10000000-0000-0000-0000-000000000004","is_anonymous":true}',true);
+do $$ begin
+ begin
+  insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by)
+   values ('10000000-0000-0000-0000-000000000004','impostor@upch.pe','10000000-0000-0000-0000-000000000002');
+  raise exception 'anonymous user may grant teacher access';
+ exception when insufficient_privilege then null; end;
 end $$;
 reset role;
 update auth.sessions set not_after=now()-interval '1 second' where id='10000000-0000-0000-0000-000000000001';

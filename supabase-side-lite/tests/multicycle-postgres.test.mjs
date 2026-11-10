@@ -26,7 +26,7 @@ test('three and six cycles persist official results for two students', async t =
       await pool.query('insert into auth.sessions(id,user_id) values($1,$2)',[sessions[i],ids[i]]);
       await pool.query('update public.lite_profiles set display_name=$2 where id=$1',[ids[i],`Player ${i}`]);
     }
-    await pool.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values($1,$2)',[ids[0],`multi-${ids[0]}@upch.pe`]);
+    await pool.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by) values($1,$2,$3)',[ids[0],`multi-${ids[0]}@upch.pe`,ids[1]]);
     const app=createGamesApp({pool:apiPool,verifyToken:async token=>{const x=tokens.get(token);if(!x)throw Error('invalid');return x;},limitJoin:async()=>true});
     server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});
     const request=async(method,path,token,body)=>{const response=await fetch(`http://127.0.0.1:${server.address().port}/api${path}`,{method,headers:{authorization:`Bearer token${token}`,...(body?{'content-type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});return {status:response.status,body:await response.json()};};

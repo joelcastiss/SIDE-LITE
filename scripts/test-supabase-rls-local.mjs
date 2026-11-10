@@ -39,7 +39,8 @@ try {
  const rights=await db.query(`select has_schema_privilege('side_lite_api_login','auth','USAGE') as direct_auth,has_function_privilege('side_lite_api_login','side_lite_private.api_identity(uuid,uuid)','execute') as bridge`);
  assert.equal(rights.rows[0].direct_auth,false);assert.equal(rights.rows[0].bridge,true);
  await db.query('begin');
- await db.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values($1,$2)',[teacher.id,teacher.email]);
+ // This separate fixture represents an administrator in the disposable stack.
+ await db.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by) values($1,$2,$3)',[teacher.id,teacher.email,c.id]);
  for(let i=0;i<2;i++)await db.query('insert into public.lite_games(id,teacher_id,name,code,cycle_count,capital_min,capital_max,costs) values($1,$2,$3,$4,3,10000,10000,$5)',[gameIds[i],teacher.id,`RLS ${suffix}`,randomUUID().replaceAll('-','').slice(0,8).toUpperCase(),{}]);
  const {rows:[store]}=await db.query('select id from public.lite_stores order by id limit 1');
  for(let i=0;i<3;i++)await db.query('insert into public.lite_companies(id,game_id,student_id,name,store_id,initial_capital,cash) values($1,$2,$3,$4,$5,10000,10000)',[companyIds[i],gameIds[i===2?1:0],[a,b,c][i].id,`RLS ${i}`,store.id]);

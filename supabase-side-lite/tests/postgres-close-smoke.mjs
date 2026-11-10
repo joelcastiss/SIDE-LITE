@@ -12,7 +12,8 @@ const teacher='10000000-0000-4000-8000-000000000001', student='10000000-0000-400
 const g='20000000-0000-4000-8000-000000000001', co='30000000-0000-4000-8000-000000000001', cy='40000000-0000-4000-8000-000000000001';
 try {
  await sql`insert into auth.users(id,email,email_confirmed_at) values (${teacher}, 'teacher@example.com',now()),(${student},'student@example.com',now())`;
- await sql`insert into public.lite_profiles(id,display_name) values (${teacher},'Teacher'),(${student},'Student')`;
+ // Current Auth bootstrap creates profiles automatically on user insertion.
+ await sql`insert into public.lite_profiles(id,display_name) values (${teacher},'Teacher'),(${student},'Student') on conflict (id) do nothing`;
  await sql`insert into public.lite_games(id,teacher_id,name,code,cycle_count,capital_min,capital_max,costs) values (${g},${teacher},'Game','ABCDEF11',3,30000,30000,${sql.json({basic:20,standard:30,premium:40})})`;
  await sql`insert into public.lite_companies(id,game_id,student_id,name,store_id,initial_capital,cash) values (${co},${g},${student},'Company',(select id from public.lite_stores limit 1),30000,30000)`;
  await sql`insert into public.lite_cycles(id,game_id,number,starts_at,ends_at,close_requested_at) values (${cy},${g},1,now(),now()+interval '1 second',now())`;

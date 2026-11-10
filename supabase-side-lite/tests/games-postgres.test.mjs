@@ -25,7 +25,7 @@ test('create and join use confirmed identities, teacher approval, unique members
       await pool.query('insert into auth.sessions(id,user_id) values($1,$2)',[sessions[i],ids[i]]);
       await pool.query('update public.lite_profiles set display_name=$2 where id=$1',[ids[i],`User ${i}`]);
     }
-    await pool.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values($1,$2)',[ids[0],`test-${ids[0]}@upch.pe`]);
+    await pool.query('insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by) values($1,$2,$3)',[ids[0],`test-${ids[0]}@upch.pe`,ids[1]]);
     let allowed=true;
     const app=createGamesApp({pool:apiPool,verifyToken:async token=>{const identity=tokens.get(token);if(!identity)throw Error('invalid');return identity;},limitJoin:async()=>allowed});
     app.use(createCycleControlsRouter({pool:apiPool,verifyToken:async token=>{const identity=tokens.get(token);if(!identity)throw Error('invalid');return identity;}}));

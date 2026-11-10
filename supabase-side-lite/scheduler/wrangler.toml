@@ -1,7 +1,10 @@
-# Preparation only. No Cron Trigger is enabled by this file.
+# Deployment requires explicit authorization and the shared server-only secret.
 name = "side-lite-closer-scheduler"
 main = "worker.js"
 compatibility_date = "2026-11-01"
+account_id = "2271c3c692434ed7a37a5fabf2ecf4fc"
+workers_dev = false
+preview_urls = false
 
 [triggers]
-crons = []
+crons = ["* * * * *"]
