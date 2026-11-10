@@ -29,7 +29,7 @@ export function createTurnstileProvider({siteKey,document:doc=globalThis.documen
      callback:token=>typeof token==='string'&&token?finish(null,token):finish(Error('No se pudo verificar el acceso.')),
      'error-callback':errorCode=>{
       const safeCode=/^[0-9]{4,10}$/.test(String(errorCode||''))?` (Cloudflare ${errorCode})`:'';
-      finish(Error('No se pudo completar la verificación de Cloudflare'+safeCode+'.'));
+      finish(Error('No se pudo verificar el acceso con Cloudflare'+safeCode+'.'));
       return true;
      },
      'expired-callback':()=>finish(Error('La verificación venció. Inténtalo de nuevo.')),
