@@ -17,7 +17,8 @@ where teacher.id='10000000-0000-0000-0000-000000000001'
  and teacher.email_confirmed_at is not null
  and (teacher.banned_until is null or teacher.banned_until<=clock_timestamp())
  and administrator.is_anonymous is false and administrator.email_confirmed_at is not null
- and (administrator.banned_until is null or administrator.banned_until<=clock_timestamp());
+ and (administrator.banned_until is null or administrator.banned_until<=clock_timestamp())
+on conflict (user_id) do update set granted_by=excluded.granted_by;
 do $$ begin
  if not exists(select 1 from side_lite_private.lite_teacher_grants
   where user_id='10000000-0000-0000-0000-000000000001'
