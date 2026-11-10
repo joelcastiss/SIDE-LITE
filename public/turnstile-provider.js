@@ -22,6 +22,7 @@ export function createTurnstileProvider({siteKey,document:doc=globalThis.documen
    const timer=setTimeout(()=>finish(Error('La verificación tardó demasiado. Inténtalo de nuevo.')),timeoutMs);
    try{widget=api.render(container,{sitekey:siteKey,execution:'execute',appearance:'interaction-only',callback:token=>typeof token==='string'&&token?finish(null,token):finish(Error('No se pudo verificar el acceso.')),'error-callback':()=>finish(Error('No se pudo verificar el acceso.')),'expired-callback':()=>finish(Error('La verificación venció. Inténtalo de nuevo.'))});api.execute(widget)}catch{finish(Error('No se pudo iniciar la verificación.'))}
   });
- } verify.preload=load;
+ };
+ verify.preload=load;
  return verify;
 }
