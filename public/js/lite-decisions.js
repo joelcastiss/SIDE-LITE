@@ -104,21 +104,7 @@
     replaceButton('exitDecisions',()=>showScreen('studentLobby'));
     const enter=replaceButton('enterDecisionsBtn',()=>{showScreen('decisionMenu');select(selected);});
     const results=$('studentFinancialDetail');
-    function refreshResults() {
-      if (!results || !data) return;
-      results.replaceChildren();
-      const title=document.createElement('h3'); title.textContent='Clasificación'; results.append(title);
-      const list=document.createElement('ol');
-      for(const row of data.ranking || []) { const li=document.createElement('li'); li.textContent=`${row.name} · ${Number(row.returnPercent || 0).toFixed(1)} %`; list.append(li); }
-      results.append(list);
-      const heading=document.createElement('h3'); heading.textContent='Resultados por ciclo'; results.append(heading);
-      if (!data.results?.length) { const p=document.createElement('p');p.textContent='Aún no hay resultados.';results.append(p); }
-      for(const row of data.results || []) {
-        const v=row.result || {}, p=document.createElement('p');
-        p.textContent=`Ciclo ${row.number}: ${Number(v.sold||0)} bolsos vendidos · ingresos ${money(v.revenue)} · utilidad ${money(v.profit)} · caja ${money(v.cashEnd)}`;
-        results.append(p);
-      }
-    }
+    function refreshResults() { if (results && data) global.SIDELiteResults.render(results, data); }
     function updateEstimate() {
       if (!draft || !data) return;
       const quality=String(draft.quality), qty=Number(draft.quantity), price=Number(draft.price), marketing=Number(draft.marketingAmount);

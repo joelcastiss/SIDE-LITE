@@ -191,3 +191,12 @@
 @media (min-width:801px) and (min-height:651px) {
  #decisionMenu.lite-decision-mode .decision-tab[data-state="borrador"]::before { background:#ffd329; }
 }
+/* El encabezado pasa a dos filas en tablet horizontal; su altura debe contener ambas. */
+@media (min-width:801px) and (max-width:1080px) {
+ #decisionMenu.lite-decision-mode #decisionTopbar,
+ #decisionMenu.lite-decision-mode #decisionTopbar.compact { height:auto; min-height:0; grid-template-columns:minmax(180px,1fr) minmax(290px,350px); gap:8px 16px; }
+}
+/* En ventanas bajas el contenido sigue siendo accesible sin ocultar controles. */
+@media (min-width:801px) and (min-height:651px) {
+ #decisionMenu.lite-decision-mode #decisionFormScroll { overflow-y:auto; overflow-x:hidden; }
+}

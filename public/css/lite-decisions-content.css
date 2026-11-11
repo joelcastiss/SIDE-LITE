@@ -1,5 +1,5 @@
 /* Componentes de decisión Lite; colores y tipografía del sistema SIDE. */
-#decisionMenu.lite-decision-mode .decision-card { gap:10px; padding:16px 18px; justify-content:space-evenly; }
+#decisionMenu.lite-decision-mode .decision-card { gap:10px; padding:16px 18px; justify-content:flex-start; }
 #decisionMenu.lite-decision-mode .lite-card-heading { display:flex; align-items:center; gap:10px; }
 #decisionMenu.lite-decision-mode .lite-card-heading img { width:40px; height:40px; object-fit:contain; }
 #decisionMenu.lite-decision-mode .lite-card-heading h2 { margin:0; color:var(--side-text); font-size:18px; line-height:1.2; }
@@ -55,3 +55,16 @@
 #decisionMenu.lite-decision-mode .lite-price-zones b { position:absolute; top:-4px; width:4px; height:16px; transform:translateX(-50%); border-radius:3px; background:var(--side-text); }
 #decisionMenu.lite-decision-mode .lite-summary-row { padding-left:12px; padding-right:12px; }
 #decisionMenu.lite-decision-mode .quality-selected { right:12px; top:12px; }
+/* La tarjeta Lite ya incluye el título y la descripción de la sección. */
+@media (max-width:800px) {
+ #decisionMenu.lite-decision-mode .sticky-section-head { display:none; }
+ #decisionMenu.lite-decision-mode .decision-card { justify-content:flex-start; }
+}
+@media (min-width:601px) and (max-width:800px) {
+ #decisionMenu.lite-decision-mode .quality-options { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:600px) {
+ #decisionMenu.lite-decision-mode .quality-option { display:grid; grid-template-columns:40px minmax(0,1fr); column-gap:10px; align-content:start; }
+ #decisionMenu.lite-decision-mode .quality-icon { grid-column:1; grid-row:1 / span 5; width:40px; height:40px; }
+ #decisionMenu.lite-decision-mode .quality-option > :not(.quality-icon):not(.quality-selected) { grid-column:2; }
+}

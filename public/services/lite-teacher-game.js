@@ -261,6 +261,8 @@
       .finally(() => { submit.disabled = false; });
   }, true);
   try { gameId = sessionStorage.getItem('side-lite-teacher-game'); } catch { /* Session storage is optional. */ }
-  if (gameId) void refresh().catch(error => { gameId = null; message(error.message); });
+  // A temporary outage must not discard the room identifier: polling can
+  // restore the view once the connection returns.
+  if (gameId) void refresh().catch(error => { message(error.message); });
   setInterval(() => { if (gameId && !document.hidden) void refresh().catch(error => message(error.message)); }, 5000);
 })(window);

@@ -1,3 +1,4 @@
+import {reportApiError} from './error-reporting.js';
 // Local preparation only; mount this router on the trusted server and provide
 // the same verified-token implementation used by the game API.
 import express from 'express';
@@ -88,6 +89,6 @@ export function createCycleControlsRouter({pool,verifyToken,manualClose}={}) {
       return res.status(action==='finish' && result.results_pending?202:200).json(result);
     } catch(e) {return next(e);}
   });
-  router.use((err,req,res,next)=>{if(res.headersSent)return next(err);return res.status(err.status||500).json({error:err.status?err.message:'Error interno.'});});
+  router.use(reportApiError);
   return router;
 }

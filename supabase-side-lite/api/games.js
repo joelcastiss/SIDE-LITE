@@ -1,3 +1,4 @@
+import {reportApiError} from './error-reporting.js';
 // PREPARATION ONLY: not wired to a deployed service. The host must provide a
 // shared, durable rate limiter and a PostgreSQL pool with server-only access.
 import express from 'express';
@@ -316,6 +317,6 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
       return res.json(saved);
     } catch(e) { return next(e); }
   });
-  app.use((err,req,res,next)=>{if (res.headersSent) return next(err); return res.status(err.status || 500).json({error:err.status ? err.message : 'Error interno.'});});
+  app.use(reportApiError);
   return app;
 }

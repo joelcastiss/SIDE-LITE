@@ -20,14 +20,33 @@
       if (result.error) throw result.error;
       if (result.data?.nextLevel === 'aal2' && result.data?.currentLevel !== 'aal2') throw new Error('Completa la verificación multifactor.');
     }
-    const response = await global.fetch(apiRoot + path, {
-      method, headers: {Authorization: `Bearer ${session.access_token}`, apikey: apiKey,
-        ...(body === undefined ? {} : {'Content-Type': 'application/json'})},
-      ...(body === undefined ? {} : {body: JSON.stringify(body)}),
-      cache: 'no-store', credentials: 'omit', redirect: 'error'
-    });
+    let response;
+    for (let attempt = 0; attempt < (method === 'GET' ? 3 : 1); attempt++) {
+      try {
+        response = await global.fetch(apiRoot + path, {
+          method, headers: {Authorization: `Bearer ${session.access_token}`, apikey: apiKey,
+            ...(body === undefined ? {} : {'Content-Type': 'application/json'})},
+          ...(body === undefined ? {} : {body: JSON.stringify(body)}),
+          cache: 'no-store', credentials: 'omit', redirect: 'error'
+        });
+        if (method !== 'GET' || ![502, 503, 504].includes(response.status) || attempt === 2) break;
+      } catch {
+        if (method !== 'GET' || attempt === 2) throw new Error(method === 'GET'
+          ? 'No hay conexión con el servidor. Comprueba tu conexión e inténtalo de nuevo.'
+          : 'Se perdió la conexión. Actualiza la partida para comprobar si la operación se guardó antes de volver a intentarlo.');
+      }
+      await new Promise(resolve => global.setTimeout(resolve, 250 * (attempt + 1)));
+    }
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw Object.assign(new Error(data.error || 'No se pudo completar la solicitud.'), {status: response.status});
+    if (!response.ok) {
+      const fallback = response.status === 401 ? 'Tu sesión terminó. Vuelve a ingresar.'
+        : response.status === 403 ? 'No tienes permiso para realizar esta acción.'
+        : response.status === 429 ? 'Hay demasiados intentos. Espera un momento.'
+        : response.status >= 500 ? 'El servidor no está disponible. Inténtalo más tarde.'
+        : 'Revisa los datos e inténtalo de nuevo.';
+      const trace = typeof data.traceId === 'string' && /^[0-9a-f-]{36}$/i.test(data.traceId) ? ' Código de seguimiento: ' + data.traceId : '';
+      throw Object.assign(new Error((data.error || fallback) + trace), {status: response.status});
+    }
     return data;
   }
 
