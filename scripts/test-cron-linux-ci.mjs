@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {createServer, request} from 'node:https';
-import {readFile, mkdtemp} from 'node:fs/promises';
+import {readFile, mkdtemp, chmod} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import pg from 'pg';
@@ -11,6 +11,7 @@ const url='postgresql://postgres:local-test-only@127.0.0.1:5432/postgres';
 if(process.env.SIDE_TEST_DISPOSABLE!=='YES'||process.env.SIDE_CI_POSTGRES_URL!==url||process.env.GITHUB_ACTIONS!=='true')throw Error('Solo el clúster desechable de Actions está permitido.');
 const pool=new pg.Pool({connectionString:url,max:15});
 const dir=await mkdtemp(join(tmpdir(),'side-cron-ci-'));
+await chmod(dir,0o755); // PostgreSQL must read the public test CA certificate.
 const keyPath=join(dir,'key.pem'),certPath=join(dir,'cert.pem');
 execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',keyPath,'-out',certPath,'-days','1','-subj','/CN=localhost','-addext','subjectAltName=IP:127.0.0.1'],{stdio:'ignore'});
 const key=await readFile(keyPath),cert=await readFile(certPath);
@@ -53,6 +54,7 @@ try {
  end $proc$`);
  await pool.query("select cron.schedule('ci-side-wakeup','5 seconds','CALL ci_wakeup()')");
  for(let i=0;i<35&&!calls;i++)await pause(1000);
+ if(!calls){const x=await pool.query("select status, left(return_message,200) as message from cron.job_run_details d join cron.job j on j.jobid=d.jobid where j.jobname='ci-side-wakeup' order by d.start_time desc limit 1");console.error('Estado Cron:',JSON.stringify(x.rows).replace(/[a-f0-9]{64}/gi,'[redacted]'));}
  assert.ok(calls,'Cron no completó la llamada TLS');
  assert.equal((await pool.query('select closed from ci_cycle')).rows[0].closed,false,'no cierra antes del vencimiento');
  assert.ok(captured);const replay=await Promise.all(Array.from({length:10},()=>call(captured)));assert.ok(replay.every(code=>code===401));
