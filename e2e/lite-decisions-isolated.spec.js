@@ -21,6 +21,10 @@ for(const viewport of [{width:1920,height:1080},{width:1366,height:768},{width:1
  await page.setViewportSize(viewport);const errors=[];page.on('pageerror',e=>errors.push(e.message));await mount(page);
  const headerLayout=await page.evaluate(()=>({headerBottom:document.querySelector('#decisionTopbar').getBoundingClientRect().bottom,tabsTop:document.querySelector('#decisionTabs').getBoundingClientRect().top}));
  expect(headerLayout.tabsTop).toBeGreaterThanOrEqual(headerLayout.headerBottom-1);
+ if(viewport.width>800){
+  const actions=await page.evaluate(()=>{const track=document.querySelector('#decisionTopbar .mission-track').getBoundingClientRect(),button=document.querySelector('#topSubmitAllDecisions').getBoundingClientRect();return {trackRight:track.right,buttonLeft:button.left}});
+  expect(actions.trackRight).toBeLessThanOrEqual(actions.buttonLeft);
+ }
  if(process.env.SIDE_VISUAL_OUTPUT)await page.screenshot({path:`${process.env.SIDE_VISUAL_OUTPUT}/decision-${viewport.width}x${viewport.height}.png`});
  for(const key of ['quality','quantity','price','marketingAmount']){
   await page.locator(`[data-cat="${key}"]`).click();

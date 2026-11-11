@@ -195,6 +195,8 @@
 @media (min-width:801px) and (max-width:1080px) {
  #decisionMenu.lite-decision-mode #decisionTopbar,
  #decisionMenu.lite-decision-mode #decisionTopbar.compact { height:auto; min-height:0; grid-template-columns:minmax(180px,1fr) minmax(290px,350px); gap:8px 16px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .mission-meter { display:block; flex:0 1 130px; min-width:0; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .mission-track { width:100%; box-sizing:border-box; }
 }
 /* En ventanas bajas el contenido sigue siendo accesible sin ocultar controles. */
 @media (min-width:801px) and (min-height:651px) {
