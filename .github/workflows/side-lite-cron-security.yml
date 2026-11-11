@@ -33,7 +33,7 @@ jobs:
       - name: Configure isolated PostgreSQL
         run: |
           sudo install -d -o postgres -g postgres -m 0755 /tmp/side-lite-ci-log
-          sudo pg_ctlcluster 17 main start || true
+          sudo pg_createcluster 17 main --start --port 5432
           sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET shared_preload_libraries = 'pg_cron'"
           sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET cron.database_name = 'postgres'"
           sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET cron.use_background_workers = 'on'"
