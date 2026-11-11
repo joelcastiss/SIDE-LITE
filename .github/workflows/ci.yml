@@ -48,7 +48,6 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
       - name: Create isolated databases for permission and closing tests
         run: |
           node --input-type=module -e "import pg from 'pg'; const c=new pg.Client({connectionString:process.env.DATABASE_URL}); await c.connect(); await c.query('CREATE DATABASE side_lite_auth_test'); await c.query('CREATE DATABASE side_lite_closing_test'); await c.query('CREATE DATABASE side_lite_api_test'); await c.end();"
