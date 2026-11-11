@@ -1906,6 +1906,7 @@ function syncStudentTimer(){
   if($('studentTimerNote'))$('studentTimerNote').textContent=note;
 }
 function renderStudentStatus(){
+  if($('decisionMenu')?.classList.contains('lite-decision-mode'))return;
   if(!$('studentCashResult'))return;
   applyEventCashEffects();const f=financialReport({projection:true}),er=f.estadoResultados,bc=f.balanceCaja,fc=f.flujoCaja;
   const set=(id,val)=>{if($(id))$(id).textContent=money(val)};

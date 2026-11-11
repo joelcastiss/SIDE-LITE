@@ -27,3 +27,40 @@ for(const viewport of [{width:1366,height:768},{width:390,height:844}])test(`res
   }
   expect(errors).toEqual([]);
 });
+test('actualiza resultados propios, conserva historial y permite reintentar',async({page})=>{
+ await page.goto(base+'/index.html');
+ await page.evaluate(()=>{
+  const result={cashStart:1000,cashEnd:1200,purchase:200,unitCost:10,marketing:0,revenue:400,costOfSales:200,profit:200,sold:20,demand:25,inventory:[],event:{label:'Feria local',demand:1.15}};
+  window.__game={game:{name:'Prueba',code:'DEMO',cycle_count:3,costs:{basic:10,standard:20,premium:30}},company:{id:'mine',name:'Mi empresa',cash:1200,initial_capital:1000},cycles:[{id:'c1',number:1,status:'open',server_now:new Date().toISOString(),ends_at:new Date(Date.now()-1000).toISOString()}],ownDecision:null,ranking:[],results:[]};
+  window.__fail=false;window.SIDLiteGame={getGame:async()=>{if(window.__fail)throw Error('fallo');return structuredClone(window.__game)},request:async()=>({})};
+  window.__result=result;window.__view=window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
+ });
+ await expect(page.locator('#studentTimerNote')).toHaveText('Procesando resultados oficiales');
+ await expect(page.locator('#studentFinancialDetail')).toContainText('Aún no hay resultados oficiales');
+ await page.evaluate(()=>{window.__game.cycles[0].status='closed';window.__game.results=[{company_id:'mine',number:1,decision:{quantity:20,price:20},result:window.__result},{company_id:'other',number:1,result:{...window.__result,revenue:99999}}]});
+ await expect(page.locator('#studentFinancialDetail')).toContainText('Ciclo 1',{timeout:8000});
+ for(const text of ['Precio de venta','Costo de producción','Demanda potencial','Ventas no realizadas','Feria local'])await expect(page.locator('#studentFinancialDetail')).toContainText(text);
+ await expect(page.locator('#studentFinancialDetail')).not.toContainText('99.999');
+ await page.evaluate(()=>{window.__fail=true;return window.__view.refresh()});
+ await expect(page.getByRole('button',{name:'Reintentar actualización'})).toBeVisible();
+ await page.evaluate(()=>{window.__fail=false;window.__game.results.push({company_id:'mine',number:2,decision:{quantity:20,price:20},result:window.__result})});
+ await page.getByRole('button',{name:'Reintentar actualización'}).click();
+ await expect(page.locator('#studentFinancialDetail')).toContainText('Ciclo 2');
+ await expect(page.locator('#studentFinancialDetail')).toContainText('Ciclo 1');
+ await expect(page.getByRole('button',{name:'Reintentar actualización'})).toBeHidden();
+});
+test('una consulta sin respuesta permite reintentar tras el tiempo límite',async({page})=>{
+ await page.goto(base+'/index.html');
+ await page.evaluate(()=>{
+  window.__hang=true;
+  window.SIDLiteGame={getGame:()=>window.__hang?new Promise(resolve=>window.__late=resolve):Promise.resolve({game:{name:'Prueba',code:'DEMO',cycle_count:3,costs:{basic:10,standard:20,premium:30}},company:{id:'mine',name:'Mi empresa',cash:1000,initial_capital:1000},cycles:[],ownDecision:null,ranking:[],results:[]}),request:async()=>({})};
+  window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
+ });
+ await expect(page.getByRole('button',{name:'Reintentar actualización'})).toBeVisible({timeout:15000});
+ await page.evaluate(()=>window.__hang=false);
+ await page.getByRole('button',{name:'Reintentar actualización'}).click();
+ await expect(page.locator('#studentFinancialDetail')).toContainText('Aún no hay resultados oficiales');
+ await expect(page.getByRole('button',{name:'Reintentar actualización'})).toBeHidden();
+ await page.evaluate(()=>window.__late({game:{name:'Obsoleto'},company:{id:'old',name:'Obsoleta'},cycles:[],ranking:[],results:[]}));
+ await expect(page.locator('#lobbyGameName')).toHaveText('Prueba');
+});

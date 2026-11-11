@@ -14,7 +14,7 @@
     dispose?.();
     $('decisionMenu')?.classList.add('lite-decision-mode');
     let active = true, data = null, draft = null, draftCycle = null, selected = 0, busy = false, deadline = null;
-    let refreshing = false, touched = new Set(), editable = false;
+    let refreshing = false, touched = new Set(), editable = false, seenResultCycles = null;
     const entries = [
       {key:'quality', label:'Calidad', icon:'insumos.svg', description:'Selecciona la calidad de los bolsos.'},
       {key:'quantity', label:'Cantidad', icon:'inversiones.svg', description:'Elige cuántos bolsos producir.'},
@@ -104,6 +104,7 @@
     replaceButton('exitDecisions',()=>showScreen('studentLobby'));
     const enter=replaceButton('enterDecisionsBtn',()=>{showScreen('decisionMenu');select(selected);});
     const results=$('studentFinancialDetail');
+    const retry=document.createElement('button');retry.type='button';retry.className='ghost-btn hidden';retry.textContent='Reintentar actualización';retry.addEventListener('click',()=>void refresh());$('studentConnectionStatus')?.after(retry);
     function refreshResults() { if (results && data) global.SIDELiteResults.render(results, data); }
     function updateEstimate() {
       if (!draft || !data) return;
@@ -160,11 +161,16 @@
       const seconds=cycle.paused_at?Math.max(0,Math.ceil((Date.parse(cycle.ends_at)-Date.parse(cycle.paused_at))/1000)) : deadline===null?0:Math.max(0,Math.ceil((deadline-performance.now())/1000));
       const text=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
       write('studentRoundTimer',text);write('decisionRoundTimer',text); const timer=$('decisionRoundTimer'); if(timer){timer.classList.toggle('is-warning',seconds<120 && seconds>=30);timer.classList.toggle('is-critical',seconds<30);}
-      if (seconds===0 && cycle.status==='open' && !cycle.paused_at) {if(enter)enter.disabled=true;if(save)save.disabled=true;if(send)send.disabled=true;if(top)top.disabled=true;write('studentTimerNote','Procesando resultados oficiales');}
+      if ((cycle.close_requested_at || seconds===0) && cycle.status==='open' && !cycle.paused_at) {if(enter)enter.disabled=true;if(save)save.disabled=true;if(send)send.disabled=true;if(top)top.disabled=true;const delay=cycle.close_requested_at?Date.now()-Date.parse(cycle.close_requested_at):performance.now()-deadline;const slow=Number.isFinite(delay)&&delay>30000;write('studentTimerNote',slow?'El cierre está demorando. Puedes reintentar; si continúa, avisa al docente.':'Procesando resultados oficiales');if(slow)retry.classList.remove('hidden');}
     }
     function render(next, started) {
       data=next; const game=data.game, company=data.company, cycle=data.cycles?.at(-1), own=data.ownDecision;
       if (!company) throw new Error('No hay una empresa asociada a esta sesión.');
+      const ownResults=(data.results||[]).filter(row=>row.company_id===company.id).slice().sort((a,b)=>Number(a.number)-Number(b.number));
+      const resultCycles=new Set(ownResults.map(row=>String(row.cycle_id || row.number)));
+      const justClosed=seenResultCycles && [...resultCycles].some(id=>!seenResultCycles.has(id));
+      seenResultCycles=resultCycles;
+      if(justClosed && !$('decisionMenu')?.classList.contains('hidden'))showScreen('studentLobby');
       if (draftCycle !== (cycle?.id || null)) {
         draftCycle=cycle?.id || null; touched=new Set(); draft={quality:own?.quality || 'basic',quantity:own?.quantity ?? 0,price:own?.price ?? 100,marketingAmount:own?.marketing_amount ?? 0};
         for(const [key,input] of Object.entries(controls)) input.value=draft[key];
@@ -180,7 +186,7 @@
       if(enter){enter.classList.remove('hidden');enter.disabled=!open;}
       for(const button of [save,send,top]) if(button) button.disabled=!open || busy;
       for(const input of Object.values(controls)) input.disabled=!open || busy;
-      const last=data.results?.at(-1)?.result;
+      const last=ownResults.at(-1)?.result;
       const flow=last ? Number(last.cashEnd)-Number(last.cashStart) : null;
       write('studentIncomeResult',last?money(last.profit):'—');write('studentFlowResult',last?money(flow):'—');
       for (const [id,value] of Object.entries({studentBCInicial:last?.cashStart,studentBCEntradas:last?.revenue,
@@ -197,10 +203,10 @@
     }
     async function refresh() {
       if (!active || refreshing) return;
-      refreshing=true; const started=performance.now();
-      try { const next=await global.SIDLiteGame.getGame(gameId); if(active)render(next,started); }
-      catch(error) { if(active)showStatus(error.message || 'No se pudo consultar la partida.'); }
-      finally { refreshing=false; }
+      refreshing=true; const started=performance.now();let timeout;
+      try { const next=await Promise.race([global.SIDLiteGame.getGame(gameId),new Promise((_,reject)=>{timeout=global.setTimeout(()=>reject(new Error('Tiempo de espera agotado')),12000);})]); if(active){render(next,started);retry.classList.add('hidden');} }
+      catch(error) { if(active){write('studentConnectionStatus','No se pudo actualizar la partida. Comprueba tu conexión y vuelve a intentarlo.');if(!data && results)results.textContent='No se pudieron cargar los resultados. Comprueba tu conexión y vuelve a intentarlo.';retry.classList.remove('hidden');} }
+      finally { global.clearTimeout(timeout);refreshing=false; }
     }
     async function submit(confirmed) {
       if (!data || busy) return;
@@ -217,12 +223,9 @@
     select(0); showScreen('studentLobby');
     const poll=global.setInterval(refresh,5000), clock=global.setInterval(updateClock,250);
     const back=$('backToProfiles'); const onBack=()=>dispose?.(); back?.addEventListener('click',onBack);
-dispose=()=>{active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
+dispose=()=>{active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
     void refresh();
     return {refresh, dispose};
   }
   global.SIDELiteDecisions={mount};
 })(window);
-
-
-
