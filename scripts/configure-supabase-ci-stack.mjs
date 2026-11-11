@@ -14,7 +14,6 @@ for(const [before,after] of [['port = 54321','port = 56721'],['port = 54322','po
 // their own records, so no seed file should be loaded in the disposable stack.
 if(!/\[db\.seed\][\s\S]*?enabled = true/.test(config))throw Error('Configuración de seed inesperada');
 config=config.replace(/(\[db\.seed\][\s\S]*?)enabled = true/,'$1enabled = false');
-config+='\n[functions.side-lite-api]\nverify_jwt = false\n[functions.close-cycle]\nverify_jwt = false\n';
 await writeFile(configPath,config);
 const migrations=path.join(root,'supabase','migrations');await mkdir(migrations,{recursive:true});
 for(const file of (await readdir('supabase-side-lite/supabase/migrations')).filter(f=>/^\d{14}_[a-z0-9_]+\.sql$/.test(f)).sort()) await copyFile(path.join('supabase-side-lite/supabase/migrations',file),path.join(migrations,file));

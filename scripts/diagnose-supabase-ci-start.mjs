@@ -23,7 +23,7 @@ const filenames=[...new Set([...log.matchAll(/\b(config\.toml|seed\.sql|docker|s
 // Only inspect paths on the specific missing-file error, and report fixed
 // indicators rather than the path or basename (which may contain a secret).
 const missing=[...log.matchAll(/(?:open|stat|read(?:ing)?)\s+([^\r\n]{1,512}?)(?::\s*no such file or directory)/gi)].map(m=>m[1].toLowerCase());
-const hints=['seed.sql','config.toml','.supabase','.docker','docker.sock','.temp','project-ref','.branches','_current_branch','signing_keys','ca.crt','cert','telemetry','/supabase/','/functions/','/migrations/','/runner/','/tmp/'].filter(hint=>missing.some(path=>path.includes(hint)));
+const hints=['seed.sql','config.toml','config.json','.supabase','.config','.docker','docker.sock','.temp','project-ref','.branches','_current_branch','signing_keys','ca.crt','cert','telemetry','/supabase/','/functions/','/migrations/','/runner/','/tmp/'].filter(hint=>missing.some(path=>path.includes(hint)));
 console.log('Categorías de error de inicio:',matches.length?matches.join(', '):'sin clasificar');
 if(migrations.length) console.log('Última migración identificada:',migrations.at(-1));
 if(states.length) console.log('SQLSTATE:',states.join(', '));

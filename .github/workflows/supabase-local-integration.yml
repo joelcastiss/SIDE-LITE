@@ -56,6 +56,8 @@ jobs:
           node scripts/prepare-supabase-local-fixture.mjs
           fixture="$stack/side-lite-fixture/supabase-side-lite"
           cp "$stack/supabase/config.toml" "$fixture/supabase/config.toml"
+          # Register functions only after their local fixture files exist.
+          printf '\n[functions.side-lite-api]\nverify_jwt = false\n[functions.close-cycle]\nverify_jwt = false\n' >> "$fixture/supabase/config.toml"
           supabase functions serve --workdir "$fixture" --env-file "$stack/functions-local.env" > "$RUNNER_TEMP/side-lite-edge.log" 2>&1 &
           echo $! > "$RUNNER_TEMP/side-lite-edge.pid"
           for i in $(seq 1 90); do
