@@ -18,7 +18,14 @@ const tests=[
 const matches=tests.filter(([,pattern])=>pattern.test(log)).map(([name])=>name);
 const migrations=[...log.matchAll(/(?:Applying migration|failed to apply migration)\s+(\d{14}_[a-z0-9_]+\.sql)/gi)].map(m=>m[1]);
 const states=[...new Set([...log.matchAll(/SQLSTATE[ :]*([0-9A-Z]{5})/g)].map(m=>m[1]))];
+const codes=[...new Set([...log.matchAll(/"code"\s*:\s*"([A-Za-z][A-Za-z0-9]{0,79}Error)"/g)].map(m=>m[1]))];
 console.log('Categorías de error de inicio:',matches.length?matches.join(', '):'sin clasificar');
 if(migrations.length) console.log('Última migración identificada:',migrations.at(-1));
 if(states.length) console.log('SQLSTATE:',states.join(', '));
+if(codes.length) console.log('Códigos CLI:',codes.join(', '));
+// Preserve only known harmless diagnostic words from candidate error lines;
+// everything else, including tokens, paths, URLs, hosts and user data, is lost.
+const allowed=new Set('error failed failure fatal invalid unexpected unsupported unknown cannot could not unable missing required bad format malformed config configuration parse parsing project local stack docker container engine image pull download registry manifest access denied permission forbidden unauthorized conflict already exists not found version cli api key token jwt secret database postgres migration migrations auth schema relation role extension dependency start starting startup stop stopped health unhealthy timeout network connection connect dns socket port bind address allocated listener command flag argument syntax response status unprocessable entity password certificate issuer signing keys server platform architecture compatible latest tags rate limit refused unreachable exceeded requires sql no such file directory closed existing service services exit code'.split(' '));
+const candidates=log.split(/\r?\n/).filter(line=>/\b(error|failed|failure|fatal|invalid|unexpected|unsupported|unable|denied|forbidden|timeout|not found)\b/i.test(line)).slice(-12);
+for(const line of candidates){const words=(line.toLowerCase().match(/[a-z]+/g)||[]).filter(word=>allowed.has(word));if(words.length)console.log('Detalle filtrado:',words.join(' '));}
 console.log('El registro completo se conserva solo en el runner y no se publica.');
