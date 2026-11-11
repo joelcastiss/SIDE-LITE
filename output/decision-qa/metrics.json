@@ -1,0 +1,2234 @@
+[
+  {
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "key": "quality",
+    "metrics": {
+      "pageScroll": 768,
+      "innerHeight": 768,
+      "footer": {
+        "top": 675.5,
+        "bottom": 759,
+        "left": 21,
+        "right": 1345,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 675.5,
+        "left": 21,
+        "right": 1345,
+        "height": 414.90625
+      },
+      "scrollHeight": 415,
+      "scrollClient": 415,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 561.59375,
+        "left": 865.421875,
+        "right": 1319,
+        "height": 146
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1366,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1345,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 573
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 675.5,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 83.5
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 684.5,
+            "bottom": 750,
+            "left": 38,
+            "right": 676.375,
+            "height": 65.5
+          },
+          "width": 638.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1004.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 1012.1875,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1366x768-quality.png"
+  },
+  {
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "key": "quantity",
+    "metrics": {
+      "pageScroll": 768,
+      "innerHeight": 768,
+      "footer": {
+        "top": 675.5,
+        "bottom": 759,
+        "left": 21,
+        "right": 1345,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 675.5,
+        "left": 21,
+        "right": 1345,
+        "height": 414.90625
+      },
+      "scrollHeight": 415,
+      "scrollClient": 415,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 561.59375,
+        "left": 865.421875,
+        "right": 1319,
+        "height": 146
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1366,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1345,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 573
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 675.5,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 83.5
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 684.5,
+            "bottom": 750,
+            "left": 38,
+            "right": 676.375,
+            "height": 65.5
+          },
+          "width": 638.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1004.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 1012.1875,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1366x768-quantity.png"
+  },
+  {
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "key": "price",
+    "metrics": {
+      "pageScroll": 768,
+      "innerHeight": 768,
+      "footer": {
+        "top": 675.5,
+        "bottom": 759,
+        "left": 21,
+        "right": 1345,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 675.5,
+        "left": 21,
+        "right": 1345,
+        "height": 414.90625
+      },
+      "scrollHeight": 415,
+      "scrollClient": 415,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 561.59375,
+        "left": 865.421875,
+        "right": 1319,
+        "height": 146
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1366,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1345,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 573
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 675.5,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 83.5
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 684.5,
+            "bottom": 750,
+            "left": 38,
+            "right": 676.375,
+            "height": 65.5
+          },
+          "width": 638.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1004.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 1012.1875,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1366x768-price.png"
+  },
+  {
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "key": "marketingAmount",
+    "metrics": {
+      "pageScroll": 768,
+      "innerHeight": 768,
+      "footer": {
+        "top": 675.5,
+        "bottom": 759,
+        "left": 21,
+        "right": 1345,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 675.5,
+        "left": 21,
+        "right": 1345,
+        "height": 414.90625
+      },
+      "scrollHeight": 415,
+      "scrollClient": 415,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 561.59375,
+        "left": 865.421875,
+        "right": 1319,
+        "height": 146
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1366,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1345,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 573
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 675.5,
+            "bottom": 759,
+            "left": 21,
+            "right": 1345,
+            "height": 83.5
+          },
+          "width": 1324,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 684.5,
+            "bottom": 750,
+            "left": 38,
+            "right": 676.375,
+            "height": 65.5
+          },
+          "width": 638.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 688.375,
+            "right": 1004.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 685.53125,
+            "bottom": 748.96875,
+            "left": 1012.1875,
+            "right": 1328,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1366x768-marketingAmount.png"
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "key": "quality",
+    "metrics": {
+      "pageScroll": 720,
+      "innerHeight": 720,
+      "footer": {
+        "top": 627.5,
+        "bottom": 711,
+        "left": 21,
+        "right": 1259,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 627.5,
+        "left": 21,
+        "right": 1259,
+        "height": 366.90625
+      },
+      "scrollHeight": 384,
+      "scrollClient": 367,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 578.59375,
+        "left": 810.140625,
+        "right": 1232.984375,
+        "height": 163
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1280,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1259,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 525
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 627.5,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 83.5
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 636.5,
+            "bottom": 702,
+            "left": 38,
+            "right": 590.375,
+            "height": 65.5
+          },
+          "width": 552.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 918.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 926.1875,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1280x720-quality.png"
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "key": "quantity",
+    "metrics": {
+      "pageScroll": 720,
+      "innerHeight": 720,
+      "footer": {
+        "top": 627.5,
+        "bottom": 711,
+        "left": 21,
+        "right": 1259,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 627.5,
+        "left": 21,
+        "right": 1259,
+        "height": 366.90625
+      },
+      "scrollHeight": 384,
+      "scrollClient": 367,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 578.59375,
+        "left": 810.140625,
+        "right": 1232.984375,
+        "height": 163
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1280,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1259,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 525
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 627.5,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 83.5
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 636.5,
+            "bottom": 702,
+            "left": 38,
+            "right": 590.375,
+            "height": 65.5
+          },
+          "width": 552.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 918.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 926.1875,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1280x720-quantity.png"
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "key": "price",
+    "metrics": {
+      "pageScroll": 720,
+      "innerHeight": 720,
+      "footer": {
+        "top": 627.5,
+        "bottom": 711,
+        "left": 21,
+        "right": 1259,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 627.5,
+        "left": 21,
+        "right": 1259,
+        "height": 366.90625
+      },
+      "scrollHeight": 384,
+      "scrollClient": 367,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 578.59375,
+        "left": 810.140625,
+        "right": 1232.984375,
+        "height": 163
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1280,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1259,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 525
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 627.5,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 83.5
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 636.5,
+            "bottom": 702,
+            "left": 38,
+            "right": 590.375,
+            "height": 65.5
+          },
+          "width": 552.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 918.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 926.1875,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1280x720-price.png"
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "key": "marketingAmount",
+    "metrics": {
+      "pageScroll": 720,
+      "innerHeight": 720,
+      "footer": {
+        "top": 627.5,
+        "bottom": 711,
+        "left": 21,
+        "right": 1259,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 627.5,
+        "left": 21,
+        "right": 1259,
+        "height": 366.90625
+      },
+      "scrollHeight": 384,
+      "scrollClient": 367,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 415.59375,
+        "bottom": 578.59375,
+        "left": 810.140625,
+        "right": 1232.984375,
+        "height": 163
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1280,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1259,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 525
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 627.5,
+            "bottom": 711,
+            "left": 21,
+            "right": 1259,
+            "height": 83.5
+          },
+          "width": 1238,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 636.5,
+            "bottom": 702,
+            "left": 38,
+            "right": 590.375,
+            "height": 65.5
+          },
+          "width": 552.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 602.375,
+            "right": 918.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 637.53125,
+            "bottom": 700.96875,
+            "left": 926.1875,
+            "right": 1242,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1280x720-marketingAmount.png"
+  },
+  {
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "key": "quality",
+    "metrics": {
+      "pageScroll": 1080,
+      "innerHeight": 1080,
+      "footer": {
+        "top": 987.5,
+        "bottom": 1071,
+        "left": 21,
+        "right": 1899,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 987.5,
+        "left": 21,
+        "right": 1899,
+        "height": 726.90625
+      },
+      "scrollHeight": 727,
+      "scrollClient": 727,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 447.59375,
+        "bottom": 611.59375,
+        "left": 1221.5625,
+        "right": 1873,
+        "height": 164
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1920,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1899,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 885
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 987.5,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 83.5
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 996.5,
+            "bottom": 1062,
+            "left": 38,
+            "right": 1230.375,
+            "height": 65.5
+          },
+          "width": 1192.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1558.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1566.1875,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1920x1080-quality.png"
+  },
+  {
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "key": "quantity",
+    "metrics": {
+      "pageScroll": 1080,
+      "innerHeight": 1080,
+      "footer": {
+        "top": 987.5,
+        "bottom": 1071,
+        "left": 21,
+        "right": 1899,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 987.5,
+        "left": 21,
+        "right": 1899,
+        "height": 726.90625
+      },
+      "scrollHeight": 727,
+      "scrollClient": 727,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 447.59375,
+        "bottom": 611.59375,
+        "left": 1221.5625,
+        "right": 1873,
+        "height": 164
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1920,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1899,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 885
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 987.5,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 83.5
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 996.5,
+            "bottom": 1062,
+            "left": 38,
+            "right": 1230.375,
+            "height": 65.5
+          },
+          "width": 1192.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1558.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1566.1875,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1920x1080-quantity.png"
+  },
+  {
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "key": "price",
+    "metrics": {
+      "pageScroll": 1080,
+      "innerHeight": 1080,
+      "footer": {
+        "top": 987.5,
+        "bottom": 1071,
+        "left": 21,
+        "right": 1899,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 987.5,
+        "left": 21,
+        "right": 1899,
+        "height": 726.90625
+      },
+      "scrollHeight": 727,
+      "scrollClient": 727,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 447.59375,
+        "bottom": 611.59375,
+        "left": 1221.5625,
+        "right": 1873,
+        "height": 164
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1920,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1899,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 885
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 987.5,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 83.5
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 996.5,
+            "bottom": 1062,
+            "left": 38,
+            "right": 1230.375,
+            "height": 65.5
+          },
+          "width": 1192.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1558.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1566.1875,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1920x1080-price.png"
+  },
+  {
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "key": "marketingAmount",
+    "metrics": {
+      "pageScroll": 1080,
+      "innerHeight": 1080,
+      "footer": {
+        "top": 987.5,
+        "bottom": 1071,
+        "left": 21,
+        "right": 1899,
+        "height": 83.5
+      },
+      "scroll": {
+        "top": 260.59375,
+        "bottom": 987.5,
+        "left": 21,
+        "right": 1899,
+        "height": 726.90625
+      },
+      "scrollHeight": 727,
+      "scrollClient": 727,
+      "scrollOverflow": "auto",
+      "impact": {
+        "top": 447.59375,
+        "bottom": 611.59375,
+        "left": 1221.5625,
+        "right": 1873,
+        "height": 164
+      },
+      "tabs": [
+        {
+          "text": "Calidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Cantidad",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Precio",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        },
+        {
+          "text": "Marketing",
+          "height": 15.59375,
+          "lineHeight": "15.6px",
+          "whiteSpace": "nowrap"
+        }
+      ],
+      "opts": [
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "backgroundImage": "linear-gradient(145deg, rgb(16, 60, 85), rgb(10, 35, 57))",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        },
+        {
+          "text": "rgb(248, 254, 255)",
+          "description": "rgb(191, 208, 227)",
+          "bg": "rgb(2, 56, 99)",
+          "backgroundImage": "none",
+          "opacity": "1"
+        }
+      ],
+      "header": {
+        "top": 0,
+        "bottom": 117,
+        "left": 0,
+        "right": 1920,
+        "height": 117
+      },
+      "head": {
+        "top": 186,
+        "bottom": 260.59375,
+        "left": 21,
+        "right": 1899,
+        "height": 74.59375
+      },
+      "detail": [
+        {
+          "sel": "decision-detail",
+          "r": {
+            "top": 186,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 885
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "section-save-bar",
+          "r": {
+            "top": 987.5,
+            "bottom": 1071,
+            "left": 21,
+            "right": 1899,
+            "height": 83.5
+          },
+          "width": 1878,
+          "display": "flex",
+          "flex": "row",
+          "grid": "minmax(0px, 1fr) minmax(0px, 1fr)"
+        },
+        {
+          "sel": "",
+          "r": {
+            "top": 996.5,
+            "bottom": 1062,
+            "left": 38,
+            "right": 1230.375,
+            "height": 65.5
+          },
+          "width": 1192.375,
+          "display": "flex",
+          "flex": "column",
+          "grid": "none"
+        },
+        {
+          "sel": "decision-action-pair",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 639.625,
+          "display": "flex",
+          "flex": "row",
+          "grid": "repeat(2, minmax(0px, 1fr))"
+        },
+        {
+          "sel": "game-confirm-btn save-section-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1242.375,
+            "right": 1558.1875,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 272.234px"
+        },
+        {
+          "sel": "game-confirm-btn submit-decisions-btn section-submit-btn",
+          "r": {
+            "top": 997.53125,
+            "bottom": 1060.96875,
+            "left": 1566.1875,
+            "right": 1882,
+            "height": 63.4375
+          },
+          "width": 315.8125,
+          "display": "grid",
+          "flex": "column",
+          "grid": "20px 261.812px"
+        }
+      ]
+    },
+    "consoleIssues": [],
+    "path": "output/decision-qa/1920x1080-marketingAmount.png"
+  }
+]

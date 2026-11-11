@@ -2,7 +2,8 @@
   'use strict';
   let dispose = null;
   const $ = id => document.getElementById(id);
-  const money = n => 'S/ ' + Number(n || 0).toLocaleString('es-PE', {maximumFractionDigits: 2});
+  const number = n => new Intl.NumberFormat('es-PE', {maximumFractionDigits: 2}).format(Number(n) || 0);
+  const money = n => 'S/ ' + number(n);
   const write = (id, value) => { const el = $(id); if (el) el.textContent = String(value); };
   function replaceButton(id, handler) {
     const old = $(id); if (!old) return null;
@@ -25,8 +26,10 @@
     nav.replaceChildren(); cards.replaceChildren();
     const controls = {};
     const context=document.createElement('aside'); context.className='lite-context';
-    context.innerHTML='<section class="lite-summary"><h2>Resumen de tus decisiones</h2><div class="lite-summary-list"></div></section><section class="lite-impact" aria-live="polite"><h2>Impacto estimado</h2><div class="lite-impact-values"></div><small>*Si se vende toda la producción. La validación final corresponde al servidor.</small></section><p class="lite-tip"></p>';
+    context.innerHTML='<section class="lite-summary"><h2>Resumen de tus decisiones</h2><div class="lite-summary-list"></div></section><section class="lite-impact" aria-live="polite"><h2>Impacto estimado</h2><div class="lite-impact-values"></div><div class="lite-cash-stack" aria-label="Distribución estimada de caja"><i></i><i></i><i></i></div><div class="lite-cash-legend"><span>Producción</span><span>Marketing</span><span>Caja restante</span></div><small>*Si se vende toda la producción. La validación final corresponde al servidor.</small></section><p class="lite-tip"></p>';
     cards.after(context);
+    const formScroll=$('decisionFormScroll'), footer=formScroll.querySelector('.section-save-bar');
+    const footerNext=footer.nextSibling; formScroll.after(footer);
     const summary=context.querySelector('.lite-summary-list');
     entries.forEach((entry,index)=>{const button=document.createElement('button');button.type='button';button.className='lite-summary-row';button.addEventListener('click',()=>select(index));summary.append(button);});
     const tips=['Una calidad mayor puede mejorar la demanda, pero también aumenta el costo.','Considera la caja disponible y evita producir más de lo que esperas vender.','Compara el precio con el costo: las ventas no están garantizadas.','La publicidad puede aumentar la demanda; reserva efectivo para producir.'];
@@ -34,6 +37,7 @@
       selected = index;
       nav.querySelectorAll('button').forEach((el,i) => {el.classList.toggle('active', i === index); el.setAttribute('aria-pressed',String(i === index));});
       cards.querySelectorAll('.decision-card').forEach((el,i) => {el.hidden = i !== index;});
+      formScroll.scrollLeft=0; cards.scrollLeft=0; cards.querySelectorAll('.decision-card').forEach(el=>{el.scrollLeft=0;});
       const entry = entries[index]; write('categoryTitle',entry.label); write('categoryDescription',entry.description);
       const icon=$('detailCategoryIcon'); if (icon) icon.src='assets/icons/categories/'+entry.icon; context.querySelector('.lite-tip').textContent='Consejo: '+tips[index]; if(data)updateEstimate();
     }
@@ -41,7 +45,8 @@
       const tab=document.createElement('button'); tab.type='button'; tab.className='decision-tab'; tab.dataset.cat=entry.key;
       const icon=document.createElement('img'); icon.alt=''; icon.src='assets/icons/categories/'+entry.icon;
       const label=document.createElement('span'); label.textContent=entry.label; tab.append(icon,label); tab.addEventListener('click',()=>select(index)); nav.append(tab);
-      const card=document.createElement('div'); card.className='decision-card';
+      const card=document.createElement('div'); card.className='decision-card'; card.dataset.panel=entry.key;
+      const heading=document.createElement('div');heading.className='lite-card-heading';heading.innerHTML=`<img src="assets/icons/categories/${entry.icon}" alt=""><div><h2>${entry.label}</h2><p>${entry.description}</p></div>`;card.append(heading);
       const field=document.createElement('label'); field.className='decision-field-label'; field.htmlFor='decision-'+entry.key;
       field.textContent=entry.key==='quality'?'Elige una calidad':entry.key==='quantity'?'Bolsos a producir':entry.key==='price'?'Precio por bolso':'Inversión en publicidad';
       const input=document.createElement('input'); input.id='decision-'+entry.key; input.name=entry.key;
@@ -57,10 +62,12 @@
           const label=document.createElement('strong');label.textContent=name;
           const cost=document.createElement('span');cost.className='quality-cost';cost.dataset.qualityCost=value;
           const detail=document.createElement('small');detail.textContent=description;
-          option.append(symbol,label,cost,detail);option.addEventListener('click',()=>{input.value=value;change();});
+          const badge=document.createElement('span');badge.className='quality-selected';badge.textContent='✓ Seleccionada';
+          const levels={basic:[1,1,1],standard:[2,2,2],premium:[3,3,3]}[value];const attrs=document.createElement('div');attrs.className='quality-attributes';attrs.innerHTML=['Costo','Demanda','Reputación'].map((name,i)=>`<div><span>${name}</span><span class="quality-dots" aria-label="${levels[i]} de 3">${[1,2,3].map(n=>`<i class="${n<=levels[i]?'on':''}"></i>`).join('')}</span></div>`).join('');
+          option.append(badge,symbol,label,cost,detail,attrs);option.addEventListener('click',()=>{input.value=value;change();});
           option.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;event.preventDefault();const options=[...group.querySelectorAll('button')];const delta=['ArrowRight','ArrowDown'].includes(event.key)?1:-1;const next=options[(options.indexOf(option)+delta+options.length)%options.length];next.focus();next.click();});group.append(option);
         }
-        card.append(input,group);
+        card.append(input,group); const comparison=document.createElement('div');comparison.className='quality-comparison';comparison.innerHTML='<strong>Costo total con tu cantidad actual</strong><div></div>';card.append(comparison);
       } else {
         const row=document.createElement('div');row.className='decision-number-row';
         const step=entry.key==='quantity'?10:entry.key==='price'?1:100;
@@ -75,10 +82,14 @@
           const range=document.createElement('input');range.type='range';range.className='decision-range';range.min='0';range.max=entry.key==='quantity'?'100000':'10000';range.step=entry.key==='quantity'?'1':'100';range.setAttribute('aria-label',entry.key==='quantity'?'Ajustar cantidad':'Ajustar inversión en marketing');
           range.addEventListener('input',()=>{input.value=range.value;change();});card.append(range);
           const shortcuts=document.createElement('div');shortcuts.className='decision-shortcuts';
-          const values=entry.key==='quantity'?[['+10',10],['+50',50],['+100',100],['Máx.',null]]:[['S/ 0',0],['S/ 500',500],['S/ 1.000',1000],['S/ 2.500',2500]];
+          const values=entry.key==='quantity'?[['+10',10],['+50',50],['+100',100],['Máx.',null]]:[[money(0),0],[money(500),500],[money(1000),1000],[money(2500),2500]];
           for(const [text,value] of values) shortcuts.append(button(text,()=>{input.value=String(entry.key==='quantity'?Math.min(Number(range.max),value===null?Number(range.max):Number(input.value||0)+value):value);change();}));
-          card.append(shortcuts);
+          const marks=document.createElement('div');marks.className='lite-range-marks'; marks.dataset.marks=entry.key;card.append(marks,shortcuts);
+          const bar=document.createElement('div');bar.className='lite-measure';bar.dataset.measure=entry.key;card.append(bar);
         }
+        if(entry.key==='price'){const shortcuts=document.createElement('div');shortcuts.className='decision-shortcuts';[20,50,100].forEach(percent=>shortcuts.append(button('Costo +'+percent+'%',()=>{const factor={cost_discount:.9,cost_freight:1.1,cost_offer:.95,cost_shortage:1.15}[data?.cycles?.at(-1)?.event_id]||1;const unit=Math.round(Number(data?.game?.costs?.[draft.quality]||0)*factor);input.value=String(Math.round(unit*(1+percent/100)));change();})));card.append(shortcuts);const measure=document.createElement('div');measure.className='lite-measure';measure.dataset.measure='price';card.append(measure);}
+        if(entry.key==='marketingAmount'){const hint=document.createElement('p');hint.className='lite-fixed-hint';hint.textContent='0 o entre '+money(200)+' y '+money(10000);row.after(hint);}
+        const kpis=document.createElement('div');kpis.className='lite-control-kpis';kpis.dataset.kpis=entry.key;card.append(kpis);
         const feedback=document.createElement('p');feedback.className='decision-feedback';feedback.dataset.feedback=entry.key;feedback.setAttribute('aria-live','polite');card.append(feedback);
       }
       cards.append(card);
@@ -88,6 +99,8 @@
     const save=replaceButton('saveDecisionSection',()=>submit(false));
     const send=replaceButton('sendDecisionSection',()=>submit(true));
     const top=replaceButton('topSubmitAllDecisions',()=>submit(true));
+    if(save){save.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12l3 3v15H4V3h1zm3 0v6h8V3M8 21v-8h8v8"/></svg>';save.querySelector('small').textContent='Guarda la sección; puedes editar';}
+    if(send){send.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3l-6.5 18-3-7-8.5-2.5zm8.5 2.5L21 3"/></svg>';send.querySelector('small').textContent='Confirma; no editable en este ciclo';}
     replaceButton('exitDecisions',()=>showScreen('studentLobby'));
     const enter=replaceButton('enterDecisionsBtn',()=>{showScreen('decisionMenu');select(selected);});
     const results=$('studentFinancialDetail');
@@ -117,14 +130,14 @@
       const invalid={quantity:String(draft.quantity).trim()===''||!Number.isInteger(qty)||qty<0||qty>100000,price:String(draft.price).trim()===''||!Number.isInteger(price)||price<1||price>100000,marketingAmount:String(draft.marketingAmount).trim()===''||!Number.isInteger(marketing)||(marketing!==0&&(marketing<200||marketing>10000))};
       for(const key of Object.keys(invalid)){controls[key].setAttribute('aria-invalid',String(invalid[key]));controls[key].setAttribute('aria-describedby','decision-error-'+key);const feedback=cards.querySelector('[data-feedback="'+key+'"]');if(feedback){feedback.id='decision-error-'+key;feedback.classList.toggle('is-error',invalid[key]);}}
       const labels={basic:'Básica',standard:'Media',premium:'Premium'};
-      const values=[labels[quality],`${qty} bolsos`,money(price),money(marketing)];
+      const values=[labels[quality],`${number(qty)} bolsos`,money(price),money(marketing)];
       const state=data.ownDecision?.confirmed?'Enviada':data.ownDecision?'Borrador':'Pendiente';
-      summary.querySelectorAll('button').forEach((button,i)=>{button.textContent=`${entries[i].label}: ${values[i]} · ${state}`;});
+      summary.querySelectorAll('button').forEach((button,i)=>{button.replaceChildren(); const name=document.createElement('span'); name.textContent=`${entries[i].label}: ${values[i]}`; const chip=document.createElement('small'); chip.className='lite-state-chip'; chip.textContent=state; button.append(name,chip);});
       context.querySelector('.lite-impact-values').innerHTML=`<div><span>Inversión total</span><strong>${money(cost)}</strong></div><div><span>Caja restante</span><strong>${money(cash-cost)}</strong></div><div><span>Ingreso potencial máximo</span><strong>${money(qty*price)}</strong></div><div><span>Margen estimado*</span><strong>${money(qty*price-cost)}</strong></div>`;
       const completed=data.ownDecision?4:touched.size, progress=completed*25;
-      write('decisionProgressText',progress+'%'); write('decisionProgressHint',`${completed} de 4 decisiones revisadas`);
+      write('decisionProgressText',progress+'%'); write('decisionProgressHint',`${completed}/4 revisadas`);
       const progressBar=$('decisionProgressBar'); if(progressBar)progressBar.style.width=progress+'%';
-      nav.querySelectorAll('button').forEach((button,i)=>{button.dataset.state=data.ownDecision?.confirmed?'enviada':data.ownDecision?'borrador':touched.has(entries[i].key)?'revisada':'pendiente';button.setAttribute('aria-label',`${entries[i].label}: ${button.dataset.state}`);});
+      nav.querySelectorAll('button').forEach((button,i)=>{button.dataset.state=data.ownDecision?.confirmed?'enviada':data.ownDecision?'borrador':touched.has(entries[i].key)?'borrador':'pendiente';button.setAttribute('aria-label',`${entries[i].label}: ${button.dataset.state}`);});
       for(const button of [save,send,top]) if(button)button.disabled=!editable || busy || !valid;
       const maxQty=unit>0?Math.max(0,Math.min(100000,Math.floor((cash-Math.max(0,marketing || 0))/unit))):100000;
       cards.querySelectorAll('.quality-option').forEach(option=>{const checked=option.dataset.value===quality;option.setAttribute('aria-checked',String(checked));option.tabIndex=checked?0:-1;});
@@ -133,20 +146,34 @@
       if(quantityRange){quantityRange.max=String(maxQty);quantityRange.value=String(Math.min(maxQty,Math.max(0,qty || 0)));}
       const marketingRange=controls.marketingAmount.closest('.decision-card')?.querySelector('.decision-range');
       if(marketingRange){marketingRange.max=String(Math.max(0,Math.min(10000,Math.floor(cash-unit*Math.max(0,qty||0)))));marketingRange.value=String(Math.min(Number(marketingRange.max),Math.max(0,marketing||0)));}
+      const comparison=cards.querySelector('.quality-comparison div');
+      if(comparison) comparison.innerHTML=qty>0?['basic','standard','premium'].map(key=>`<span>${labels[key]} <strong>${money(unitCost(key)*qty)}</strong></span>`).join(''):'<span>Define la cantidad para comparar</span>';
+      const percent=(part,total)=>total>0?Math.max(0,Math.min(100,part/total*100)):0;
+      const quantityMarks=cards.querySelector('[data-marks="quantity"]');if(quantityMarks)quantityMarks.innerHTML=[25,50,75,100].map(n=>`<span>${n} %</span>`).join('');
+      const marketingMarks=cards.querySelector('[data-marks="marketingAmount"]');if(marketingMarks)marketingMarks.innerHTML=`<span>${money(200)}</span><span>${money(10000)}</span>`;
+      const measure=(key,title,value,label)=>{const el=cards.querySelector(`[data-measure="${key}"]`);if(el)el.innerHTML=`<div><span>${title}</span><strong>${label}</strong></div><div class="lite-meter"><i style="width:${value}%"></i></div>`;};
+      measure('quantity','Producción vs. caja disponible',percent(qty,maxQty),`Máximo: ${number(maxQty)} bolsos`);
+      measure('marketingAmount','% de la caja',percent(marketing,cash),`${number(cash>0?marketing/cash*100:0)} %`);
+      const priceMeasure=cards.querySelector('[data-measure="price"]');if(priceMeasure)priceMeasure.innerHTML=`<div><span>Bajo</span><span>Competitivo</span><span>Alto</span></div><div class="lite-price-zones"><i></i><i></i><i></i><b style="left:${percent(price,unit*2)}%" aria-label="Precio ${price<unit?'bajo':price<unit*1.5?'competitivo':'alto'}"></b></div>`;
+      const kpis=(key,items)=>{const el=cards.querySelector(`[data-kpis="${key}"]`);if(el)el.innerHTML=items.map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong></div>`).join('');};
+      kpis('quantity',[['Costo unitario',money(unit)],['Cantidad',number(qty)],['Costo total',money(unit*qty)]]);
+      kpis('price',[['Margen por bolso',money(price-unit)],['Margen',`${number(price?((price-unit)/price)*100:0)} %`],['Ingreso potencial',money(price*qty)]]);
+      kpis('marketingAmount',[['% de la caja',`${number(cash?marketing/cash*100:0)} %`],['Caja restante',money(cash-marketing)]]);
+      const parts=[unit*Math.max(0,qty||0),Math.max(0,marketing||0),Math.max(0,cash-cost)];context.querySelectorAll('.lite-cash-stack i').forEach((el,i)=>{el.style.width=percent(parts[i],cash)+'%';});
       const feedback=(key,text)=>{const el=cards.querySelector('[data-feedback="'+key+'"]');if(el)el.textContent=text;};
-      feedback('quantity',invalid.quantity?'Ingresa una cantidad entera entre 0 y 100.000.':`Producción: ${money(unit*qty)} · Máximo con caja disponible: ${maxQty.toLocaleString('es-PE')} bolsos.`);
-      feedback('price',invalid.price?'Ingresa un precio entero entre S/ 1 y S/ 100.000.':`Margen por bolso: ${money(price-unit)} · ${price<unit?'Por debajo del costo':price<unit*1.5?'Precio moderado':'Precio alto'} respecto al costo unitario.`);
-      feedback('marketingAmount',invalid.marketingAmount?'Ingresa S/ 0 o un monto entero entre S/ 200 y S/ 10.000.':`${cash>0?((marketing/cash)*100).toFixed(1):'0.0'} % de la caja disponible. Marketing: S/ 0 o entre S/ 200 y S/ 10.000.`);
+      feedback('quantity',invalid.quantity?`Ingresa una cantidad entera entre 0 y ${number(100000)}.`:`Producción: ${money(unit*qty)} · Máximo con caja disponible: ${number(maxQty)} bolsos.`);
+      feedback('price',invalid.price?`Ingresa un precio entero entre ${money(1)} y ${money(100000)}.`:`Margen por bolso: ${money(price-unit)} · ${price<unit?'Por debajo del costo':price<unit*1.5?'Precio moderado':'Precio alto'} respecto al costo unitario.`);
+      feedback('marketingAmount',invalid.marketingAmount?`Ingresa ${money(0)} o un monto entero entre ${money(200)} y ${money(10000)}.`:`${number(cash>0?(marketing/cash)*100:0)} % de la caja disponible.`);
       cards.querySelectorAll('.decision-card').forEach(card=>card.querySelectorAll('button, input').forEach(el=>{el.disabled=controls[card.querySelector('[name]')?.name]?.disabled ?? false;}));
       write('sectionDraftCost',Number.isFinite(cost)?money(selected===1?unit*qty:selected===3?marketing:0):'—');
       $('sectionSaveHint')?.setAttribute('aria-live','polite');
-      write('sectionSaveHint',!fieldsValid?'Revisa los campos; marketing debe ser S/ 0 o entre S/ 200 y S/ 10.000.':cost>cash?'La inversión supera la caja disponible.':`Inversión estimada: ${money(cost)}. La validación final corresponde al servidor.`);
+      write('sectionSaveHint',!fieldsValid?`Revisa los campos; marketing debe ser ${money(0)} o entre ${money(200)} y ${money(10000)}.`:cost>cash?'La inversión supera la caja disponible.':'La validación final la hace el servidor.');
     }
     function updateClock() {
       const cycle=data?.cycles?.at(-1); if (!cycle) {write('studentRoundTimer','--:--');write('decisionRoundTimer','--:--');return;}
       const seconds=cycle.paused_at?Math.max(0,Math.ceil((Date.parse(cycle.ends_at)-Date.parse(cycle.paused_at))/1000)) : deadline===null?0:Math.max(0,Math.ceil((deadline-performance.now())/1000));
       const text=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
-      write('studentRoundTimer',text);write('decisionRoundTimer',text); const timer=$('decisionRoundTimer'); if(timer){timer.classList.toggle('is-warning',seconds<=60 && seconds>30);timer.classList.toggle('is-critical',seconds<=30);}
+      write('studentRoundTimer',text);write('decisionRoundTimer',text); const timer=$('decisionRoundTimer'); if(timer){timer.classList.toggle('is-warning',seconds<120 && seconds>=30);timer.classList.toggle('is-critical',seconds<30);}
       if (seconds===0 && cycle.status==='open' && !cycle.paused_at) {if(enter)enter.disabled=true;if(save)save.disabled=true;if(send)send.disabled=true;if(top)top.disabled=true;write('studentTimerNote','Procesando resultados oficiales');}
     }
     function render(next, started) {
@@ -204,7 +231,7 @@
     select(0); showScreen('studentLobby');
     const poll=global.setInterval(refresh,5000), clock=global.setInterval(updateClock,250);
     const back=$('backToProfiles'); const onBack=()=>dispose?.(); back?.addEventListener('click',onBack);
-dispose=()=>{active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();context.remove();$('decisionMenu')?.classList.remove('lite-decision-mode');};
+dispose=()=>{active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
     void refresh();
     return {refresh, dispose};
   }

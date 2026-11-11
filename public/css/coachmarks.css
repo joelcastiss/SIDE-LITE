@@ -9,3 +9,12 @@
 
 
 .coach-card button,.coach-help{font-family:SidePoppins,Poppins,sans-serif!important}
+/* La guía comparte la paleta de decisiones. */
+.coach-card { background:var(--side-decision-panel,#091c2f); color:var(--side-text,#eef5fa); border:1px solid var(--side-blue,#39d0ff); box-shadow:0 12px 36px #0009; }
+.coach-card h2 { color:var(--side-text,#eef5fa); }
+.coach-progress { color:var(--side-text-muted,#a3b8c9); }
+.coach-actions button { background:var(--side-decision-raised,#0d263d); color:var(--side-text,#eef5fa); }
+.coach-actions [data-action=skip] { background:transparent; color:var(--side-text,#eef5fa); border:1px solid var(--side-line-control,#5c7890); }
+.coach-actions [data-action=next] { background:var(--side-gold,#ffd329); color:#091426; }
+/* Amarillo de la paleta base: el tema institucional redefine --side-gold en cian. */
+.coach-actions [data-action=next] { background:#ffd329; color:#091426; }

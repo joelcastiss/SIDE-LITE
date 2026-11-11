@@ -1,0 +1,236 @@
+[
+  {
+    "text": "Costo unitario",
+    "selector": "",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      9,
+      24,
+      47
+    ],
+    "ratio": 10.029264259707872,
+    "font": "11px",
+    "weight": "400"
+  },
+  {
+    "text": "S/ 50",
+    "selector": "",
+    "fg": "rgb(57, 208, 255)",
+    "bg": [
+      9,
+      24,
+      47
+    ],
+    "ratio": 9.837034271723338,
+    "font": "15px",
+    "weight": "700"
+  },
+  {
+    "text": "Cantidad",
+    "selector": "",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      9,
+      24,
+      47
+    ],
+    "ratio": 10.029264259707872,
+    "font": "11px",
+    "weight": "400"
+  },
+  {
+    "text": "0",
+    "selector": "",
+    "fg": "rgb(57, 208, 255)",
+    "bg": [
+      9,
+      24,
+      47
+    ],
+    "ratio": 9.837034271723338,
+    "font": "15px",
+    "weight": "700"
+  },
+  {
+    "text": "Costo total",
+    "selector": "",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      9,
+      24,
+      47
+    ],
+    "ratio": 10.029264259707872,
+    "font": "11px",
+    "weight": "400"
+  },
+  {
+    "text": "S/ 0",
+    "selector": "",
+    "fg": "rgb(57, 208, 255)",
+    "bg": [
+      9,
+      24,
+      47
+    ],
+    "ratio": 9.837034271723338,
+    "font": "15px",
+    "weight": "700"
+  },
+  {
+    "text": "Pendiente",
+    "selector": "lite-state-chip",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "10px",
+    "weight": "400"
+  },
+  {
+    "text": "Pendiente",
+    "selector": "lite-state-chip",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "10px",
+    "weight": "400"
+  },
+  {
+    "text": "Pendiente",
+    "selector": "lite-state-chip",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "10px",
+    "weight": "400"
+  },
+  {
+    "text": "Pendiente",
+    "selector": "lite-state-chip",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "10px",
+    "weight": "400"
+  },
+  {
+    "text": "Inversión total",
+    "selector": "",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "11px",
+    "weight": "400"
+  },
+  {
+    "text": "S/ 0",
+    "selector": "",
+    "fg": "rgb(57, 208, 255)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.224142451640878,
+    "font": "13px",
+    "weight": "700"
+  },
+  {
+    "text": "Caja restante",
+    "selector": "",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "11px",
+    "weight": "400"
+  },
+  {
+    "text": "S/ 30,000",
+    "selector": "",
+    "fg": "rgb(57, 208, 255)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.224142451640878,
+    "font": "13px",
+    "weight": "700"
+  },
+  {
+    "text": "Ingreso potencial máximo",
+    "selector": "",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "11px",
+    "weight": "400"
+  },
+  {
+    "text": "S/ 0",
+    "selector": "",
+    "fg": "rgb(57, 208, 255)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.224142451640878,
+    "font": "13px",
+    "weight": "700"
+  },
+  {
+    "text": "Margen estimado*",
+    "selector": "",
+    "fg": "rgb(180, 197, 211)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.423937097704135,
+    "font": "11px",
+    "weight": "400"
+  },
+  {
+    "text": "S/ 0",
+    "selector": "",
+    "fg": "rgb(57, 208, 255)",
+    "bg": [
+      5,
+      21,
+      38
+    ],
+    "ratio": 10.224142451640878,
+    "font": "13px",
+    "weight": "700"
+  }
+]

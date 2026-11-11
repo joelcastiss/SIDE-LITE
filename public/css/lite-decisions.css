@@ -99,3 +99,95 @@
 #decisionMenu.lite-decision-mode .decision-feedback.is-error { color:var(--side-danger); border-color:var(--side-danger); }
 #decisionMenu.lite-decision-mode .decision-number-row:has([aria-invalid="true"]) { border-color:var(--side-danger); }
 #decisionMenu.lite-decision-mode .decision-tab[data-state="revisada"]::before { background:var(--side-blue); }
+/* Distribución de la pantalla Lite: solo el contenido central se desplaza. */
+@media (min-width:801px) {
+ #decisionMenu.lite-decision-mode { height:100dvh; min-height:0; overflow:hidden; display:flex; flex-direction:column; }
+ #decisionMenu.lite-decision-mode #decisionTopbar { flex:none; padding:8px 20px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .decision-topbar-actions { display:flex; width:auto; justify-content:flex-end; gap:12px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .mission-meter { width:150px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .coach-help { order:0; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .cash-hud, #decisionMenu.lite-decision-mode #decisionTopbar .student-top-timer { min-height:62px; }
+ #decisionMenu.lite-decision-mode .decision-game-stage { flex:1; height:auto; min-height:0; margin:0; padding:8px 20px; width:100%; box-sizing:border-box; }
+ #decisionMenu.lite-decision-mode .decision-window { height:100%; overflow:hidden; }
+ #decisionMenu.lite-decision-mode .decision-tabs { position:static; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-flow:row; flex:none; gap:6px; padding:4px 12px; overflow:hidden; }
+ #decisionMenu.lite-decision-mode .decision-tabs .decision-tab { display:flex; flex-direction:row; align-items:center; justify-content:flex-start; min-width:0; height:52px; min-height:52px; padding:6px 12px; gap:8px; white-space:nowrap; word-break:normal; overflow-wrap:normal; }
+ #decisionMenu.lite-decision-mode .decision-tab img { flex:none; width:26px; height:26px; }
+ #decisionMenu.lite-decision-mode .decision-tab span { min-width:0; white-space:nowrap; word-break:normal; overflow-wrap:normal; line-height:1.3; }
+ #decisionMenu.lite-decision-mode .decision-tab[data-state]::before { order:2; flex:none; margin-left:auto; }
+ #decisionMenu.lite-decision-mode .decision-detail { overflow:hidden; }
+ #decisionMenu.lite-decision-mode .sticky-section-head { position:static; flex:none; min-height:64px; padding:6px 16px; margin:0; box-sizing:border-box; }
+ #decisionMenu.lite-decision-mode .detail-heading { display:flex; align-items:center; gap:12px; }
+ #decisionMenu.lite-decision-mode .detail-heading img { width:40px; height:40px; }
+ #decisionMenu.lite-decision-mode .detail-heading h1 { font-size:20px; line-height:1.2; margin:0; }
+ #decisionMenu.lite-decision-mode .detail-heading p { margin:2px 0 0; line-height:1.3; font-size:12px; }
+ #decisionMenu.lite-decision-mode #decisionFormScroll { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(290px,1fr); grid-template-rows:minmax(min-content,1fr); align-content:start; flex:1 1 0; min-height:0; padding:8px 16px; overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; scrollbar-color:var(--side-line-control) transparent; }
+ #decisionMenu.lite-decision-mode .section-save-bar { flex:none; display:flex; position:static; align-items:center; justify-content:space-between; gap:12px; min-height:80px; margin:0; padding:8px 16px; box-sizing:border-box; }
+ #decisionMenu.lite-decision-mode .section-save-bar > div:first-child { min-width:0; display:flex; flex-direction:column; gap:2px; }
+ #decisionMenu.lite-decision-mode .section-save-bar > div:first-child span, #decisionMenu.lite-decision-mode .section-save-bar > div:first-child small { white-space:normal; overflow:visible; text-overflow:clip; line-height:1.25; }
+ #decisionMenu.lite-decision-mode .decision-action-pair { display:flex; flex:none; gap:8px; }
+ #decisionMenu.lite-decision-mode .decision-action-pair button { display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; align-content:center; align-items:center; column-gap:8px; min-height:56px; padding:8px 12px; text-align:left; }
+ #decisionMenu.lite-decision-mode .decision-action-pair button > span { grid-row:1 / 3; grid-column:1; }
+ #decisionMenu.lite-decision-mode .decision-action-pair button > strong, #decisionMenu.lite-decision-mode .decision-action-pair button > small { grid-column:2; white-space:nowrap; }
+ #decisionMenu.lite-decision-mode .decision-action-pair .save-section-btn { border:1px solid var(--lite-cyan); background:rgba(16,49,74,.7); color:var(--side-text); }
+ #decisionMenu.lite-decision-mode .decision-action-pair .section-submit-btn { background:var(--side-gold); color:#091426; }
+ #decisionMenu.lite-decision-mode .decision-card { display:flex; flex-direction:column; min-height:300px; }
+ #decisionMenu.lite-decision-mode .decision-card[hidden] { display:none; }
+ #decisionMenu.lite-decision-mode .quality-options { flex:1; align-items:stretch; }
+ #decisionMenu.lite-decision-mode .quality-option { position:relative; min-height:0; background:var(--side-decision-raised,#0d263d); border-color:rgba(57,208,255,.35); color:var(--side-text,#eef5fa); }
+ #decisionMenu.lite-decision-mode .quality-option:disabled { opacity:1; cursor:not-allowed; }
+ #decisionMenu.lite-decision-mode .quality-option[aria-checked=true]::after { content:'✓'; position:absolute; right:12px; top:12px; color:var(--lite-cyan); font-weight:800; }
+ #decisionMenu.lite-decision-mode .quality-option small { color:#bfd0e3; }
+ #decisionMenu.lite-decision-mode .lite-state-chip { flex:none; padding:2px 7px; border:1px solid var(--side-line-control); border-radius:999px; color:var(--side-text,#eef5fa); font-size:10px; }
+}
+@media (max-width:800px) {
+ #decisionMenu.lite-decision-mode .decision-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-flow:row; }
+ #decisionMenu.lite-decision-mode .decision-tab { display:flex; flex-direction:row; min-width:0; white-space:nowrap; }
+ #decisionMenu.lite-decision-mode .decision-tab span { white-space:nowrap; word-break:normal; overflow-wrap:normal; }
+ #decisionMenu.lite-decision-mode .decision-tab[data-state]::before { order:2; margin-left:auto; }
+ #decisionMenu.lite-decision-mode .quality-option:disabled { opacity:1; }
+}
+#decisionMenu.lite-decision-mode .decision-card { animation:none; }
+@media (min-width:801px) {
+ #decisionMenu.lite-decision-mode .decision-action-pair { width:auto; }
+ #decisionMenu.lite-decision-mode .section-save-bar > div:first-child { flex:1 1 auto; }
+ #decisionMenu.lite-decision-mode .decision-detail { padding:0; }
+}
+#decisionMenu.lite-decision-mode .decision-action-pair button > span { width:20px; font-size:18px; line-height:1; text-align:center; letter-spacing:0; }
+
+/* Shell compacto de decisiones Lite. */
+@media (min-width:801px) and (min-height:651px) {
+ #decisionMenu.lite-decision-mode #decisionTopbar,
+ #decisionMenu.lite-decision-mode #decisionTopbar.compact { height:72px; min-height:72px; box-sizing:border-box; padding:8px 20px; grid-template-columns:minmax(190px,1fr) minmax(300px,380px) auto; gap:16px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .decision-topbar-metrics { grid-template-columns:minmax(160px,1fr) minmax(130px,.8fr); gap:8px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .cash-hud,
+ #decisionMenu.lite-decision-mode #decisionTopbar .student-top-timer { height:56px; min-height:56px; padding:5px 10px; box-sizing:border-box; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .cash-hud strong { margin:0; font-size:19px; line-height:1.1; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .cash-hud small { font-size:9px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar #decisionRoundTimer { min-width:5ch; margin:0; font-size:20px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .decision-topbar-actions { gap:12px; align-items:center; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .coach-help { width:36px; height:36px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .mission-meter { display:grid; grid-template-columns:auto 84px auto; align-items:center; gap:8px; width:auto; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .mission-label { display:flex; flex-wrap:nowrap; gap:5px; margin:0; white-space:nowrap; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .mission-track { width:84px; }
+ #decisionMenu.lite-decision-mode #decisionTopbar #decisionProgressHint { margin:0; white-space:nowrap; }
+ #decisionMenu.lite-decision-mode #decisionTopbar .top-submit-all { width:auto; height:44px; min-height:44px; padding:0 16px; }
+ #decisionMenu.lite-decision-mode .decision-game-stage { padding:8px 20px; }
+ #decisionMenu.lite-decision-mode .decision-tabs { gap:8px; padding:0 12px 8px; }
+ #decisionMenu.lite-decision-mode .decision-tabs .decision-tab { height:48px; min-height:48px; }
+ #decisionMenu.lite-decision-mode .sticky-section-head { display:none; }
+ #decisionMenu.lite-decision-mode #decisionFormScroll { grid-template-columns:minmax(0,1fr) clamp(380px,32vw,520px); grid-template-rows:minmax(0,1fr); gap:12px; padding:0 16px 8px; overflow:hidden; }
+ #decisionMenu.lite-decision-mode .section-save-bar { height:68px; min-height:68px; padding:5px 16px; }
+ #decisionMenu.lite-decision-mode .section-save-bar > div:first-child { gap:0; }
+ #decisionMenu.lite-decision-mode .section-save-bar > div:first-child span,
+ #decisionMenu.lite-decision-mode .section-save-bar > div:first-child small { font-size:11px; line-height:1.2; }
+ #decisionMenu.lite-decision-mode .decision-action-pair button { min-height:54px; padding:6px 16px; }
+ #decisionMenu.lite-decision-mode .decision-action-pair button > span { width:18px; height:18px; }
+ #decisionMenu.lite-decision-mode .decision-action-pair svg { display:block; width:18px; height:18px; }
+ #decisionMenu.lite-decision-mode .decision-tab[data-state]::before { box-sizing:border-box; width:10px; height:10px; background:transparent; border:2px solid var(--side-text-muted); }
+ #decisionMenu.lite-decision-mode .decision-tab[data-state="borrador"]::before { border:0; background:var(--side-gold); }
+ #decisionMenu.lite-decision-mode .decision-tab[data-state="enviada"]::before { content:'✓'; width:16px; height:16px; border:0; color:var(--side-success); font-size:15px; line-height:16px; background:transparent; }
+}
+#decisionMenu.lite-decision-mode #decisionRoundTimer.is-warning { color:#ffd329; }
+@media (min-width:801px) and (min-height:651px) {
+ #decisionMenu.lite-decision-mode .decision-tab[data-state="borrador"]::before { background:#ffd329; }
+}

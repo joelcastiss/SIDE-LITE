@@ -1,0 +1,57 @@
+/* Componentes de decisión Lite; colores y tipografía del sistema SIDE. */
+#decisionMenu.lite-decision-mode .decision-card { gap:10px; padding:16px 18px; justify-content:space-evenly; }
+#decisionMenu.lite-decision-mode .lite-card-heading { display:flex; align-items:center; gap:10px; }
+#decisionMenu.lite-decision-mode .lite-card-heading img { width:40px; height:40px; object-fit:contain; }
+#decisionMenu.lite-decision-mode .lite-card-heading h2 { margin:0; color:var(--side-text); font-size:18px; line-height:1.2; }
+#decisionMenu.lite-decision-mode .lite-card-heading p { margin:2px 0 0; color:var(--side-text-muted); font-size:12px; }
+#decisionMenu.lite-decision-mode .decision-field-label { margin:0; }
+#decisionMenu.lite-decision-mode .quality-options { flex:initial; align-items:stretch; gap:10px; }
+#decisionMenu.lite-decision-mode .quality-option { display:flex; gap:4px; position:relative; padding:10px 12px; min-height:0; background:var(--side-decision-panel); }
+#decisionMenu.lite-decision-mode .quality-option[aria-checked=true] { background:linear-gradient(145deg,var(--side-decision-raised),#164561); border-color:var(--side-blue); box-shadow:0 0 16px #39d0ff33; }
+#decisionMenu.lite-decision-mode .quality-option[aria-checked=true]::after { content:none; }
+#decisionMenu.lite-decision-mode .quality-icon { display:grid; place-items:center; width:48px; height:48px; border-radius:50%; background:var(--side-decision-raised); color:var(--side-blue); font-size:25px; }
+#decisionMenu.lite-decision-mode .quality-selected { display:none; position:absolute; right:9px; top:10px; color:var(--side-blue); font-size:10px; font-weight:700; }
+#decisionMenu.lite-decision-mode .quality-option[aria-checked=true] .quality-selected { display:block; }
+#decisionMenu.lite-decision-mode .quality-option small { font-size:11px; line-height:1.25; min-height:28px; }
+#decisionMenu.lite-decision-mode .quality-attributes { width:100%; display:grid; gap:3px; margin-top:3px; color:var(--side-text-muted); font-size:11px; }
+#decisionMenu.lite-decision-mode .quality-attributes > div { display:flex; justify-content:space-between; align-items:center; }
+#decisionMenu.lite-decision-mode .quality-dots { display:flex; gap:4px; }
+#decisionMenu.lite-decision-mode .quality-dots i { width:7px; height:7px; border-radius:50%; background:var(--side-line-control); }
+#decisionMenu.lite-decision-mode .quality-dots i.on { background:var(--side-blue); }
+#decisionMenu.lite-decision-mode .quality-comparison { padding:10px 12px; border:1px solid var(--side-line); border-radius:10px; background:var(--side-decision-panel); color:var(--side-text); font-size:12px; }
+#decisionMenu.lite-decision-mode .quality-comparison > div { display:flex; gap:16px; flex-wrap:wrap; margin-top:5px; color:var(--side-text-muted); }
+#decisionMenu.lite-decision-mode .quality-comparison strong { color:var(--side-text); }
+#decisionMenu.lite-decision-mode .decision-number-row { width:100%; max-width:none; min-height:56px; }
+#decisionMenu.lite-decision-mode .decision-number-row input { font-size:40px; line-height:1; padding:4px; }
+#decisionMenu.lite-decision-mode .decision-number-row button { min-height:56px; }
+#decisionMenu.lite-decision-mode .decision-range { max-width:none; margin:2px 0 0; }
+#decisionMenu.lite-decision-mode .lite-range-marks { display:flex; justify-content:space-between; color:var(--side-text-muted); font-size:11px; }
+#decisionMenu.lite-decision-mode .decision-shortcuts button { min-height:34px; padding:6px 16px; }
+#decisionMenu.lite-decision-mode .lite-fixed-hint { margin:0; color:var(--side-text-muted); font-size:12px; }
+#decisionMenu.lite-decision-mode .lite-measure { color:var(--side-text-muted); font-size:12px; }
+#decisionMenu.lite-decision-mode .lite-measure > div:first-child { display:flex; justify-content:space-between; gap:8px; }
+#decisionMenu.lite-decision-mode .lite-measure strong { color:var(--side-text); }
+#decisionMenu.lite-decision-mode .lite-meter, #decisionMenu.lite-decision-mode .lite-cash-stack { display:flex; overflow:hidden; height:8px; margin-top:6px; border-radius:999px; background:var(--side-line); }
+#decisionMenu.lite-decision-mode .lite-meter i, #decisionMenu.lite-decision-mode .lite-cash-stack i:first-child { display:block; height:100%; background:var(--side-blue); }
+#decisionMenu.lite-decision-mode .lite-cash-stack i:nth-child(2) { background:var(--side-gold); }
+#decisionMenu.lite-decision-mode .lite-cash-stack i:nth-child(3) { background:var(--side-success); }
+#decisionMenu.lite-decision-mode .lite-cash-legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:5px; color:var(--side-text-muted); font-size:10px; }
+#decisionMenu.lite-decision-mode .lite-control-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px; }
+#decisionMenu.lite-decision-mode .lite-control-kpis > div { padding:8px 10px; border:1px solid var(--side-line); border-radius:9px; background:var(--side-decision-panel); }
+#decisionMenu.lite-decision-mode .lite-control-kpis span, #decisionMenu.lite-decision-mode .lite-control-kpis strong { display:block; }
+#decisionMenu.lite-decision-mode .lite-control-kpis span { color:var(--side-text-muted); font-size:11px; }
+#decisionMenu.lite-decision-mode .lite-control-kpis strong { margin-top:3px; color:var(--side-blue); font-size:15px; }
+#decisionMenu.lite-decision-mode .decision-feedback { max-width:none; margin:0; padding:6px 10px; font-size:11px; }
+#decisionMenu.lite-decision-mode .decision-action-pair svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+@media (max-width:800px) { #decisionMenu.lite-decision-mode .quality-options { grid-template-columns:1fr; } }
+#decisionMenu.lite-decision-mode .quality-dots i { background:transparent; border:1px solid var(--side-text-muted); box-sizing:border-box; }
+#decisionMenu.lite-decision-mode .quality-dots i.on { background:var(--side-blue); border-color:var(--side-blue); }
+
+#decisionMenu.lite-decision-mode .lite-meter, #decisionMenu.lite-decision-mode .lite-cash-stack { background:var(--side-decision-panel); border:1px solid var(--side-line-control); }
+#decisionMenu.lite-decision-mode .lite-price-zones { display:flex; position:relative; height:8px; margin-top:6px; border-radius:999px; overflow:visible; }
+#decisionMenu.lite-decision-mode .lite-price-zones i { flex:1; background:var(--side-blue); opacity:.45; }
+#decisionMenu.lite-decision-mode .lite-price-zones i:nth-child(2) { background:var(--side-success); opacity:.75; }
+#decisionMenu.lite-decision-mode .lite-price-zones i:nth-child(3) { background:var(--side-gold); opacity:.75; }
+#decisionMenu.lite-decision-mode .lite-price-zones b { position:absolute; top:-4px; width:4px; height:16px; transform:translateX(-50%); border-radius:3px; background:var(--side-text); }
+#decisionMenu.lite-decision-mode .lite-summary-row { padding-left:12px; padding-right:12px; }
+#decisionMenu.lite-decision-mode .quality-selected { right:12px; top:12px; }
