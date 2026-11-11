@@ -53,5 +53,5 @@ test('cierre asistido exige docente propietario y vencimiento, sin duplicar resu
   }
   const next=await post(`/games/${game.body.id}/start`,0);
   assert.equal(next.status,201);assert.equal(next.body.number,2);
- }finally{if(server)await new Promise(resolve=>server.close(resolve));await closer.end();await api.end();if(gameId){await admin.query('delete from public.lite_results where game_id=$1',[gameId]);await admin.query('delete from public.lite_decisions where game_id=$1',[gameId]);await admin.query('delete from public.lite_games where id=$1',[gameId]);}for(const id of ids)await admin.query('delete from auth.users where id=$1',[id]);await admin.end();}
+ }finally{if(server)await new Promise(resolve=>server.close(resolve));await closer.end();await api.end();if(gameId){await admin.query('delete from public.lite_results where game_id=$1',[gameId]);await admin.query('delete from public.lite_decisions where game_id=$1',[gameId]);await admin.query('delete from public.lite_games where id=$1',[gameId]);}for(const id of ids){await admin.query('delete from auth.sessions where user_id=$1',[id]);await admin.query('delete from auth.users where id=$1',[id]);}await admin.end();}
 });

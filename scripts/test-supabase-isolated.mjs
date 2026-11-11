@@ -18,7 +18,15 @@ try {
   await run('supabase-side-lite/tests/postgres-auth-bootstrap.sql');
   await run('supabase-side-lite/tests/legacy-tables-fixture.sql');
   const migrations=(await readdir('supabase-side-lite/supabase/migrations')).filter(n=>n.endsWith('.sql')).sort();
-  for (const migration of migrations) await run(path.join('supabase-side-lite/supabase/migrations',migration));
+  // Plain PostgreSQL CI has no pg_cron extension. Its real scheduling is
+  // exercised separately by cron-multicycle-local.mjs on a Supabase stack.
+  for (const migration of migrations) {
+    if (migration === '20261111222502_side_lite_enable_sql_cron.sql') {
+      console.log(`SKIP ${migration}: pg_cron is not installed in this fixture`);
+      continue;
+    }
+    await run(path.join('supabase-side-lite/supabase/migrations',migration));
+  }
   await run('supabase-side-lite/tests/legacy-tables-security.sql');
   await run('supabase-side-lite/tests/postgres-rls-smoke.sql');
   await run('supabase-side-lite/tests/postgres-server-roles.sql');
