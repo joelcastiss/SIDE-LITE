@@ -35,6 +35,9 @@ const productionUrl='https://hwwwoblfpsqqrkxvclag.supabase.co';
 const localUrl=`http://127.0.0.1:${apiPort}`;
 const productionKey='sb_publishable_52fukw__BaCel-Igx5e0vg_RgsvhxiN';
 await transform('public/supabase-client.js',[[productionUrl,localUrl],[productionKey,anon]]);
+// The game bridge has its own endpoint and key; leaving it untouched would
+// send a local browser session to the hosted project.
+await transform('public/services/lite-game-service.js',[[productionUrl,localUrl],[productionKey,anon]]);
 await transform('public/supabase-session.js',[
   ["projectUrl.protocol !== 'https:' || projectUrl.hostname !== 'hwwwoblfpsqqrkxvclag.supabase.co' || projectUrl.port",`projectUrl.origin !== '${localUrl}'`],
   [productionUrl,localUrl],[productionKey,anon],
@@ -47,6 +50,7 @@ const localValidator=`export function validateDatabaseTarget(raw) {
 }`;
 await writeFile(path.join(target,'supabase-side-lite/functions/database-target.js'),localValidator);
 await transform('supabase-side-lite/functions/side-lite-api/index.ts',[
+  ["const ref = 'hwwwoblfpsqqrkxvclag';", "// This fixture has no hosted project reference."],
   ["ssl:{rejectUnauthorized:true}, ",""],
   ["ssl:{ca:closerCa,rejectUnauthorized:true},", ""],
   ["const closerCa=Deno.env.get('SIDE_CLOSER_CA_CERT') || '';", "const closerCa='-----BEGIN CERTIFICATE-----\\nlocal-only\\n-----END CERTIFICATE-----';"],
@@ -62,4 +66,8 @@ await transform('supabase-side-lite/api/identity.js',[
   ["url.protocol !== 'https:' || url.username || url.password || url.port || url.pathname !== '/' || url.search || url.hash || url.hostname !== 'hwwwoblfpsqqrkxvclag.supabase.co'",`url.origin !== '${localUrl}' || url.username || url.password || url.pathname !== '/' || url.search || url.hash`],
   ["const keys = keyResolver || createRemoteJWKSet(new URL(`${issuer}/.well-known/jwks.json`));", `const keys = keyResolver || createRemoteJWKSet(new URL('http://host.docker.internal:${apiPort}/auth/v1/.well-known/jwks.json'));`],
 ]);
+for (const file of ['public/supabase-client.js','public/supabase-session.js','public/services/lite-game-service.js','supabase-side-lite/api/identity.js','supabase-side-lite/functions/database-target.js','supabase-side-lite/functions/side-lite-api/index.ts','supabase-side-lite/functions/side-lite-api/adapter.js']) {
+  const source=await readFile(path.join(target,file),'utf8');
+  if (source.includes('hwwwoblfpsqqrkxvclag') || source.includes('plfuwfdpsagzrlveqkvl') || source.includes('https://joelcastiss.github.io')) throw Error(`Referencia alojada en fixture activo: ${file}`);
+}
 console.log(`Copia local creada en ${target}. No apta para desplegar.`);

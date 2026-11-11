@@ -44,3 +44,25 @@ test('Edge restringe CORS, preflight, rutas y métodos', async () => {
   assert.equal((await handle(new Request(podium,{method:'DELETE'}))).status,200);
   assert.equal((await handle(new Request('https://example.invalid/other/api/games'))).status,404);
 });
+
+test('la ruta completa de cierre alcanza la autorización y comprobación del ciclo', async () => {
+  // An OPTIONS 204 alone does not prove that the POST route exists. This is
+  // a routing test with simulated database responses, not a hosted test.
+  const user='c529fd8d-6cec-4c01-9c18-16c079112e23', session='773d8048-bdeb-4bfb-973b-a0a808183235';
+  const game='00000000-0000-4000-8000-000000000001', cycle='00000000-0000-4000-8000-000000000002';
+  const project='https://hwwwoblfpsqqrkxvclag.supabase.co';
+  const {privateKey,publicKey}=await generateKeyPair('ES256');
+  const token=await new SignJWT({role:'authenticated',session_id:session}).setProtectedHeader({alg:'ES256'}).setSubject(user).setIssuer(project+'/auth/v1').setAudience('authenticated').setExpirationTime('5m').sign(privateKey);
+  const client={query:async sql=>({rows:/lock_active_identity/.test(sql)?[{active:true}]:/api_mfa_ready/.test(sql)?[{allowed:true}]:/api_lock_teacher/.test(sql)?[{authorized:true}]:/from public\.lite_games/.test(sql)?[{id:game,teacher_id:user}]:/from public\.lite_cycles/.test(sql)?[{id:cycle,status:'open',paused_at:null,due:false}]:[]}),release(){}};
+  const pool={query:async sql=>({rows:[/api_mfa_ready/.test(sql)?{allowed:true}:{id:user,display_name:'Docente',email_verified:true,teacher_authorized:true,session_active:true,banned:false}]}),connect:async()=>client};
+  let closed=false;
+  const handle=createEdgeHandler(createSideLiteApp({pool,projectUrl:project,keyResolver:async()=>publicKey,manualClose:async()=>{closed=true;return cycle;}}));
+  const path=`/functions/v1/side-lite-api/api/games/${game}/close`;
+  const url='https://example.invalid'+path;
+  const preflight=await handle(new Request(url,{method:'OPTIONS',headers:{origin:'https://joelcastiss.github.io','access-control-request-method':'POST','access-control-request-headers':'authorization, content-type, apikey'}}));
+  assert.equal(preflight.status,204);
+  const response=await handle(new Request(url,{method:'POST',headers:{origin:'https://joelcastiss.github.io',authorization:`Bearer ${token}`}}));
+  assert.equal(response.status,409);
+  assert.match((await response.json()).error,/aún no ha vencido/);
+  assert.equal(closed,false);
+});
