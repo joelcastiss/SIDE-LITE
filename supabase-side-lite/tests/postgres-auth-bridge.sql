@@ -3,7 +3,12 @@ begin;
 insert into auth.users(id,email,email_confirmed_at) values
  ('10000000-0000-0000-0000-000000000001','teacher@upch.pe',now()),
  ('10000000-0000-0000-0000-000000000002','student@example.test',now()),
- ('10000000-0000-0000-0000-000000000003','pending@example.test',null);
+ ('10000000-0000-0000-0000-000000000003','pending@upch.pe',null);
+do $$ begin
+ if exists(select 1 from side_lite_private.lite_teacher_grants
+   where user_id='10000000-0000-0000-0000-000000000003')
+ then raise exception 'unverified institutional email received teacher access'; end if;
+end $$;
 insert into auth.sessions(id,user_id) select id,id from auth.users where id::text like '10000000-%';
 insert into auth.users(id,is_anonymous) values ('10000000-0000-0000-0000-000000000004',true);
 insert into auth.sessions(id,user_id) values ('10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000004');

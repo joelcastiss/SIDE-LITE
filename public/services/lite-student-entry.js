@@ -4,7 +4,7 @@
   if (!form || !global.SIDLiteGame) return;
   let mounted = false;
   const code = document.getElementById('gameCode');
-  if (code) code.placeholder = 'Código de 8 caracteres';
+  if (code) code.placeholder = 'Ej. A7K2M';
   async function openCompany(company) {
     if (!global.SIDELiteDecisions?.mount) throw new Error('No se pudo cargar la pantalla de la partida.');
     const saved = JSON.parse(global.localStorage.getItem('side-lite-guest-' + company.game_id) || 'null');
@@ -71,5 +71,6 @@
     finally { resuming = false; }
   }
   global.addEventListener('online', resume);
-  void resume();
+  // Invitation links always show the prefilled form; submitting it safely reopens a remembered company.
+  if (!new URLSearchParams(global.location.search).has('partida')) void resume();
 })(window);

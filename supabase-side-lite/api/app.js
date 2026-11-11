@@ -6,7 +6,7 @@ import {createJoinLimiter} from './join-limiter.js';
 import {createCycleControlsRouter} from './cycle-controls.js';
 import {createPodiumRouter} from './podium.js';
 
-export function createSideLiteApp({pool, projectUrl, keyResolver} = {}) {
+export function createSideLiteApp({pool, projectUrl, keyResolver, manualClose} = {}) {
   if (typeof pool?.query !== 'function' || typeof pool?.connect !== 'function') throw new TypeError('Se requiere un pool PostgreSQL.');
   const verifyToken = createTokenVerifier({projectUrl, keyResolver});
   const limitJoin = createJoinLimiter({pool});
@@ -16,7 +16,7 @@ export function createSideLiteApp({pool, projectUrl, keyResolver} = {}) {
   // in its database transactions. The first app passes unhandled routes on.
   app.use(createIdentityApp({pool, verifyToken}));
   app.use(createGamesApp({pool, verifyToken, limitJoin}));
-  app.use(createCycleControlsRouter({pool, verifyToken}));
+  app.use(createCycleControlsRouter({pool, verifyToken, manualClose}));
   app.use(createPodiumRouter({pool, verifyToken}));
   return app;
 }

@@ -90,7 +90,7 @@
     code = String(code || '').trim().toUpperCase();
     name = String(name || '').trim();
     brand = String(brand || '').trim();
-    if (!/^[0-9A-F]{8}$/.test(code)) throw new Error('El código debe tener ocho caracteres hexadecimales.');
+    if (!/^(?:[A-Z0-9]{5}|[0-9A-F]{8})$/.test(code)) throw new Error('Ingresa un código de partida válido.');
     await studentIdentity(name);
     // An existing anonymous session must reopen its own company instead of
     // trying to insert a second one, including after the game has started.
@@ -161,7 +161,7 @@
   async function recoverGame(code, secret) {
     code = String(code || '').trim().toUpperCase();
     secret = String(secret || '').trim();
-    if (!/^[0-9A-F]{8}$/.test(code) || !/^[A-Za-z0-9_-]{43}$/.test(secret)) throw new Error('Ingresa un código y una clave de recuperación válidos.');
+    if (!/^(?:[A-Z0-9]{5}|[0-9A-F]{8})$/.test(code) || !/^[A-Za-z0-9_-]{43}$/.test(secret)) throw new Error('Ingresa un código y una clave de recuperación válidos.');
     const key = 'side-lite-guest-manual-' + code;
     let saved;
     try { saved = JSON.parse(global.localStorage.getItem(key) || 'null'); } catch { saved = null; }

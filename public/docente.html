@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#081a34">
   <title>SIDE — Panel Docente</title>
   <link rel="stylesheet" href="css/design-system.css?v=20261001">
-  <link rel="stylesheet" href="css/docente.css?v=20261028-statement">
+  <link rel="stylesheet" href="css/docente.css?v=20261110-invitacion">
   <link rel="stylesheet" href="css/laboratorio.css?v=20261030-7">
   <link rel="stylesheet" href="css/responsive.css?v=20261009-mobile">
   <link rel="stylesheet" href="css/faculty-theme.css?v=20261022-cancelar-rojo">
@@ -42,6 +42,7 @@
         <span id="gameCodeBadge" class="code-badge" tabindex="0" aria-label="Código de sala">Código pendiente</span>
         <button id="copyGameCode" class="secondary side-button" type="button" aria-live="polite">Copiar código</button>
         <button id="copyGameLink" class="secondary side-button" type="button" aria-live="polite">Copiar enlace</button>
+        <button id="showGameQr" class="secondary side-button" type="button">Mostrar QR</button>
         <button id="saveAll" class="secondary">Guardar configuración</button>
         <button id="cancelGame" class="secondary side-button danger hidden" type="button">Cancelar partida</button>
 
@@ -252,8 +253,10 @@
 
 <script src="js/docente.js?v=20261110-auth-guard"></script>
 <script src="pages-notice.js?v=20261110-preview"></script>
-<script src="services/lite-game-service.js?v=20261110-no-captcha"></script>
-<script src="services/lite-teacher-game.js?v=20261110-history"></script>
+<script src="services/lite-game-service.js?v=20261110-invitacion"></script>
+<dialog id="gameQrDialog" class="game-qr-dialog" aria-labelledby="gameQrTitle"><h2 id="gameQrTitle">Escanea para entrar</h2><canvas id="gameQrCanvas" aria-label="Código QR de invitación"></canvas><p id="gameQrCode"></p><div class="top-actions"><button id="downloadGameQr" class="secondary" type="button">Descargar PNG</button><button id="closeGameQr" class="secondary" type="button">Cerrar</button></div></dialog>
+<script src="vendor/qrcode.min.js"></script>
+<script src="services/lite-teacher-game.js?v=20261110-piloto-cierre"></script>
 <script type="module" src="js/lite-laboratory.js?v=20261110"></script>
 </body>
 </html>

@@ -55,7 +55,7 @@ test('three and six cycles persist official results for two students', async t =
           assert.equal((await request('PUT',`/games/${game.body.id}/decision`,1,decision)).status,409);
         } else {
           // Accelerated closure exercises the same transaction and engine.
-          await pool.query('update public.lite_cycles set close_requested_at=clock_timestamp() where id=$1',[started.body.id]);
+          await pool.query("update public.lite_cycles set starts_at=clock_timestamp()-interval '121 seconds', ends_at=clock_timestamp()-interval '1 second' where id=$1",[started.body.id]);
         }
         if(count===6 && n===1) {
           await pool.query('delete from side_lite_private.lite_cycle_secrets where cycle_id=$1',[started.body.id]);
@@ -71,6 +71,7 @@ test('three and six cycles persist official results for two students', async t =
         }
         const view=await request('GET',`/games/${game.body.id}`,0);
         assert.equal(view.status,200);assert.equal(view.body.results.length,n*2);
+        if(n===count) assert.equal(view.body.ranking.length,2,'el ranking final contiene ambas empresas');
       }
       assert.equal((await request('POST',`/games/${game.body.id}/start`,0,{})).status,409);
     }

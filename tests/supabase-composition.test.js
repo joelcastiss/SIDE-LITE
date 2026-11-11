@@ -18,7 +18,7 @@ test('identidad y juegos comparten verificación; perfil no depende de ruta jueg
  await serve(pool,async base=>{let r=await fetch(base+'/api/me',{headers});assert.equal(r.status,200);assert.equal((await r.json()).role,'student');r=await fetch(base+'/api/games',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});assert.equal(r.status,401);assert.equal(connects,0)});
 });
 test('límite compartido deniega ingreso y no abre transacción de juego',async()=>{
- let connects=0;const pool={query:async sql=>({rows:[/lite_join_attempt_windows/i.test(sql)?{attempts:11}:/api_mfa_ready/.test(sql)?{allowed:true}:student]}),connect:async()=>{connects++;throw new Error('should not connect')}};
+ let connects=0;const pool={query:async sql=>({rows:[/lite_admission_global_window/i.test(sql)?{attempts:1}:/lite_join_attempt_windows/i.test(sql)?{attempts:11}:/api_mfa_ready/.test(sql)?{allowed:true}:student]}),connect:async()=>{connects++;throw new Error('should not connect')}};
  await serve(pool,async base=>{const r=await fetch(base+'/api/join',{method:'POST',headers,body:JSON.stringify({code:'12345678',name:'Empresa'})});assert.equal(r.status,429);assert.equal(connects,0)});
 });
 test('fallo del limitador cierra acceso y no abre transacción',async()=>{

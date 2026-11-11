@@ -24,7 +24,7 @@ async function lockAuthorizedGame(c,identity,id) {
   return game;
 }
 
-export function createCycleControlsRouter({pool,verifyToken}={}) {
+export function createCycleControlsRouter({pool,verifyToken,manualClose}={}) {
   if(typeof pool?.connect!=='function' || typeof verifyToken!=='function') throw new TypeError('Faltan dependencias seguras.');
   const router=express.Router();
   router.use(async(req,res,next)=>{
@@ -35,6 +35,24 @@ export function createCycleControlsRouter({pool,verifyToken}={}) {
     if(!UUID.test(req.identity?.id || '') || !UUID.test(req.identity?.sessionId || '')) return res.status(401).json({error:'Sesión inválida o vencida.'});
     return next();
   });
+  router.post('/api/games/:id/close',async(req,res,next)=>{
+    try {
+      if(!UUID.test(req.params.id)) throw fail(400,'Partida inválida.');
+      if(typeof manualClose!=='function') throw fail(503,'Cierre asistido no disponible.');
+      const result=await transaction(pool,async c=>{
+        const game=await lockAuthorizedGame(c,req.identity,req.params.id);
+        const {rows:[cycle]}=await c.query(`select id,status,paused_at,clock_timestamp() >= ends_at as due
+          from public.lite_cycles where game_id=$1 order by number desc limit 1`,[game.id]);
+        if(!cycle) throw fail(409,'No hay un ciclo para cerrar.');
+        if(cycle.status==='closed') return {cycle_id:cycle.id,already_closed:true};
+        if(cycle.paused_at || !cycle.due) throw fail(409,'El ciclo aún no ha vencido.');
+        const closed=await manualClose(game.id);
+        if(closed!==cycle.id) throw fail(409,'El cierre está en curso. Inténtalo nuevamente.');
+        return {cycle_id:closed,already_closed:false};
+      });
+      return res.json(result);
+    }catch(e){return next(e);}
+  });
   for (const action of ['pause','resume','finish']) router.post(`/api/games/:id/${action}`,async(req,res,next)=>{
     try {
       if(!UUID.test(req.params.id)) throw fail(400,'Partida inválida.');
@@ -44,9 +62,9 @@ export function createCycleControlsRouter({pool,verifyToken}={}) {
         const {rows:[cycle]}=await c.query(`select id,paused_at,close_requested_at from public.lite_cycles
           where game_id=$1 and status='open' for update`,[game.id]);
         if(action==='finish') {
-          // A paused cycle is unpaused and queued for the same idempotent closer.
+          // A pilot game cannot force the current cycle to close early.
+          if(cycle) throw fail(409,'Cierra primero el ciclo vencido.');
           const {rows:[ended]}=await c.query('update public.lite_games set ended_at=clock_timestamp() where id=$1 returning ended_at',[game.id]);
-          if(cycle) await c.query(`update public.lite_cycles set paused_at=null,close_requested_at=coalesce(close_requested_at,clock_timestamp()) where id=$1`,[cycle.id]);
           return {ended_at:ended.ended_at,cycle_id:cycle?.id || null,results_pending:Boolean(cycle)};
         }
         if(!cycle || cycle.close_requested_at) throw fail(409,'No hay un ciclo activo disponible.');

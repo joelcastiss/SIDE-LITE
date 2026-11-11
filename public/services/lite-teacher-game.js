@@ -44,9 +44,11 @@
   }
   const pauseButton = document.createElement('button'); pauseButton.type = 'button'; pauseButton.className = 'mini'; pauseButton.id = 'litePauseCycle'; pauseButton.hidden = true;
   $('startTimer')?.after(pauseButton);
-  document.querySelector('.config-start-footer p').textContent = 'Crea la sala y comparte el código. Cada ciclo dura 120 segundos.';
+  document.querySelector('.config-start-footer p').textContent = 'Piloto: cada ciclo dura 120 segundos. Al vencer, el docente debe cerrarlo para calcular los resultados.';
   for (const id of ['cutRound', 'startCycle1Btn']) if ($(id)) { $(id).hidden = true; $(id).style.display = 'none'; }
-  for (const id of ['viewPdf', 'downloadPdf', 'resultCompanySelect', 'refreshReports', 'copyGameLink', 'cancelGame', 'clearEvents', 'saveAll']) if ($(id)) { $(id).hidden = true; $(id).style.display = 'none'; }
+  const closeButton = $('cutRound');
+  if (closeButton) { closeButton.textContent = 'Cerrar ciclo vencido'; closeButton.disabled = true; }
+  for (const id of ['viewPdf', 'downloadPdf', 'resultCompanySelect', 'refreshReports', 'cancelGame', 'clearEvents', 'saveAll']) if ($(id)) { $(id).hidden = true; $(id).style.display = 'none'; }
   document.querySelectorAll('.nav-btn').forEach(button => {
     if (!['configuracion', 'rondas', 'empresas', 'resultados', 'podio', 'laboratorio', 'historial'].includes(button.dataset.tab)) { button.hidden = true; button.style.display = 'none'; }
   });
@@ -77,8 +79,8 @@
     pauseButton.hidden = cycle?.status !== 'open' || !!cycle?.close_requested_at || !!game.ended_at;
     pauseButton.textContent = cycle?.paused_at ? 'Reanudar' : 'Pausar';
     pauseButton.dataset.action = cycle?.paused_at ? 'resume' : 'pause';
-    for (const id of ['copyGameCode', 'copyLobbyCode']) if ($(id)) { $(id).hidden = false; $(id).style.display = ''; $(id).disabled = !gameCode; }
-    if ($('gameStatusBanner')) $('gameStatusBanner').textContent = cycle ? `Partida iniciada · Ciclo ${cycle.number} de ${game.cycle_count}.` : 'Sala creada. Comparte el código con los estudiantes.';
+    for (const id of ['copyGameCode', 'copyLobbyCode', 'copyGameLink', 'showGameQr']) if ($(id)) { $(id).hidden = false; $(id).style.display = ''; $(id).disabled = !gameCode; }
+    if ($('gameStatusBanner')) $('gameStatusBanner').textContent = cycle ? `Piloto con cierre asistido · Ciclo ${cycle.number} de ${game.cycle_count}.` : 'Piloto con cierre asistido: comparte el código con los estudiantes.';
     if ($('financeConfigHelp')) $('financeConfigHelp').textContent = 'La configuración se aplica al crear la sala.';
     for (const id of ['gameName', 'cycles', 'capital', 'capitalMin', 'capitalMax', 'capitalModeFixed', 'capitalModeRandom', 'liteCostBasic', 'liteCostStandard', 'liteCostPremium']) if ($(id)) $(id).disabled = true;
     if ($('startGame')) $('startGame').disabled = true;
@@ -90,7 +92,7 @@
     if ($('lobbyCountdown')) $('lobbyCountdown').textContent = cycle ? `Ciclo ${cycle.number} de ${game.cycle_count}` : 'La sala está abierta para estudiantes.';
     if ($('roundDisplay')) $('roundDisplay').textContent = `${cycle?.number || 0} / ${game.cycle_count}`;
     if ($('roundState')) $('roundState').textContent = cycle?.paused_at ? 'Pausado' : cycle?.status === 'open' ? 'En curso' : cycle ? 'Cerrado' : 'Sala abierta';
-    if ($('roundSummary')) $('roundSummary').textContent = cycle?.status === 'open' ? 'El ciclo está en curso.' : 'Inicia el siguiente ciclo cuando todos estén listos.';
+    if ($('roundSummary')) $('roundSummary').textContent = cycle?.status === 'open' ? 'Al vencer el tiempo, el docente debe cerrar el ciclo para calcular los resultados.' : 'Inicia el siguiente ciclo cuando todos estén listos.';
     if ($('startTimer')) { $('startTimer').textContent = cycle ? 'Iniciar siguiente ciclo' : 'Iniciar ciclo'; $('startTimer').disabled = cycle?.status === 'open' || !!(cycle && cycle.number >= game.cycle_count); }
     if ($('advanceRound')) $('advanceRound').disabled = $('startTimer')?.disabled || false;
     if ($('companiesLiveStatus')) $('companiesLiveStatus').textContent = `${snapshot.companies.length} empresas registradas`;
@@ -99,10 +101,12 @@
     const reports = $('detailReports');
     if (reports) { reports.replaceChildren(); for (const item of snapshot.ranking || []) { const line = document.createElement('p'); line.textContent = `${item.name}: ${Number(item.returnPercent).toFixed(1)} % de rentabilidad`; reports.append(line); } for (const item of snapshot.results || []) { const line = document.createElement('p'); const company = snapshot.companies.find(c => c.id === item.company_id); line.textContent = `${company?.name || 'Empresa'} · Ciclo ${item.number} · Ventas ${Number(item.result?.sold || 0)} · Ingresos S/ ${Number(item.result?.revenue || 0).toLocaleString('es-PE')} · Costos S/ ${Number(item.result?.costOfSales || 0).toLocaleString('es-PE')} · Utilidad S/ ${Number(item.result?.profit || 0).toLocaleString('es-PE')} · Caja S/ ${Number(item.result?.cashEnd || 0).toLocaleString('es-PE')}`; reports.append(line); } }
     clearInterval(timer);
+    if (closeButton) { closeButton.hidden = cycle?.status !== 'open' || !!game.ended_at; closeButton.style.display = closeButton.hidden ? 'none' : ''; closeButton.disabled = true; }
     if (cycle?.status === 'open') {
-      const remaining = Math.max(0, Date.parse(cycle.ends_at) - Date.parse(cycle.paused_at || cycle.server_now || new Date().toISOString()));
+      const serverNow=Date.parse(cycle.server_now || '');
+      const remaining = Math.max(0, Date.parse(cycle.ends_at) - Date.parse(cycle.paused_at || cycle.server_now || ''));
       const deadline = performance.now() + remaining;
-      const paint = () => { const s = Math.max(0, Math.ceil((cycle.paused_at ? remaining : deadline - performance.now()) / 1000)); if ($('roundTimer')) $('roundTimer').textContent = `00:${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
+      const paint = () => { const s = Math.max(0, Math.ceil((cycle.paused_at ? remaining : deadline - performance.now()) / 1000)); if ($('roundTimer')) $('roundTimer').textContent = Number.isFinite(s) ? `00:${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}` : '--:--:--'; if(closeButton) closeButton.disabled = loading || !!game.ended_at || !!cycle.paused_at || !Number.isFinite(serverNow) || !Number.isFinite(remaining) || s>0; };
       paint(); timer = setInterval(paint, 1000);
     }
   }
@@ -141,6 +145,29 @@
     if ($('podiumScheduledAt') && podium.podium) $('podiumScheduledAt').textContent = 'Programado: ' + new Date(podium.podium.scheduledAt).toLocaleString('es-PE');
   }
 
+  function invitationUrl() {
+    const url = new URL('../', global.location.href);
+    url.search = ''; url.hash = ''; url.searchParams.set('partida', gameCode);
+    return url.href;
+  }
+  $('copyGameLink').disabled = true; $('showGameQr').disabled = true;
+  async function copyLink() {
+    if (!gameCode) return;
+    try { await navigator.clipboard.writeText(invitationUrl()); $('copyGameLink').textContent = 'Enlace copiado'; setTimeout(() => { $('copyGameLink').textContent = 'Copiar enlace'; }, 2000); }
+    catch { message('No se pudo copiar el enlace.'); }
+  }
+  $('showGameQr').addEventListener('click', async () => {
+    if (!gameCode) return;
+    try {
+      await global.SIDELiteQRCode.toCanvas($('gameQrCanvas'), invitationUrl(), {width: 768, margin: 4, errorCorrectionLevel: 'M'});
+      $('gameQrCode').textContent = gameCode; $('gameQrDialog').showModal();
+    } catch { message('No se pudo generar el código QR.'); }
+  });
+  $('closeGameQr').addEventListener('click', () => $('gameQrDialog').close());
+  $('downloadGameQr').addEventListener('click', () => {
+    const link = document.createElement('a'); link.download = 'SIDE-' + gameCode + '-QR.png';
+    link.href = $('gameQrCanvas').toDataURL('image/png'); link.click();
+  });
   async function create() {
     if (loading) return;
     loading = true;
@@ -168,7 +195,9 @@
   document.addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button) return;
-    if (button.id === 'publishPodium') {
+    if (button.id === 'copyGameLink') {
+      event.preventDefault(); event.stopImmediatePropagation(); void copyLink();
+    } else if (button.id === 'publishPodium') {
       event.preventDefault(); event.stopImmediatePropagation(); $('podiumDialog')?.showModal();
     } else if (button.id === 'cancelPodiumPublish') {
       event.preventDefault(); event.stopImmediatePropagation(); $('podiumDialog')?.close();
@@ -177,6 +206,14 @@
       void api.request('/games/' + gameId + '/podium', 'DELETE', undefined, 'teacher').then(renderPodium).catch(error => { $('publishStatus').textContent = error.message; });
     } else if (button.id === 'podiumPublishNow' || button.id === 'podiumReschedule') {
       event.preventDefault(); event.stopImmediatePropagation(); $('podiumDialog')?.showModal();
+    } else if (button.id === 'cutRound') {
+      event.preventDefault(); event.stopImmediatePropagation();
+      if (!gameId || loading || button.disabled) return;
+      loading = true; button.disabled = true;
+      void api.request('/games/' + gameId + '/close', 'POST', {}, 'teacher')
+        .then(() => { loading = false; return refresh(); })
+        .catch(error => { message(error.message || 'No se pudo cerrar el ciclo.'); })
+        .finally(() => { loading = false; });
     } else if (button.id === 'litePauseCycle') {
       event.preventDefault(); event.stopImmediatePropagation();
       if (!gameId || loading) return;

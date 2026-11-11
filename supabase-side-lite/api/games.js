@@ -8,6 +8,9 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const integer = (v, min, max) => Number.isSafeInteger(v) && v >= min && v <= max;
 const fail = (status, message) => Object.assign(new Error(message), {status});
 const qualities = ['basic', 'standard', 'premium'];
+const GAME_CODE = /^(?:[A-Z0-9]{5}|[A-F0-9]{8})$/i;
+const CODE_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const newGameCode = () => Array.from({length:5}, () => CODE_ALPHABET[crypto.randomInt(CODE_ALPHABET.length)]).join('');
 
 async function transaction(pool, fn) {
   const c = await pool.connect();
@@ -182,7 +185,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         await requireCurrentUser(c,req.identity,true);
         let inserted;
         for(let n=0;n<8 && !inserted;n++) {
-          const code=crypto.randomBytes(4).toString('hex').toUpperCase();
+          const code=newGameCode();
           const result=await c.query(`insert into public.lite_games(teacher_id,name,code,cycle_count,capital_min,capital_max,costs,enabled_events)
             values($1,$2,$3,$4,$5,$6,$7,$8) on conflict(code) do nothing
             returning id,teacher_id,name,code,cycle_count,duration_seconds,capital_min,capital_max,costs,enabled_events,created_at`,
@@ -203,7 +206,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
       const allowed=await limitJoin({userId:req.identity.id,code:req.body?.code});
       if (allowed !== true) throw fail(429,'Demasiados intentos. Inténtalo más tarde.');
       const {code,name,brand,recoverySecret:providedSecret}=req.body || {};
-      if (typeof code !== 'string' || !/^[0-9a-f]{8}$/i.test(code) || typeof name !== 'string' || name.trim().length<2 || name.length>80 || (req.identity.isAnonymous && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80)) || (brand !== undefined && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80))) throw fail(400,'Datos inválidos.');
+      if (typeof code !== 'string' || !GAME_CODE.test(code) || typeof name !== 'string' || name.trim().length<2 || name.length>80 || (req.identity.isAnonymous && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80)) || (brand !== undefined && (typeof brand !== 'string' || brand.trim().length<2 || brand.length>80))) throw fail(400,'Datos inválidos.');
       if(req.identity.isAnonymous && (typeof providedSecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(providedSecret)))throw fail(400,'No se pudo preparar la recuperación de la empresa.');
       const recoverySecret=req.identity.isAnonymous?providedSecret:null,recoveryHash=recoverySecret?crypto.createHash('sha256').update(recoverySecret).digest():null;
       const company=await transaction(pool,async c=>{
@@ -234,7 +237,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
       if(!req.identity.isAnonymous)throw fail(403,'Se requiere una sesión de invitado.');
       if(await limitJoin({userId:req.identity.id,code:req.body?.code})!==true)throw fail(429,'Demasiados intentos. Inténtalo más tarde.');
       const {code,recoverySecret,newRecoverySecret}=req.body||{};
-      if(typeof code!=='string'||!/^[0-9a-f]{8}$/i.test(code)||typeof recoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(recoverySecret)||typeof newRecoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(newRecoverySecret)||newRecoverySecret===recoverySecret)throw fail(400,'Datos de recuperación inválidos.');
+      if(typeof code!=='string'||!GAME_CODE.test(code)||typeof recoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(recoverySecret)||typeof newRecoverySecret!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(newRecoverySecret)||newRecoverySecret===recoverySecret)throw fail(400,'Datos de recuperación inválidos.');
       const hash=crypto.createHash('sha256').update(recoverySecret).digest(),newHash=crypto.createHash('sha256').update(newRecoverySecret).digest();
       const company=await transaction(pool,async c=>{
         await requireCurrentUser(c,req.identity);

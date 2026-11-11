@@ -8,14 +8,15 @@ const DEMO_GAME = {id:'demo-side-000',codigo:'SIDE-000',nombre:'SIDE — Simulac
 const COMPANY_NAME = 'MI EMPRESA'; // respaldo visual; el estudiante define el nombre comercial al ingresar
 const JOIN_STARTED_MESSAGE = 'La partida ya inició. Solo pueden reingresar quienes ya estaban registrados; verifica que el código, el nombre de empresa y el nombre comercial sean exactamente los registrados.';
 const JOIN_INVALID_MESSAGE = 'No se pudo validar el ingreso. Comprueba el código de la sala con tu docente. Si ya participaste, usa los nombres registrados, respetando mayúsculas y tildes.';
-const JOIN_CODE_MESSAGE = 'Usa un código como SIDE-PTV6 o PTV6. También se aceptan los códigos anteriores de 6 caracteres y SIDE-000. Copia solo el código de la sala del docente.';
+const JOIN_CODE_MESSAGE = 'Ingresa el código de 5 caracteres que te entregó tu profesor.';
 function admissionCode(value){
   const code=String(value||'').replace(/\s+/g,'').toUpperCase();
+  if(/^(?:[A-Z0-9]{5}|[0-9A-F]{8})$/.test(code))return code;
   if(/^SIDE[A-Z0-9]+$/.test(code))return code.replace(/^SIDE/,'SIDE-');
   if(code!=='SIDE'&&/^(?:[A-Z0-9]{3,4}|[A-Z0-9]{6})$/.test(code))return 'SIDE-'+code;
   return code;
 }
-function validAdmissionCode(value){return /^[0-9A-F]{8}$/.test(String(value||'').trim().toUpperCase());}
+function validAdmissionCode(value){return /^(?:[A-Z0-9]{5}|[0-9A-F]{8})$/.test(String(value||'').trim().toUpperCase());}
 function showAdmissionCodeError(text=''){
   const field=$('gameCode'),detail=$('gameCodeError');
   if(field)field.setAttribute('aria-invalid',text?'true':'false');
@@ -719,7 +720,7 @@ $('registerForm')?.addEventListener('submit',async e=>{
   const form=e.currentTarget,button=form.querySelector('[type="submit"]');if(button)button.disabled=true;
   try{
     message('registerMessage','Creando cuenta...');const session=await teacherSession();const result=await session.register({email,password,name,firstName:first,lastName:last,course});
-    if(!result?.session){message('registerMessage','No se pudo completar el registro sin confirmación. Contacta al administrador.',true);return;}
+    if(!result?.session){form.reset();showModal('teacherLoginModal');$('loginEmail').value=email;message('loginMessage','Revisa tu correo institucional y confirma tu cuenta antes de iniciar sesión.');return;}
     await teacherIdentity(session);
     await session.signOut();form.reset();showModal('teacherLoginModal');$('loginEmail').value=email;
     message('loginMessage','Cuenta creada exitosamente. Ya puedes iniciar sesión.');
@@ -2008,7 +2009,7 @@ function resumeStudentSession(){
   if(!saved?.game?.codigo||!saved.company)return;
   const invitedCode=new URLSearchParams(window.location.search).get('partida');
   // A shared link to another room takes precedence over a previous student session.
-  if(invitedCode&&admissionCode(invitedCode)!==admissionCode(saved.game.codigo))return;
+  if(invitedCode)return;
   studentSnapshotEpoch++;currentStudent=saved;studentConnected=true;studentSessionRecovering=Boolean(saved.empresaId);studentProgressHydrated=!saved.empresaId;loadDecisionState();
   await resumeStudentSession();if(studentConnected)startStudentSync();
 })();

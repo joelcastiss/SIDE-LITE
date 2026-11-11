@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
-const useCodex=process.env.SIDE_TEST_STACK==='codex-guest', stackName=useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify', dbPort=useCodex?'56622':'56522';
+const useCodex=process.env.SIDE_TEST_STACK==='codex-guest', validation=process.env.SIDE_TEST_STACK==='validation', stackName=validation?'side-lite-validation-20261110':useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify', dbPort=validation?'56722':useCodex?'56622':'56522';
 const raw = process.env.SIDE_LOCAL_POSTGRES_URL;
 const url = new URL(raw);
 if (!['postgres:', 'postgresql:'].includes(url.protocol) || url.hostname !== '127.0.0.1' || url.port !== dbPort || url.pathname !== '/postgres' || url.search || url.hash) throw Error('Se requiere el stack Supabase local desechable confirmado');

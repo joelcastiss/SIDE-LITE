@@ -5,5 +5,5 @@
 verify_jwt = false
 
 [functions.close-cycle]
-# The worker validates the independent server-only scheduler secret itself.
+# The worker consumes a database-backed, expiring one-use scheduler ticket.
 verify_jwt = false

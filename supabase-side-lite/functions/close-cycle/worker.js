@@ -2,14 +2,15 @@ import { closeCycle } from '../../../js/engine.js';
 
 // Every call owns a single transaction. All submit/pause/start operations MUST
 // lock the same cycle row before checking its state, deadline or decisions.
-export async function closeOne(sql, excluded = []) {
+export async function closeOne(sql, excluded = [], gameId = null) {
   return await sql.begin(async tx => {
     const cycles = await tx`
       select c.id, c.game_id, c.event_id, s.seed
       from public.lite_cycles c
       left join side_lite_private.lite_cycle_secrets s on s.cycle_id = c.id
       where c.status = 'open' and c.paused_at is null
-        and (c.ends_at <= clock_timestamp() or c.close_requested_at is not null)
+        and c.ends_at <= clock_timestamp()
+        and (${gameId}::uuid is null or c.game_id = ${gameId}::uuid)
         and not (c.id = any(${excluded}::uuid[]))
       order by c.ends_at, c.id
       for update of c skip locked limit 1`;

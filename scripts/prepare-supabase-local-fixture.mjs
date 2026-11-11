@@ -7,8 +7,9 @@ import {fileURLToPath} from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const useCodex = process.env.SIDE_TEST_STACK === 'codex-guest';
-const stackName=useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify';
-const apiPort=useCodex?56621:56521, dbPort=useCodex?56622:56522;
+const validation = process.env.SIDE_TEST_STACK === 'validation';
+const stackName=validation?'side-lite-validation-20261110':useCodex?'side-lite-codex-guest-20261109':'side-lite-supabase-stack-verify';
+const apiPort=validation?56721:useCodex?56621:56521, dbPort=validation?56722:useCodex?56622:56522;
 const stack = path.join(os.tmpdir(), stackName);
 const fixtureName = process.env.SIDE_TEST_FIXTURE_NAME || (useCodex ? 'side-lite-fixture-final2' : 'side-lite-fixture');
 if (!/^side-lite-fixture(?:-[a-z0-9]+)*$/.test(fixtureName)) throw Error('Nombre de copia local inválido');
@@ -47,11 +48,13 @@ const localValidator=`export function validateDatabaseTarget(raw) {
 await writeFile(path.join(target,'supabase-side-lite/functions/database-target.js'),localValidator);
 await transform('supabase-side-lite/functions/side-lite-api/index.ts',[
   ["ssl:{rejectUnauthorized:true}, ",""],
+  ["ssl:{ca:closerCa,rejectUnauthorized:true},", ""],
+  ["const closerCa=Deno.env.get('SIDE_CLOSER_CA_CERT') || '';", "const closerCa='-----BEGIN CERTIFICATE-----\\nlocal-only\\n-----END CERTIFICATE-----';"],
   ["projectUrl:`https://${ref}.supabase.co`",`projectUrl:'${localUrl}'`],
 ]);
 await transform('supabase-side-lite/functions/close-cycle/index.ts',[
   ["ssl: {ca: caCertificate, rejectUnauthorized: true}, ",""],
-  ["validateCloserConfig(dbUrl, cronSecret, caCertificate);", "validateCloserConfig(dbUrl, cronSecret, '-----BEGIN CERTIFICATE-----\\nlocal-only\\n-----END CERTIFICATE-----');"],
+  ["validateCloserConfig(dbUrl, caCertificate);", "validateCloserConfig(dbUrl, '-----BEGIN CERTIFICATE-----\\nlocal-only\\n-----END CERTIFICATE-----');"],
 ]);
 // Local Auth signs with an asymmetric key. Its issuer is the browser-visible
 // loopback URL, while Edge reaches the same local gateway via Docker's host alias.
