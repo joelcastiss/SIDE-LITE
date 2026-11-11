@@ -22,7 +22,7 @@ test('three and six cycles persist official results for two students', async t =
   let server;
   try {
     for (let i=0;i<ids.length;i++) {
-      await pool.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[ids[i],`multi-${ids[i]}@${i?'example.test':'upch.pe'}`]);
+      await pool.query('insert into auth.users(id,email,email_confirmed_at,is_anonymous) values($1,$2,now(),$3)',[ids[i],i===0?`multi-${ids[i]}@upch.pe`:null,i!==0]);
       await pool.query('insert into auth.sessions(id,user_id) values($1,$2)',[sessions[i],ids[i]]);
       await pool.query('update public.lite_profiles set display_name=$2 where id=$1',[ids[i],`Player ${i}`]);
     }

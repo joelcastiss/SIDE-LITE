@@ -1,11 +1,22 @@
 -- Auth is emulated; this does not establish Supabase Auth/Realtime behavior.
 begin;
 insert into auth.users(id,email,email_confirmed_at) values
- ('00000000-0000-0000-0000-000000000001','a@example.test', now()),
- ('00000000-0000-0000-0000-000000000002','b@example.test', now()),
- ('00000000-0000-0000-0000-000000000003','teacher@upch.pe', now()),
- ('00000000-0000-0000-0000-000000000004','other@example.test', now()),
- ('00000000-0000-0000-0000-000000000005','peer@example.test', now());
+ ('00000000-0000-0000-0000-000000000003','teacher@upch.pe', now());
+insert into auth.users(id,is_anonymous) values
+ ('00000000-0000-0000-0000-000000000001',true),
+ ('00000000-0000-0000-0000-000000000002',true),
+ ('00000000-0000-0000-0000-000000000004',true),
+ ('00000000-0000-0000-0000-000000000005',true);
+do $$ begin
+ begin
+  insert into auth.users(id,email) values ('00000000-0000-0000-0000-000000000006','invalid@example.test');
+  raise exception 'non-institutional signup accepted';
+ exception when check_violation then null; end;
+ begin
+  insert into auth.users(id,email) values ('00000000-0000-0000-0000-000000000007','spoof@upch.pe.evil.test');
+  raise exception 'spoofed institutional signup accepted';
+ exception when check_violation then null; end;
+end $$;
 insert into auth.sessions(id,user_id) select id,id from auth.users where id in (
  '00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002',
  '00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004',
@@ -81,7 +92,7 @@ end $$;
 reset role;
 set local role authenticated;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
-select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000001"}',true);
+select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000001","is_anonymous":true}',true);
 do $$ begin
  if (select count(*) from public.lite_games) <> 1 or (select count(*) from public.lite_companies) <> 1 then raise exception 'student A game/company isolation failed'; end if;
  if (select role from public.lite_my_identity()) <> 'student' then raise exception 'student identity incorrect'; end if;
@@ -98,7 +109,7 @@ do $$ begin
  begin insert into side_lite_private.lite_teacher_grants(user_id,approved_email) values ('00000000-0000-0000-0000-000000000001','a@example.test'); raise exception 'teacher escalation permitted'; exception when insufficient_privilege then null; end;
 end $$;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000002',true);
-select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000002"}',true);
+select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000002","is_anonymous":true}',true);
 do $$ begin
  if (select count(*) from public.lite_games) <> 1 or (select count(*) from public.lite_companies) <> 1 then raise exception 'student B isolation failed'; end if;
 end $$;
@@ -115,14 +126,14 @@ reset role;
 -- A session belonging to a different user must not authorize this JWT.
 set local role authenticated;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
-select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000002"}',true);
+select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000002","is_anonymous":true}',true);
 do $$ begin
  if exists(select 1 from public.lite_my_identity()) or exists(select 1 from public.lite_games) then raise exception 'foreign session accepted'; end if;
 end $$;
 reset role;
 update auth.sessions set not_after=now()-interval '1 second' where user_id='00000000-0000-0000-0000-000000000001';
 set local role authenticated;
-select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000001"}',true);
+select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000001","is_anonymous":true}',true);
 do $$ begin
  if exists(select 1 from public.lite_my_identity()) or exists(select 1 from public.lite_games) then raise exception 'expired session accepted'; end if;
 end $$;

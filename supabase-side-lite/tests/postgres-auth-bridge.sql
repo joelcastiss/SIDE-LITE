@@ -2,13 +2,14 @@
 begin;
 insert into auth.users(id,email,email_confirmed_at) values
  ('10000000-0000-0000-0000-000000000001','teacher@upch.pe',now()),
- ('10000000-0000-0000-0000-000000000002','student@example.test',now()),
+ ('10000000-0000-0000-0000-000000000005','admin@upch.pe',now()),
  ('10000000-0000-0000-0000-000000000003','pending@upch.pe',null);
 do $$ begin
  if exists(select 1 from side_lite_private.lite_teacher_grants
    where user_id='10000000-0000-0000-0000-000000000003')
  then raise exception 'unverified institutional email received teacher access'; end if;
 end $$;
+insert into auth.users(id,is_anonymous) values ('10000000-0000-0000-0000-000000000002',true);
 insert into auth.sessions(id,user_id) select id,id from auth.users where id::text like '10000000-%';
 insert into auth.users(id,is_anonymous) values ('10000000-0000-0000-0000-000000000004',true);
 insert into auth.sessions(id,user_id) values ('10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000004');
@@ -16,7 +17,7 @@ insert into auth.sessions(id,user_id) values ('10000000-0000-0000-0000-000000000
 insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by)
 select teacher.id,lower(btrim(teacher.email)),administrator.id
 from auth.users teacher join auth.users administrator
- on administrator.id='10000000-0000-0000-0000-000000000002'
+ on administrator.id='10000000-0000-0000-0000-000000000005'
 where teacher.id='10000000-0000-0000-0000-000000000001'
  and teacher.id<>administrator.id and teacher.is_anonymous is false
  and teacher.email_confirmed_at is not null
@@ -27,7 +28,7 @@ on conflict (user_id) do update set granted_by=excluded.granted_by;
 do $$ begin
  if not exists(select 1 from side_lite_private.lite_teacher_grants
   where user_id='10000000-0000-0000-0000-000000000001'
-    and granted_by='10000000-0000-0000-0000-000000000002' and revoked_at is null)
+    and granted_by='10000000-0000-0000-0000-000000000005' and revoked_at is null)
  then raise exception 'administrative grant was not recorded'; end if;
 end $$;
 delete from public.lite_profiles where id='10000000-0000-0000-0000-000000000002';

@@ -16,7 +16,7 @@ test('cierre asistido exige docente propietario y vencimiento, sin duplicar resu
  const ids=Array.from({length:3},()=>crypto.randomUUID()),sessions=ids.map(()=>crypto.randomUUID()),tokens=new Map(ids.map((id,i)=>['token'+i,{id,sessionId:sessions[i]}]));let server;
  try{
   for(let i=0;i<3;i++){
-   await admin.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[ids[i],`manual-${ids[i]}@${i?'example.test':'upch.pe'}`]);
+   await admin.query('insert into auth.users(id,email,email_confirmed_at,is_anonymous) values($1,$2,now(),$3)',[ids[i],i===0?`manual-${ids[i]}@upch.pe`:null,i!==0]);
    await admin.query('insert into auth.sessions(id,user_id) values($1,$2)',[sessions[i],ids[i]]);
    await admin.query('update public.lite_profiles set display_name=$2 where id=$1',[ids[i],`Piloto ${i}`]);
   }
