@@ -80,3 +80,20 @@ test('el piloto habilita el cierre asistido únicamente después del vencimiento
  await expect(page.locator('#cutRound')).toBeEnabled({timeout:10000});await page.locator('#cutRound').click();
  await expect.poll(()=>closeCalls).toBe(1);await expect(page.locator('#cutRound')).toBeHidden();
 });
+
+test('el docente puede cancelar una sala sin ciclo abierto',async({page})=>{
+ let created=false,finished=false,cancelCalls=0;
+ const game={id:'game1',code:'A7K2M',name:'Sala',cycle_count:3,enabled_events:[],costs:{basic:50,standard:80,premium:120}};
+ await page.route('https://joelcastiss.github.io/**',async route=>{const u=new URL(route.request().url());const response=await route.fetch({url:base+u.pathname+u.search});await route.fulfill({response})});
+ await page.route('**/vendor/supabase-js/supabase.js*',route=>route.fulfill({contentType:'application/javascript',body:`window.supabase={createClient:()=>({supabaseUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',auth:{getSession:async()=>({data:{session:{access_token:'test-teacher',user:{email_confirmed_at:'yes'}}}}),onAuthStateChange:()=>({data:{subscription:{}}})}})};`}));
+ await page.route('https://hwwwoblfpsqqrkxvclag.supabase.co/**',route=>{
+  const req=route.request(),path=new URL(req.url()).pathname.split('/api')[1],headers={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,PUT,OPTIONS','access-control-allow-headers':'authorization,apikey,content-type'};
+  if(req.method()==='OPTIONS')return route.fulfill({status:204,headers});
+  let json={};if(path==='/me')json={id:'t1',display_name:'Docente',role:'teacher'};else if(path==='/catalog')json=[];else if(path==='/games'&&req.method()==='POST'){created=true;json=game}else if(path==='/games')json=created?[game]:[];else if(path==='/games/game1/finish'){expect(req.headers().authorization).toBe('Bearer test-teacher');cancelCalls++;finished=true;json={ended_at:new Date().toISOString()}}else if(path==='/games/game1')json={isTeacher:true,game,companies:[],decisions:[],results:[],ranking:[],cycles:[]};
+  return route.fulfill({status:200,headers,json});
+ });
+ await page.goto('https://joelcastiss.github.io/SIDE-LITE/public/docente.html');await page.locator('#startGame').click();
+ await expect(page.locator('#liteCancelGame')).toBeVisible();await page.locator('#liteCancelGame').click();await expect(page.locator('#cancelGameDialog')).toBeVisible();
+ await page.locator('#keepGame').click();expect(cancelCalls).toBe(0);await page.locator('#liteCancelGame').click();await Promise.all([page.waitForEvent('load'),page.locator('#confirmCancelGame').click()]);
+ await expect.poll(()=>finished).toBe(true);await expect.poll(async()=>{try{return await page.evaluate(()=>sessionStorage.getItem('side-lite-teacher-game'))}catch{return 'navigating'}}).toBeNull();
+});

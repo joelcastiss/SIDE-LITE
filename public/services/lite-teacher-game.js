@@ -76,6 +76,8 @@
     selectedEvents.clear();
     for (const id of game.enabled_events || []) selectedEvents.add(id);
     eventSection?.querySelectorAll('input').forEach(input => { input.checked = selectedEvents.has(input.value); input.disabled = true; });
+    const cancelButton = $('liteCancelGame');
+    if (cancelButton) { cancelButton.hidden = !!game.ended_at || !!(cycle && cycle.number >= game.cycle_count && cycle.status === 'closed'); cancelButton.disabled = cycle?.status === 'open'; cancelButton.title = cancelButton.disabled ? 'Cierra el ciclo vencido antes de cancelar la partida.' : ''; }
     pauseButton.hidden = cycle?.status !== 'open' || !!cycle?.close_requested_at || !!game.ended_at;
     pauseButton.textContent = cycle?.paused_at ? 'Reanudar' : 'Pausar';
     pauseButton.dataset.action = cycle?.paused_at ? 'resume' : 'pause';
@@ -195,7 +197,20 @@
   document.addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button) return;
-    if (button.id === 'copyGameLink') {
+    if (button.id === 'liteCancelGame') {
+      event.preventDefault(); event.stopImmediatePropagation();
+      if (gameId && !loading && !button.disabled) { $('liteCancelError').textContent = ''; $('cancelGameDialog').showModal(); }
+    } else if (button.id === 'keepGame') {
+      event.preventDefault(); event.stopImmediatePropagation(); $('cancelGameDialog').close();
+    } else if (button.id === 'confirmCancelGame') {
+      event.preventDefault(); event.stopImmediatePropagation();
+      if (!gameId || loading) return;
+      loading = true; button.disabled = true; $('liteCancelError').textContent = '';
+      void api.request('/games/' + gameId + '/finish', 'POST', {}, 'teacher')
+        .then(() => { try { sessionStorage.removeItem('side-lite-teacher-game'); } catch {} global.location.reload(); })
+        .catch(error => { $('liteCancelError').textContent = error.message || 'No se pudo cancelar la partida.'; })
+        .finally(() => { loading = false; button.disabled = false; });
+    } else if (button.id === 'copyGameLink') {
       event.preventDefault(); event.stopImmediatePropagation(); void copyLink();
     } else if (button.id === 'publishPodium') {
       event.preventDefault(); event.stopImmediatePropagation(); $('podiumDialog')?.showModal();

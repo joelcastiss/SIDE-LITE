@@ -116,7 +116,7 @@
 
     <section id="tab-rondas" class="tab-panel">
       <article id="teacherLobby" class="card teacher-lobby hidden" aria-labelledby="lobbyHeading"><h2 id="lobbyHeading">Sala de espera</h2><div class="lobby-identity"><strong id="lobbyCode"></strong><button id="copyLobbyCode" class="secondary side-button" type="button" aria-live="polite">Copiar código</button></div><p id="lobbyCountdown" role="timer"></p><p id="lobbyNext"></p><div id="lobbyCompanies" aria-live="polite">Esperando empresas.</div></article>
-      <div class="section-head"><div><span class="eyebrow">CONTROL DE CICLO</span><h2>Tiempo, noticias y eventos</h2></div><button id="advanceRound" class="primary">Pasar al siguiente ciclo <img class="button-arrow-icon" src="assets/icons/ui/arrow-right-thick.svg" alt=""></button></div>
+      <div class="section-head"><div><span class="eyebrow">CONTROL DE CICLO</span><h2>Tiempo, noticias y eventos</h2></div><button id="liteCancelGame" class="secondary side-button danger" type="button" hidden>Cancelar partida</button><button id="advanceRound" class="primary">Pasar al siguiente ciclo <img class="button-arrow-icon" src="assets/icons/ui/arrow-right-thick.svg" alt=""></button></div>
       <div class="round-status card">
         <div class="round-number"><span>CICLO</span><strong id="roundDisplay">1 / 6</strong></div>
         <div><b id="roundState">Preparación</b><p id="roundSummary">La partida está lista para iniciar.</p></div>
@@ -212,7 +212,7 @@
 </dialog>
 <dialog id="cancelGameDialog" class="event-picker" aria-labelledby="cancelGameTitle">
   <h2 id="cancelGameTitle">Cancelar partida</h2>
-  <p>Los estudiantes recibirán un aviso y dejarán de poder tomar decisiones. Los resultados registrados se conservarán.</p>
+  <p>La partida terminará y se conservarán los resultados registrados. Si hay un ciclo abierto, primero debes esperar su vencimiento y cerrarlo.</p><p id="liteCancelError" role="alert"></p>
   <div class="top-actions"><button id="keepGame" class="secondary" type="button">Continuar partida</button><button id="confirmCancelGame" class="secondary danger" type="button">Sí, cancelar partida</button></div>
 </dialog>
 
@@ -256,7 +256,7 @@
 <script src="services/lite-game-service.js?v=20261110-invitacion"></script>
 <dialog id="gameQrDialog" class="game-qr-dialog" aria-labelledby="gameQrTitle"><h2 id="gameQrTitle">Escanea para entrar</h2><canvas id="gameQrCanvas" aria-label="Código QR de invitación"></canvas><p id="gameQrCode"></p><div class="top-actions"><button id="downloadGameQr" class="secondary" type="button">Descargar PNG</button><button id="closeGameQr" class="secondary" type="button">Cerrar</button></div></dialog>
 <script src="vendor/qrcode.min.js"></script>
-<script src="services/lite-teacher-game.js?v=20261110-piloto-cierre"></script>
+<script src="services/lite-teacher-game.js?v=20261111-cancelar"></script>
 <script type="module" src="js/lite-laboratory.js?v=20261110"></script>
 </body>
 </html>
