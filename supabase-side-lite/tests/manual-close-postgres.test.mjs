@@ -28,6 +28,11 @@ test('cierre asistido exige docente propietario y vencimiento, sin duplicar resu
   const game=await post('/games',0,{name:'Piloto manual',cycleCount:3,duration:120,capitalMin:30000,capitalMax:30000,costs:{basic:30,standard:50,premium:70},events:[]});assert.equal(game.status,201);
   for(let i=1;i<=2;i++)assert.equal((await post('/join',i,{code:game.body.code,name:`Empresa piloto ${i}`})).status,201);
   const cycle=await post(`/games/${game.body.id}/start`,0);assert.equal(cycle.status,201);
+  const decision={quality:'basic',quantity:10,price:100,marketingAmount:200,confirmed:true};
+  for(let i=1;i<=2;i++){
+   const response=await fetch(`http://127.0.0.1:${server.address().port}/api/games/${game.body.id}/decision`,{method:'PUT',headers:{authorization:'Bearer token'+i,'content-type':'application/json'},body:JSON.stringify(decision)});
+   assert.equal(response.status,200);
+  }
   const close=`/games/${game.body.id}/close`;
   assert.equal((await post(close,1)).status,403);
   assert.equal((await post(close,0)).status,409);
@@ -39,5 +44,13 @@ test('cierre asistido exige docente propietario y vencimiento, sin duplicar resu
   const both=await Promise.all([post(close,0),post(close,0)]);assert.deepEqual(both.map(x=>x.status),[200,200]);assert.equal(both.filter(x=>x.body.already_closed===false).length,1);
   const {rows:[state]}=await admin.query("select status,(select count(*)::int from public.lite_results where cycle_id=$1) as results from public.lite_cycles where id=$1",[cycle.body.id]);
   assert.deepEqual(state,{status:'closed',results:2});
+  const saved=await admin.query('select r.result,c.cash,c.inventory from public.lite_results r join public.lite_companies c on c.id=r.company_id where r.cycle_id=$1',[cycle.body.id]);
+  for(const row of saved.rows){
+   assert.equal(row.result.cashEnd,row.cash);
+   assert.deepEqual(row.result.inventory,row.inventory);
+   assert.equal(row.result.profit,row.result.revenue-row.result.costOfSales-row.result.marketing);
+  }
+  const next=await post(`/games/${game.body.id}/start`,0);
+  assert.equal(next.status,201);assert.equal(next.body.number,2);
  }finally{if(server)await new Promise(resolve=>server.close(resolve));await closer.end();await api.end();await admin.end();}
 });
