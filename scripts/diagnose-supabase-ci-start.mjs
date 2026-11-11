@@ -20,11 +20,16 @@ const migrations=[...log.matchAll(/(?:Applying migration|failed to apply migrati
 const states=[...new Set([...log.matchAll(/SQLSTATE[ :]*([0-9A-Z]{5})/g)].map(m=>m[1]))];
 const codes=[...new Set([...log.matchAll(/"code"\s*:\s*"([A-Za-z][A-Za-z0-9]{0,79}Error)"/g)].map(m=>m[1]))];
 const filenames=[...new Set([...log.matchAll(/\b(config\.toml|seed\.sql|docker|supabase|migrations|functions|deno\.json|import_map\.json|\.env)\b/gi)].map(m=>m[1].toLowerCase()))];
+// Only inspect paths on the specific missing-file error, and report fixed
+// indicators rather than the path or basename (which may contain a secret).
+const missing=[...log.matchAll(/(?:open|stat|read(?:ing)?)\s+([^\r\n]{1,512}?)(?::\s*no such file or directory)/gi)].map(m=>m[1].toLowerCase());
+const hints=['seed.sql','config.toml','.supabase','.docker','docker.sock','.temp','project-ref','.branches','_current_branch','signing_keys','ca.crt','cert','telemetry','/supabase/','/functions/','/migrations/','/runner/','/tmp/'].filter(hint=>missing.some(path=>path.includes(hint)));
 console.log('Categorías de error de inicio:',matches.length?matches.join(', '):'sin clasificar');
 if(migrations.length) console.log('Última migración identificada:',migrations.at(-1));
 if(states.length) console.log('SQLSTATE:',states.join(', '));
 if(codes.length) console.log('Códigos CLI:',codes.join(', '));
 if(filenames.length) console.log('Archivos o componentes conocidos:',filenames.join(', '));
+if(missing.length) console.log('Error de archivo inexistente; indicadores seguros:',hints.length?hints.join(', '):'ninguno conocido');
 // Preserve only known harmless diagnostic words from candidate error lines;
 // everything else, including tokens, paths, URLs, hosts and user data, is lost.
 const allowed=new Set('error failed failure fatal invalid unexpected unsupported unknown cannot could not unable missing required bad format malformed config configuration parse parsing project local stack docker container engine image pull download registry manifest access denied permission forbidden unauthorized conflict already exists not found version cli api key token jwt secret database postgres migration migrations auth schema relation role extension dependency start starting startup stop stopped health unhealthy timeout network connection connect dns socket port bind address allocated listener command flag argument syntax response status unprocessable entity password certificate issuer signing keys server platform architecture compatible latest tags rate limit refused unreachable exceeded requires sql no such file directory closed existing service services exit code read reading open opening stat executable binary create creating load loading resolve resolving write writing initialize initializing source copy path client request'.split(' '));
