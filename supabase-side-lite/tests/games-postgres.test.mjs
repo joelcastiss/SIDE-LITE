@@ -40,7 +40,7 @@ test('create and join use confirmed identities, teacher approval, unique members
     assert.equal((await post('/api/games','token0',{...config,duration:30})).status,400);
     const created=await post('/api/games','token0',config);
     assert.equal(created.status,201);
-    assert.match(created.body.code,/^[A-F0-9]{8}$/);
+    assert.match(created.body.code,/^[A-Z0-9]{5}$/);
     assert.equal(created.body.teacher_id,ids[0]);
     const ended=await post('/api/games','token0',config);
     assert.equal((await post(`/api/games/${ended.body.id}/finish`,'token0',{})).status,200);
@@ -66,6 +66,12 @@ test('create and join use confirmed identities, teacher approval, unique members
     assert.equal(teacherView.body.companies.length,2);
     assert.ok('cash' in teacherView.body.companies[0]);
     assert.equal((await post('/api/join','token1',{code:created.body.code,name:'Otra empresa'})).status,409);
+    // Existing hexadecimal codes continue to admit students after migration.
+    const legacy=await post('/api/games','token0',config);
+    assert.equal(legacy.status,201);
+    await pool.query('update public.lite_games set code=$1 where id=$2',['ABCDEF12',legacy.body.id]);
+    assert.equal((await post('/api/join','token3',{code:'ABCDEF12',name:'Empresa antigua'})).status,201);
+    await assert.rejects(pool.query('update public.lite_games set code=$1 where id=$2',['ABCDEF12',created.body.id]),error=>error.code==='23505');
     assert.equal((await post('/api/join','token3',{code:'!INVALID',name:'Otro'})).status,400);
     allowed=false;
     assert.equal((await post('/api/join','token3',{code:created.body.code,name:'Alumno tres'})).status,429);

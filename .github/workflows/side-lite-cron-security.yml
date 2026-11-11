@@ -1,0 +1,60 @@
+name: SIDE-LITE isolated cron security
+on:
+  push:
+    branches: [codex/side-lite-cron-validation]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Install PostgreSQL 17 and pg_cron
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates curl gnupg lsb-release
+          sudo install -d /usr/share/postgresql-common/pgdg
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update
+          sudo apt-get install -y postgresql-17 postgresql-server-dev-17 postgresql-17-cron libcurl4-openssl-dev build-essential openssl
+      - name: Build pgsql-http 1.6.3
+        run: |
+          curl -fsSL https://github.com/pramsey/pgsql-http/archive/refs/tags/v1.6.3.tar.gz | tar xz -C "$RUNNER_TEMP"
+          make -C "$RUNNER_TEMP/pgsql-http-1.6.3" PG_CONFIG=/usr/lib/postgresql/17/bin/pg_config
+          sudo make -C "$RUNNER_TEMP/pgsql-http-1.6.3" PG_CONFIG=/usr/lib/postgresql/17/bin/pg_config install
+      - name: Configure isolated PostgreSQL
+        run: |
+          sudo install -d -o postgres -g postgres -m 0755 /tmp/side-lite-ci-log
+          sudo pg_ctlcluster 17 main start || true
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET shared_preload_libraries = 'pg_cron'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET cron.database_name = 'postgres'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET cron.use_background_workers = 'on'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET logging_collector = 'on'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET log_directory = '/tmp/side-lite-ci-log'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET log_filename = 'postgres.log'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET log_file_mode = '0644'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER SYSTEM SET log_min_messages = 'debug2'"
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER USER postgres PASSWORD 'local-test-only'"
+          sudo pg_ctlcluster 17 main restart
+          PGPASSWORD=local-test-only psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -c 'CREATE EXTENSION pg_cron' -c 'CREATE EXTENSION http'
+      - name: Test prepared migrations and PostgreSQL permissions
+        env:
+          SIDE_TEST_DISPOSABLE: 'YES'
+          SIDE_LITE_TEST_DATABASE_URL: postgresql://postgres:local-test-only@127.0.0.1:5432/side_lite_supabase_test
+          PGPASSWORD: local-test-only
+        run: |
+          createdb -h 127.0.0.1 -U postgres side_lite_supabase_test
+          node scripts/test-supabase-isolated.mjs
+      - name: Exercise TLS, Cron and credential exposure
+        env:
+          SIDE_TEST_DISPOSABLE: 'YES'
+          SIDE_CI_POSTGRES_URL: postgresql://postgres:local-test-only@127.0.0.1:5432/postgres
+        run: node scripts/test-cron-linux-ci.mjs

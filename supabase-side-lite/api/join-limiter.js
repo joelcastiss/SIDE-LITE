@@ -8,6 +8,24 @@ export function createJoinLimiter({pool} = {}) {
   if (typeof pool?.query !== 'function') throw new TypeError('Falta el pool de base de datos.');
   return async ({userId,code} = {}) => {
     if (typeof userId !== 'string' || !UUID.test(userId)) return false;
+    // Shared across identities and codes. Without this budget an attacker can
+    // rotate anonymous identities and guesses to bypass per-user limits.
+    // A global budget also permits denial of service, so edge IP throttling is
+    // still needed; the generous ceiling accommodates simultaneous classrooms.
+    const {rows:[global]} = await pool.query(`
+      insert into side_lite_private.lite_admission_global_window as w
+        (singleton, window_started_at, attempts)
+      values (true, clock_timestamp(), 1)
+      on conflict (singleton) do update set
+        window_started_at = case
+          when w.window_started_at <= excluded.window_started_at - interval '5 minutes'
+          then excluded.window_started_at else w.window_started_at end,
+        attempts = case
+          when w.window_started_at <= excluded.window_started_at - interval '5 minutes'
+          then 1 else least(w.attempts + 1, 1001) end
+      returning attempts`);
+    if (!global || !Number.isInteger(global.attempts)) throw new Error('No se pudo comprobar el límite.');
+    if (global.attempts > 1000) return false;
     // A single atomic upsert serializes concurrent requests for this user.
     // Database errors propagate, so the caller must reject rather than bypass.
     const {rows:[row]} = await pool.query(`
@@ -24,7 +42,7 @@ export function createJoinLimiter({pool} = {}) {
       returning attempts`, [userId]);
     if (!row || !Number.isInteger(row.attempts)) throw new Error('No se pudo comprobar el límite.');
     if (row.attempts > 10) return false;
-    if (typeof code !== 'string' || !/^[0-9a-f]{8}$/i.test(code)) return false;
+    if (typeof code !== 'string' || !/^(?:[A-Z0-9]{5}|[A-F0-9]{8})$/i.test(code)) return false;
     const digest=crypto.createHash('sha256').update(code.toUpperCase()).digest();
     const {rows:[shared]}=await pool.query(`
       insert into side_lite_private.lite_admission_code_windows as w (code_hash,window_started_at,attempts)

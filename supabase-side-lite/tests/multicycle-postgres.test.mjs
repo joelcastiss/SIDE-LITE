@@ -71,6 +71,7 @@ test('three and six cycles persist official results for two students', async t =
         }
         const view=await request('GET',`/games/${game.body.id}`,0);
         assert.equal(view.status,200);assert.equal(view.body.results.length,n*2);
+        if(n===count) assert.equal(view.body.ranking.length,2,'el ranking final contiene ambas empresas');
       }
       assert.equal((await request('POST',`/games/${game.body.id}/start`,0,{})).status,409);
     }
