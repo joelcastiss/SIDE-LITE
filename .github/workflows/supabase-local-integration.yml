@@ -35,6 +35,7 @@ jobs:
           # Startup emits generated local credentials; keep its output private.
           if ! supabase start --workdir "$stack" > "$RUNNER_TEMP/side-lite-start.log" 2>&1; then
             echo 'No se pudo iniciar el stack Supabase local.' >&2
+            node scripts/diagnose-supabase-ci-start.mjs "$RUNNER_TEMP/side-lite-start.log"
             exit 1
           fi
       - name: Configure local roles and isolated Edge fixture
