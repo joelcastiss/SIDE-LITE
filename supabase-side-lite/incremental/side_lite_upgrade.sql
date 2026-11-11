@@ -861,7 +861,7 @@ $side_migration$;
 -- 20261110004101_guest_session.sql
  execute $side_migration$
 -- SIDE-LITE guest identities: reviewed local preparation only.
--- Anonymous Auth must remain disabled until rate limiting/CAPTCHA and all
+-- Anonymous Auth must remain disabled until rate limiting and all
 -- authorization tests have been verified on the target environment.
 alter table public.lite_companies add column brand_name text
   check (brand_name is null or char_length(btrim(brand_name)) between 2 and 80);
@@ -1077,7 +1077,7 @@ $side_migration$;
 -- 20261110024228_side_lite_join_game_limit.sql
  execute $side_migration$
 -- Defense in depth: shared per-code admission budgets across anonymous identities.
--- Trusted-edge IP throttling and Auth CAPTCHA are still required independently.
+-- Trusted-edge IP throttling is still required independently.
 create table side_lite_private.lite_admission_code_windows (
  code_hash bytea primary key check(octet_length(code_hash)=32),
  window_started_at timestamptz not null,

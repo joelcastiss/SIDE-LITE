@@ -1,6 +1,6 @@
 const staticPreview=false;
 import {createNeonSession} from './neon-session.js';
-import {createSupabaseSession,recoveryRedirect} from './supabase-session.js?v=20261110-auth2';
+import {createSupabaseSession,recoveryRedirect} from './supabase-session.js?v=20261111-direct';
 import {campaignFor,eventDescription} from './campaign.js';
 import {renderLaboratory} from './laboratory.js';
 import {renderTeacherHistory} from './teacher-history.js';

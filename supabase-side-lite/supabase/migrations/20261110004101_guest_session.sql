@@ -1,5 +1,5 @@
 -- SIDE-LITE guest identities: reviewed local preparation only.
--- Anonymous Auth must remain disabled until rate limiting/CAPTCHA and all
+-- Anonymous Auth must remain disabled until rate limiting and all
 -- authorization tests have been verified on the target environment.
 alter table public.lite_companies add column brand_name text
   check (brand_name is null or char_length(btrim(brand_name)) between 2 and 80);

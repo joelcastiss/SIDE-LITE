@@ -671,7 +671,7 @@ let teacherSessionPromise;
 function teacherSession(){
   if(!supabaseClient)throw new Error('No se pudo conectar con el servicio de acceso.');
   if(teacherSessionPromise)return teacherSessionPromise;
-  teacherSessionPromise=import('../supabase-session.js?v=20261110-login-fast3')
+  teacherSessionPromise=import('../supabase-session.js?v=20261111-direct')
     .then(({createSupabaseSession})=>createSupabaseSession(supabaseClient,fetch))
     .catch(error=>{teacherSessionPromise=null;throw error;});
   return teacherSessionPromise;

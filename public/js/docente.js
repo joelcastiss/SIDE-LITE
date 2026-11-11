@@ -1430,7 +1430,7 @@ $('teacherLogout')?.addEventListener('click',async()=>{
   // Every entry to the teacher page must resolve the authoritative server role.
   try {
     if(!supabaseClient)throw new Error('No hay sesión docente.');
-    const {createSupabaseSession}=await import('../supabase-session.js?v=20261110-login-fast3');
+    const {createSupabaseSession}=await import('../supabase-session.js?v=20261111-direct');
     const session=createSupabaseSession(supabaseClient);
     const identity=await Promise.race([session.identity(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión docente. Revisa tu conexión.')),8000))]);
     if(identity.role!=='teacher')throw new Error('La cuenta no tiene autorización docente.');
