@@ -65,7 +65,6 @@ function signin(){
           <div><label for="registerName">Nombre</label><input id="registerName" placeholder="Ana" autocomplete="off" required></div>
           <div><label for="registerLastName">Apellido</label><input id="registerLastName" placeholder="Ramírez" autocomplete="off" required></div>
         </div>
-        <label for="registerCourse">Curso</label><input id="registerCourse" placeholder="Finanzas Corporativas" autocomplete="off" required>
         <label for="registerEmail">Correo institucional</label><input id="registerEmail" type="email" placeholder="profesor@upch.pe" required>
         <label for="registerPassword">Contraseña (mínimo ${supabase?6:12} caracteres)</label><input id="registerPassword" type="password" minlength="${supabase?6:12}" placeholder="••••••••" autocomplete="new-password" required>
 
@@ -133,15 +132,13 @@ function signin(){
  app.querySelector('#registerForm').onsubmit=teacherAction(async(event,message)=>{
   const form=event.currentTarget;
   message.textContent='Verificando y creando tu cuenta…';
-  const first=app.querySelector('#registerName').value.trim(),last=app.querySelector('#registerLastName').value.trim(),course=app.querySelector('#registerCourse').value.trim(),email=app.querySelector('#registerEmail').value.trim().toLowerCase(),password=app.querySelector('#registerPassword').value,name=`${first} ${last}`;
-  if(!first||!last||!course||name.length>80||course.length>100||!/^[^@\s]+@upch\.pe$/i.test(email))throw Error('Completa los datos e ingresa un correo institucional @upch.pe.');
+  const first=app.querySelector('#registerName').value.trim(),last=app.querySelector('#registerLastName').value.trim(),email=app.querySelector('#registerEmail').value.trim().toLowerCase(),password=app.querySelector('#registerPassword').value,name=`${first} ${last}`;
+  if(!first||!last||name.length>80||!/^[^@\s]+@upch\.pe$/i.test(email))throw Error('Completa los datos e ingresa un correo institucional @upch.pe.');
   if(supabase){
-   const result=await supabase.register({email,password,name,firstName:first,lastName:last,course});
+   const result=await supabase.register({email,password,name,firstName:first,lastName:last});
    if(!result?.session){message.textContent='No se pudo completar el registro sin confirmación. Contacta al administrador.';return}
    try{await supabase.identity()}catch(err){await supabase.signOut();throw Error('La cuenta se creó, pero no se pudo comprobar el perfil. Inicia sesión o contacta al administrador.')};
-   await supabase.signOut();
-   form.reset();teacherRegister.classList.add('hidden');teacherLogin.classList.remove('hidden');
-   app.querySelector('#loginEmail').value=email;app.querySelector('#loginMessage').textContent='Cuenta creada exitosamente. Ya puedes iniciar sesión.';app.querySelector('#loginPassword').focus();
+   form.reset();await finishTeacherIdentity();
   }
   else throw Error('No se pudo conectar con Supabase.');
  });

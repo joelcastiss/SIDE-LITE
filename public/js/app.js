@@ -714,16 +714,15 @@ $('loginForm')?.addEventListener('submit',async e=>{
   finally{if(button)button.disabled=false;}
 });
 $('registerForm')?.addEventListener('submit',async e=>{
-  e.preventDefault();const first=$('registerName').value.trim(),last=$('registerLastName').value.trim(),course=$('registerCourse').value.trim(),email=$('registerEmail').value.trim().toLowerCase(),password=$('registerPassword').value,name=`${first} ${last}`;
-  if(!first||!last||!course||name.length>80||course.length>100||!/^[^@\s]+@upch\.pe$/i.test(email)){message('registerMessage','Completa los datos e ingresa un correo institucional @upch.pe.',true);return;}
+  e.preventDefault();const first=$('registerName').value.trim(),last=$('registerLastName').value.trim(),email=$('registerEmail').value.trim().toLowerCase(),password=$('registerPassword').value,name=`${first} ${last}`;
+  if(!first||!last||name.length>80||!/^[^@\s]+@upch\.pe$/i.test(email)){message('registerMessage','Completa los datos e ingresa un correo institucional @upch.pe.',true);return;}
   if(password.length<6){message('registerMessage','La contraseña debe tener al menos 6 caracteres.',true);return;}
   const form=e.currentTarget,button=form.querySelector('[type="submit"]');if(button)button.disabled=true;
   try{
-    message('registerMessage','Creando cuenta...');const session=await teacherSession();const result=await session.register({email,password,name,firstName:first,lastName:last,course});
-    if(!result?.session){form.reset();showModal('teacherLoginModal');$('loginEmail').value=email;message('loginMessage','Revisa tu correo institucional y confirma tu cuenta antes de iniciar sesión.');return;}
+    message('registerMessage','Creando cuenta...');const session=await teacherSession();const result=await session.register({email,password,name,firstName:first,lastName:last});
+    if(!result?.session) throw new Error('No se pudo iniciar la sesión. Intenta iniciar sesión o contacta al administrador.');
     await teacherIdentity(session);
-    await session.signOut();form.reset();showModal('teacherLoginModal');$('loginEmail').value=email;
-    message('loginMessage','Cuenta creada exitosamente. Ya puedes iniciar sesión.');
+    form.reset();openTeacherPanel();
   }catch(error){message('registerMessage',error.message||'No se pudo crear la cuenta.',true);}
   finally{if(button)button.disabled=false;}
 });

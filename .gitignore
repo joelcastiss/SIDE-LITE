@@ -1,8 +1,13 @@
 node_modules/
 public/assets/models/incoming/quaternius/Universal Base Characters[[]Standard].zip
 .playwright-browsers/
+.playwright-local/
 test-results/
 playwright-report/
+output/qa-demo/
+output/qa-validation/
+output/menu-decisiones.png
+output/resultados-*.png
 .env
 .data/
 tests/output/
