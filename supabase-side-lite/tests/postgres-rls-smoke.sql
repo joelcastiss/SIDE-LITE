@@ -155,4 +155,35 @@ do $$ begin
  perform set_config('request.jwt.claims','{}',true);
  if exists(select 1 from public.lite_my_identity()) or exists(select 1 from public.lite_profiles) then raise exception 'missing session retained access'; end if;
 end $$;
+
+reset role;
+-- History remains private after multiple cycles, including between peers in
+-- the same game. These rows are fixtures for RLS, not economic-engine tests.
+update auth.users set banned_until=null where id='00000000-0000-0000-0000-000000000001';
+update side_lite_private.lite_teacher_grants set revoked_at=null where user_id='00000000-0000-0000-0000-000000000003';
+insert into public.lite_cycles(id,game_id,number,ends_at,status) values
+ ('30000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000001',2,now()+interval '120 seconds','closed'),
+ ('30000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000001',3,now()+interval '120 seconds','closed');
+insert into public.lite_results(game_id,cycle_id,company_id,result)
+select '10000000-0000-0000-0000-000000000001', cy.id, co.id, '{}'::jsonb
+from public.lite_cycles cy cross join public.lite_companies co
+where cy.id in ('30000000-0000-0000-0000-000000000003','30000000-0000-0000-0000-000000000004')
+  and co.id in ('20000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000005');
+set local role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
+select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000001","is_anonymous":true}',true);
+do $$ begin
+ if (select count(*) from public.lite_cycle_history) <> 3 or exists(select 1 from public.lite_cycle_history where company_id <> '20000000-0000-0000-0000-000000000001') then raise exception 'student A multicycle history isolation failed'; end if;
+end $$;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000005',true);
+select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000005","is_anonymous":true}',true);
+do $$ begin
+ if (select count(*) from public.lite_cycle_history) <> 3 or exists(select 1 from public.lite_cycle_history where company_id <> '20000000-0000-0000-0000-000000000005') then raise exception 'student peer multicycle history isolation failed'; end if;
+end $$;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000003',true);
+select set_config('request.jwt.claims','{"session_id":"00000000-0000-0000-0000-000000000003"}',true);
+do $$ begin
+ if (select count(*) from public.lite_cycle_history) <> 6 then raise exception 'teacher multicycle history failed'; end if;
+end $$;
+reset role;
 rollback;

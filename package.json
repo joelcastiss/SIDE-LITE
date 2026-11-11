@@ -6,6 +6,7 @@
     "start": "node server/index.js",
     "migrate": "node server/migrate.js",
     "test:e2e": "playwright test e2e --workers=1 --timeout=120000",
+    "test:sql-closer": "node supabase-side-lite/experimental/engine-v2-parity.mjs && node supabase-side-lite/experimental/close-one-parity.mjs",
     "test:restart": "node e2e/restart.js",
     "test:abuse": "node e2e/abuse.js",
     "build:closing": "node remote/build-closing.js",

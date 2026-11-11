@@ -1,4 +1,9 @@
-# Programador de cierre: bloqueo de despliegue
+# Seguridad del programador de cierre
+
+El reemplazo preparado usa `install-sql-cron.sql` y ejecuta PostgreSQL
+directamente, sin HTTP ni credenciales en la cola. Las observaciones siguientes
+documentan por qué no debe instalarse el antiguo `install-cron.sql`; no prueban
+el despliegue ni la operación del reemplazo.
 
 El programador preparado en `install-cron.sql` no debe activarse en el proyecto
 alojado mientras se exija que la credencial del cierre no sea accesible a roles

@@ -110,8 +110,12 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
           where game_id=$1 and cycle_id=$2`,[game.id,current.id])).rows : [];
         const ownDecision=ownCompany && current ? (await c.query(`select id,game_id,cycle_id,company_id,quality,quantity,price,marketing_amount,confirmed,updated_at
           from public.lite_decisions where game_id=$1 and cycle_id=$2 and company_id=$3`,[game.id,current.id,ownCompany.id])).rows[0] || null : null;
-        const {rows:results}=await c.query(`select r.cycle_id,r.company_id,r.result,cy.number from public.lite_results r
+        const {rows:results}=await c.query(`select r.cycle_id,r.company_id,r.result,cy.number,
+          case when d.confirmed then json_build_object('quality',d.quality,'quantity',d.quantity,
+            'price',d.price,'marketingAmount',d.marketing_amount) else null end as decision
+          from public.lite_results r
           join public.lite_cycles cy on cy.game_id=r.game_id and cy.id=r.cycle_id
+          left join public.lite_decisions d on d.game_id=r.game_id and d.cycle_id=r.cycle_id and d.company_id=r.company_id
           where r.game_id=$1 and cy.status='closed' and ($2::boolean or r.company_id=$3::uuid)
           order by cy.number`,[game.id,isTeacher,ownCompany?.id || null]);
         const ranking=rank(allCompanies.map(x=>({...x,initialCapital:x.initial_capital,

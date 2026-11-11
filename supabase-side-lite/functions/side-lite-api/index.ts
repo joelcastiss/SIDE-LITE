@@ -3,7 +3,6 @@ import postgres from 'npm:postgres@3.4.7';
 import {createSideLiteApp} from '../../api/app.js';
 import {createEdgeHandler} from './adapter.js';
 import {validateDatabaseTarget} from '../database-target.js';
-import {closeOne} from '../close-cycle/worker.js';
 
 // Only a dedicated server-side login for this project is accepted. A public or
 // service key is never accepted as a database connection string.
@@ -17,5 +16,10 @@ const closerCa=Deno.env.get('SIDE_CLOSER_CA_CERT') || '';
 if(!closerUrl || !closerCa.includes('-----BEGIN CERTIFICATE-----') || !closerCa.includes('-----END CERTIFICATE-----')) throw new Error('Cierre asistido no configurado');
 validateDatabaseTarget(closerUrl);
 const closer=postgres(closerUrl,{ssl:{ca:closerCa,rejectUnauthorized:true},max:1,prepare:false,idle_timeout:10,connect_timeout:10});
-const app = createSideLiteApp({pool, projectUrl:`https://${ref}.supabase.co`,manualClose:(gameId:string)=>closeOne(closer,[],gameId)});
+// The manual route and pg_cron call the same database implementation.
+const manualClose=async (gameId:string) => {
+  const [row]=await closer`select side_lite_private.side_close_one(${gameId}::uuid) as id`;
+  return row.id;
+};
+const app = createSideLiteApp({pool, projectUrl:`https://${ref}.supabase.co`,manualClose});
 export default {fetch:createEdgeHandler(app)};

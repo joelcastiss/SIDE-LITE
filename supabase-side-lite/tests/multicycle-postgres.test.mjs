@@ -71,6 +71,19 @@ test('three and six cycles persist official results for two students', async t =
         }
         const view=await request('GET',`/games/${game.body.id}`,0);
         assert.equal(view.status,200);assert.equal(view.body.results.length,n*2);
+        for(let i=0;i<players.length;i++) {
+          // A fresh request models a reload and must contain only this student's
+          // complete history, including the engine's exact latest result.
+          const own=await request('GET',`/games/${game.body.id}`,i+1);
+          assert.equal(own.status,200);
+          assert.equal(own.body.company.id,players[i].id);
+          assert.equal(own.body.results.length,n);
+          assert.ok(own.body.results.every(row=>row.company_id===players[i].id));
+          assert.deepEqual(own.body.results.find(row=>row.cycle_id===started.body.id).result,expected[i]);
+          assert.equal(new Set(own.body.results.map(row=>row.cycle_id)).size,n);
+          const reloaded=await request('GET',`/games/${game.body.id}`,i+1);
+          assert.deepEqual(reloaded.body.results,own.body.results);
+        }
         if(n===count) assert.equal(view.body.ranking.length,2,'el ranking final contiene ambas empresas');
       }
       assert.equal((await request('POST',`/games/${game.body.id}/start`,0,{})).status,409);

@@ -1,13 +1,22 @@
-# Cierre de ciclos: preparación local
+# Cierre de ciclos
 
-Estado: borrador sin desplegar. No programa Cron, no crea secretos ni concede permisos. Requiere una cadena de migraciones revisada y ensayos reales antes de su uso.
+La implementación SQL de la migración `side_lite_sql_closer` ejecuta el cierre
+oficial tanto desde el control manual como desde `pg_cron`. Usa el mismo bloqueo
+de ciclo que las decisiones, escribe los resultados y actualiza la caja en una
+transacción por partida. `side_cron_sweep` confirma cada partida por separado y
+registra fallos individuales. El trabajo se instala por separado mediante
+`scheduler/install-sql-cron.sql`; el vencimiento es de 120 segundos y el
+resultado puede tardar hasta el siguiente barrido o más si ocurre un fallo.
 
-El trabajador conserva `js/engine.js` como única implementación económica y cierra cada ciclo en una transacción PostgreSQL con bloqueo de fila y `SKIP LOCKED`. Una excepción revierte resultados y saldos; las siguientes invocaciones recuperan los ciclos vencidos. Una llamada procesa un máximo de 20 ciclos e intenta otros aunque uno falle. Los resultados necesitan una restricción única `(cycle_id, company_id)`. La base debe obligar a que decisiones, pausa, inicio y cierre compitan por el **mismo bloqueo del ciclo**, y que las decisiones vencidas se rechacen comparando `clock_timestamp()` con `ends_at`. El trabajador por sí solo no impone los 120 segundos ni autoriza alumnos y docentes.
+La función Edge `close-cycle` queda retirada: la fuente responde 410 sin hacer
+ningún cierre. La versión que estaba publicada durante la investigación usaba
+un secreto persistente; hasta desplegar la retirada esa versión anterior sigue
+operativa. Cron SQL no la invoca y no necesita HTTP, tickets ni secretos. No use el antiguo borrador
+`scheduler/install-cron.sql`, que pasa tickets por la cola de `pg_net`.
 
-El módulo requiere las tablas y columnas documentadas en el código, incluida la tabla privada `side_lite_private.lite_cycle_secrets`; se debe cotejar con la migración final antes de aplicarla. El rol de la conexión directa precisa privilegios explícitos mínimos para estas operaciones y no debe ser accesible al frontend. Debe definirse y probarse cómo este rol interactúa con RLS; no asumir que tiene acceso. En Supabase, el pooler de transacción requiere `prepare: false`. Cada solicitud usa una sola conexión transaccional. El destino de la conexión está restringido al proyecto SIDE-LITE confirmado y exige TLS con verificación de certificado; para probar una rama aislada se necesita una configuración separada y revisada que mantenga esa restricción. El módulo de motor debe incluirse en el paquete de la función; verificar el empaquetado CLI antes de despliegue.
-
-El endpoint exige un secreto aleatorio independiente de al menos 32 caracteres a través de `x-side-cron-secret`; definirlo solo como secreto del servidor. Si se usa Cron + pg_net, Vault puede protegerlo en reposo, pero Supabase advierte que una petición pendiente puede exponer el valor descifrado a roles con acceso a la cola de pg_net. Minimizar privilegios de acceso a esa cola y revisar el diseño de autenticación antes de programar. No utilizar clave publicable como autenticación del trabajador. Cuando se utilice autenticación propia hay que configurar explícitamente el gateway para que no exija un JWT de usuario y comprobar que peticiones sin secreto se rechazan. No se ha creado configuración de gateway ni Cron.
-
-Una posible programación cada 30 segundos necesita evaluación de coste, cuotas y latencia: el deadline sigue siendo de 120 s, pero el cálculo de resultados puede completarse después. Asegurar observación de respuestas HTTP y errores, alertas y conservación de registros; el estado de Cron por sí solo no prueba éxito de la función asíncrona. Las pruebas unitarias utilizan un adaptador simulado; también hay una prueba de concurrencia y rollback en PostgreSQL local real en `../../tests/postgres-close-smoke.mjs`. Sigue pendiente probar interrupción del proceso durante la transacción, recuperación de caídas, autenticación y aislamiento reales contra Supabase, así como Cron y Edge.
-
-Referencias: [conexión Postgres desde Edge](https://supabase.com/docs/guides/functions/connect-to-postgres), [programación de funciones](https://supabase.com/docs/guides/functions/schedule-functions), [Supabase Cron](https://supabase.com/docs/guides/cron).
+El motor SQL conserva valores precalculados de `marketingFactor` del motor
+JavaScript; cualquier cambio en reglas exige revisar ambos y repetir las
+pruebas de paridad. Véase `../../experimental/README.md` para su alcance y
+limitaciones. Antes de activar el trabajo se deben validar migración, permisos,
+control manual y `CALL` desde cron en una base aislada y luego comprobar la
+instalación y resultados reales en el proyecto previsto.

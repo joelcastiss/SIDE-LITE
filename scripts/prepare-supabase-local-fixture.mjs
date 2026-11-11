@@ -56,10 +56,6 @@ await transform('supabase-side-lite/functions/side-lite-api/index.ts',[
   ["const closerCa=Deno.env.get('SIDE_CLOSER_CA_CERT') || '';", "const closerCa='-----BEGIN CERTIFICATE-----\\nlocal-only\\n-----END CERTIFICATE-----';"],
   ["projectUrl:`https://${ref}.supabase.co`",`projectUrl:'${localUrl}'`],
 ]);
-await transform('supabase-side-lite/functions/close-cycle/index.ts',[
-  ["ssl: {ca: caCertificate, rejectUnauthorized: true}, ",""],
-  ["validateCloserConfig(dbUrl, caCertificate);", "validateCloserConfig(dbUrl, '-----BEGIN CERTIFICATE-----\\nlocal-only\\n-----END CERTIFICATE-----');"],
-]);
 // Local Auth signs with an asymmetric key. Its issuer is the browser-visible
 // loopback URL, while Edge reaches the same local gateway via Docker's host alias.
 await transform('supabase-side-lite/api/identity.js',[
