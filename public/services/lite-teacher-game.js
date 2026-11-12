@@ -113,10 +113,16 @@
     const summary = document.createElement('div'); summary.id = 'enabledEventsSummary'; summary.className = 'lite-event-summary-line'; summary.setAttribute('aria-live','polite');
     eventSection.append(heading,summary);
     renderEventSummary();
-    void api.request('/catalog', 'GET', undefined, 'teacher').then(catalog => {
+  }
+  let catalogRequest = null;
+  function loadCatalog() {
+    if (!eventSection || catalogRequest) return catalogRequest;
+    catalogRequest = api.request('/catalog', 'GET', undefined, 'teacher').then(catalog => {
       if (!Array.isArray(catalog)) throw new Error('Catálogo inválido.');
       eventCatalog = catalog; eventCatalogError = ''; renderEventSummary(); renderEventPicker();
-    }).catch(error => { eventCatalogError = error.message || 'No se pudo cargar el catálogo.'; renderEventSummary(); });
+    }).catch(error => { eventCatalogError = error.message || 'No se pudo cargar el catálogo.'; renderEventSummary(); })
+      .finally(() => { catalogRequest = null; });
+    return catalogRequest;
   }
   eventDialog.querySelector('#liteCloseEventPicker').addEventListener('click', () => eventDialog.close());
   eventDialog.querySelector('#liteDoneEventPicker').addEventListener('click', () => {
@@ -237,7 +243,8 @@
       if (signature !== lastSnapshot) { lastSnapshot = signature; render(snapshot); }
     })();
     refreshPromise = task;
-    try { await task; } finally { if (refreshPromise === task) refreshPromise = null; }
+    try { await task; } catch (error) { if (version === generation) lastSnapshot = ''; throw error; }
+    finally { if (refreshPromise === task) refreshPromise = null; }
   }
   async function renderPodium() {
     const preview = $('podiumPreview'), suggestion = $('sidePodium'), state = $('podiumState');
@@ -431,6 +438,7 @@
   async function initialize() {
     if (authorized) return;
     authorized = true;
+    void loadCatalog();
     const games = await listGames();
     let saved; try { saved = sessionStorage.getItem('side-lite-teacher-game'); } catch {}
     if (saved && games?.some(game => game.id === saved && game.teacher_id === global.SIDLiteTeacherIdentity.id)) {
@@ -440,6 +448,7 @@
   }
   document.addEventListener('side-lite-teacher-ready', initialize, {once:true});
   if (global.SIDLiteTeacherIdentity) void initialize();
+  global.addEventListener('online', () => { if (!authorized) return; if (eventCatalogError) void loadCatalog(); if (gameId) void refresh().catch(error => message(error.message)); });
   const poll = setInterval(() => { if (authorized && gameId && !document.hidden) void refresh().catch(error => message(error.message)); }, 5000);
   global.addEventListener('pagehide', event => { if (!event.persisted) { clearInterval(poll); clearInterval(timer); } });
 })(window);

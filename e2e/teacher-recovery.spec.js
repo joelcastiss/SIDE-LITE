@@ -13,8 +13,8 @@ test('recupera la partida docente después de una indisponibilidad temporal',asy
     const path=new URL(route.request().url()).pathname.split('/api')[1],headers={'access-control-allow-origin':'*','access-control-allow-methods':'GET,OPTIONS','access-control-allow-headers':'authorization,apikey,content-type'};
     if(route.request().method()==='OPTIONS')return route.fulfill({status:204,headers});
     if(path==='/games/game1' && ++attempts<=3)return route.fulfill({status:503,headers,json:{error:'Indisponible'}});
-    const game={id:'game1',code:'A7K2M',name:'Prueba',cycle_count:3,enabled_events:[],costs:{basic:50,standard:80,premium:120}};
-    const json=path==='/me'?{id:'teacher',display_name:'Docente',role:'teacher'}:path==='/catalog'?[]:path==='/games/game1'?{isTeacher:true,game,companies:[],decisions:[],results:[],ranking:[],cycles:[]}:[];
+    const game={id:'game1',teacher_id:'teacher',code:'A7K2M',name:'Prueba',cycle_count:3,enabled_events:[],costs:{basic:50,standard:80,premium:120}};
+    const json=path==='/me'?{id:'teacher',display_name:'Docente',role:'teacher'}:path==='/catalog'?[]:path==='/games'?[game]:path==='/games/game1'?{isTeacher:true,game,companies:[],decisions:[],results:[],ranking:[],cycles:[]}:[];
     return route.fulfill({status:200,headers,json});
   });
   await page.goto(base+'/docente.html');
