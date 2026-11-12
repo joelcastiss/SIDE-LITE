@@ -239,3 +239,12 @@
 /* Allow the fallback decision button to remain reachable on short screens. */
 #studentWaiting.lite-waiting{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 #studentWaiting.lite-waiting .student-waiting-content{height:auto;min-height:100%;max-height:none;overflow:visible}
+
+/* La sala Lite debe poder crecer y desplazar su contenido. */
+#studentWaiting.lite-waiting { overflow-y:auto; overflow-x:hidden; display:block; }
+#studentWaiting.lite-waiting .student-waiting-content { height:auto; min-height:100%; max-height:none; }
+#studentWaiting.lite-waiting .waiting-status, #studentWaiting.lite-waiting .waiting-tutorial-mount, #studentWaiting.lite-waiting #studentIntegrationNotice { display:none; }
+#studentWaiting.lite-waiting .waiting-header { display:block; }
+#studentWaiting.lite-waiting .lite-waiting-actions { order:0; }
+#studentWaiting.lite-waiting .lite-waiting-hero { min-height:0; padding:20px; gap:8px; }
+#studentWaiting.lite-waiting .lite-waiting-details { gap:16px; margin-top:16px; }

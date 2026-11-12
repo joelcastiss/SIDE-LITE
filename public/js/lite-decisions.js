@@ -112,7 +112,7 @@
     const waiting=$('studentWaiting'), dashboard=document.querySelector('#studentLobby .dashboard-inner');
     const enterParent=enter.parentNode, enterNext=enter.nextSibling;
     const lobbyDetails=document.createElement('div'); lobbyDetails.className='lite-waiting-details';
-    lobbyDetails.innerHTML=`<div class="lite-waiting-hero" role="status" aria-live="polite"></div><div class="lite-waiting-grid"><div><span>Código de partida</span><div class="lite-code"><strong id="liteWaitingCode">—</strong><button type="button" id="liteCopyCode" aria-label="Copiar código de partida">⧉</button></div></div><div><span>Estado</span><strong id="liteWaitingState">Esperando al docente</strong></div><div><span>Tu mercado</span><strong id="liteWaitingMarket">Pendiente de asignación</strong></div></div><section class="lite-companies"><div class="lite-companies-heading"><h2>Empresas inscritas</h2><span id="liteWaitingCount"></span></div><ul id="liteWaitingParticipants"></ul><div class="lite-legend"><span><i class="online"></i>Conectada</span><span><i></i>Sin actividad reciente</span></div></section><div class="lite-waiting-actions"><div class="lite-enter-wrap"></div></div>`;
+    lobbyDetails.innerHTML=`<div class="lite-waiting-hero" role="status" aria-live="polite"></div><div class="lite-waiting-actions"><div class="lite-enter-wrap"></div></div><div class="lite-waiting-grid"><div><span>Código de partida</span><div class="lite-code"><strong id="liteWaitingCode">—</strong><button type="button" id="liteCopyCode" aria-label="Copiar código de partida">⧉</button></div></div><div><span>Estado</span><strong id="liteWaitingState">Esperando al docente</strong></div><div><span>Tu mercado</span><strong id="liteWaitingMarket">Pendiente de asignación</strong></div></div><section class="lite-companies"><div class="lite-companies-heading"><h2>Empresas inscritas</h2><span id="liteWaitingCount"></span></div><ul id="liteWaitingParticipants"></ul><div class="lite-legend"><span><i class="online"></i>Conectada</span><span><i></i>Sin actividad reciente</span></div></section>`;
     const waitingTitle=waiting.querySelector('.waiting-heading h1'), previousWaitingTitle=waitingTitle.textContent; waitingTitle.textContent='Sala de espera';
     const eyebrow=waiting.querySelector('.waiting-heading .eyebrow'), previousEyebrow=eyebrow.textContent; eyebrow.textContent='SIMULACIÓN PRINCIPAL';
     waiting.classList.add('lite-waiting'); waiting.classList.remove('hidden');
@@ -201,7 +201,7 @@
       const seconds=cycle.paused_at?Math.max(0,Math.ceil((Date.parse(cycle.ends_at)-Date.parse(cycle.paused_at))/1000)) : deadline===null?0:Math.max(0,Math.ceil((deadline-performance.now())/1000));
       const text=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
       write('studentRoundTimer',text);write('decisionRoundTimer',text); const timer=$('decisionRoundTimer'); if(timer){timer.classList.toggle('is-warning',seconds<120 && seconds>=30);timer.classList.toggle('is-critical',seconds<30);}
-      if ((cycle.close_requested_at || seconds===0) && cycle.status==='open' && !cycle.paused_at) {if(enter)enter.disabled=true;if(save)save.disabled=true;if(send)send.disabled=true;if(top)top.disabled=true;const delay=cycle.close_requested_at?Date.now()-Date.parse(cycle.close_requested_at):performance.now()-deadline;const slow=Number.isFinite(delay)&&delay>30000;write('studentTimerNote',slow?'El cierre está demorando. Puedes reintentar; si continúa, avisa al docente.':'Procesando resultados oficiales');if(slow)retry.classList.remove('hidden');}
+      if ((cycle.close_requested_at || seconds===0) && cycle.status==='open' && !cycle.paused_at) {editable=false; write('liteWaitingState',cycle.close_requested_at?'Procesando resultados':'Ciclo vencido'); const hero=lobbyDetails.querySelector('.lite-waiting-hero'); hero.innerHTML='<strong>Procesando resultados</strong><span>El ciclo ya no recibe decisiones.</span>'; help.hidden=false; help.textContent='El ciclo ya no recibe decisiones.'; if(enter){enter.disabled=true;enter.setAttribute('aria-disabled','true');} for(const input of Object.values(controls)) input.disabled=true; if(save)save.disabled=true;if(send)send.disabled=true;if(top)top.disabled=true;const delay=cycle.close_requested_at?Date.now()-Date.parse(cycle.close_requested_at):performance.now()-deadline;const slow=Number.isFinite(delay)&&delay>30000;write('studentTimerNote',slow?'El cierre está demorando. Puedes reintentar; si continúa, avisa al docente.':'Procesando resultados oficiales');if(slow)retry.classList.remove('hidden');}
     }
     function render(next, started) {
       data=next; const game=data.game, company=data.company, cycle=data.cycles?.at(-1), own=data.ownDecision;
@@ -223,12 +223,13 @@
       const open=!!cycle && cycle.status==='open' && !cycle.paused_at && !cycle.close_requested_at && !own?.confirmed && deadline>performance.now();
       editable=open;
       write('waitingGameName',`${company.name} · mercado ${company.district_name || 'pendiente de asignación'}`); connectPresence(company.id); write('liteWaitingCode',game.code);
-      write('liteWaitingState',cycle?.paused_at?'Ciclo pausado':cycle?.close_requested_at?'Procesando resultados':cycle?.status==='open'?'Partida en curso':cycle?.status==='closed'?'Ciclo cerrado':'Esperando inicio del docente');
+      const state=own?.confirmed?'Decisión confirmada':cycle?.paused_at?'Ciclo pausado':cycle?.close_requested_at?'Procesando resultados':cycle?.status==='open' && !open?'Ciclo vencido':cycle?.status==='open'?'Partida en curso':cycle?.status==='closed'?'Ciclo cerrado':'Esperando inicio del docente';
+      write('liteWaitingState',state);
       write('liteWaitingMarket',company.district_name || 'Pendiente de asignación');
       write('waitingCompanies',`${(data.companies || []).length} empresas inscritas`);
       write('liteWaitingCount',`${(data.companies || []).length} empresas inscritas`); renderParticipants();
-      lobbyDetails.querySelector('.lite-waiting-hero').innerHTML=open?`<span class="lite-check" aria-hidden="true">✓</span><strong>Ciclo ${cycle.number} habilitado</strong><span>El menú de decisiones se abre automáticamente.</span>`:'<span class="lite-dots" aria-hidden="true"><i></i><i></i><i></i></span><strong>Esperando al docente</strong><span>Tu empresa ya está inscrita. El ciclo empieza cuando el docente lo habilite.</span>';
-      enter.setAttribute('aria-disabled',String(!open)); help.hidden=open;
+      lobbyDetails.querySelector('.lite-waiting-hero').innerHTML=open?`<span class="lite-check" aria-hidden="true">✓</span><strong>Ciclo ${Number(cycle.number)} habilitado</strong><span>Ya puedes entrar al menú de decisiones.</span>`:`<strong>${state}</strong><span>${own?.confirmed?'Tu decisión ya fue confirmada.':cycle?.paused_at?'Espera a que el docente reanude el ciclo.':cycle?.status==='open'?'Espera los resultados oficiales.':cycle?.status==='closed'?'Espera el siguiente ciclo o consulta los resultados.':'Tu empresa ya está inscrita. Espera a que el docente habilite el ciclo.'}</span>`;
+      enter.setAttribute('aria-disabled',String(!open)); help.hidden=open; if(!open) help.textContent=state+'.';
       write('studentIntegrationNotice',open?'La partida está habilitada. Ya puedes ingresar al menú de decisiones.':'Espera a que el docente habilite el ciclo.');
       write('lobbyCode',game.code);write('lobbyGameName',game.name);write('lobbyStudent',company.name);write('lobbySegment',cycle && company.district_name ? 'Mercado: '+company.district_name : company.store || 'Empresa');
       write('studentCycleLabel',cycle?`Ciclo ${cycle.number} de ${game.cycle_count}`:'Esperando inicio');
@@ -279,7 +280,7 @@
       finally { global.clearTimeout(timeout);refreshing=false; }
     }
     async function submit(confirmed) {
-      if (!data || busy) return;
+      if (!data || busy || !editable) return;
       const payload={quality:String(draft.quality),quantity:Number(draft.quantity),price:Number(draft.price),marketingAmount:Number(draft.marketingAmount),confirmed};
       if (['quantity','price','marketingAmount'].some(key=>String(draft[key]).trim()==='')||!['basic','standard','premium'].includes(payload.quality)||!Number.isInteger(payload.quantity)||payload.quantity<0||payload.quantity>100000||!Number.isInteger(payload.price)||payload.price<1||payload.price>100000||!Number.isInteger(payload.marketingAmount)||(payload.marketingAmount!==0&&(payload.marketingAmount<200||payload.marketingAmount>10000))) {showStatus('Revisa los cuatro valores antes de enviar.');return;}
       const factor={cost_discount:.9,cost_freight:1.1,cost_offer:.95,cost_shortage:1.15}[data.cycles?.at(-1)?.event_id] || 1;
