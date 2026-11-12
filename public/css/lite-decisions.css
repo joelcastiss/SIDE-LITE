@@ -235,3 +235,7 @@
 .lite-waiting-actions{margin:0;align-items:flex-start;gap:16px}.lite-enter-wrap{flex:1 1 380px;display:flex;flex-direction:column;gap:10px}.lite-enter-wrap button,.lite-waiting-actions>button{min-height:56px;border-radius:16px}.lite-enter-wrap button{width:100%;border:1px solid #7dd3fc;background:#0a5fa8;color:#fff;font-weight:700}.lite-enter-wrap button:disabled{border:1px dashed rgba(180,198,222,.6);background:#0b1c36;color:#b4c6de;opacity:1}.lite-enter-wrap>span{font-size:14px;color:#b4c6de}.lite-waiting-actions>button{border:1px solid #38bdf8;background:transparent;color:white}.lite-waiting .waiting-footer{margin-top:20px}.lite-waiting #studentIntegrationNotice{display:none}
 @media(max-width:600px){.lite-waiting-grid{grid-template-columns:1fr}.lite-waiting-actions>button{width:100%}.lite-waiting-details{margin-top:20px}.lite-waiting-hero{padding:28px 20px}}
 @media(prefers-reduced-motion:reduce){.lite-dots i{animation:none}}
+
+/* Allow the fallback decision button to remain reachable on short screens. */
+#studentWaiting.lite-waiting{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+#studentWaiting.lite-waiting .student-waiting-content{height:auto;min-height:100%;max-height:none;overflow:visible}

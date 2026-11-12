@@ -14,6 +14,8 @@
     dispose?.();
     $('decisionMenu')?.classList.add('lite-decision-mode');
     let active = true, data = null, draft = null, draftCycle = null, selected = 0, busy = false, deadline = null;
+    // A server-confirmed cycle enters decisions once; manual navigation remains available.
+    const autoEnteredCycles = new Set();
     let refreshing = false, touched = new Set(), editable = false, seenResultCycles = null, marketWheelStarted = false;
     const entries = [
       {key:'quality', label:'Calidad', icon:'insumos.svg', description:'Selecciona la calidad de los bolsos.'},
@@ -105,7 +107,7 @@
     if(save){save.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12l3 3v15H4V3h1zm3 0v6h8V3M8 21v-8h8v8"/></svg>';save.querySelector('small').textContent='Guarda la sección; puedes editar';}
     if(send){send.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3l-6.5 18-3-7-8.5-2.5zm8.5 2.5L21 3"/></svg>';send.querySelector('small').textContent='Confirma; no editable en este ciclo';}
     replaceButton('exitDecisions',()=>showScreen('studentLobby'));
-    const enter=replaceButton('enterDecisionsBtn',()=>{if (!editable || deadline === null || performance.now() >= deadline) return; showScreen('decisionMenu');select(selected);});
+    const enter=replaceButton('enterDecisionsBtn',()=>{if (!editable || deadline === null || performance.now() >= deadline) return; const current=data?.cycles?.at(-1); if(current)autoEnteredCycles.add(String(current.id || current.number)); showScreen('decisionMenu');select(selected);});
     enter.classList.remove('hidden'); enter.disabled=true;
     const waiting=$('studentWaiting'), dashboard=document.querySelector('#studentLobby .dashboard-inner');
     const enterParent=enter.parentNode, enterNext=enter.nextSibling;
@@ -115,7 +117,7 @@
     const eyebrow=waiting.querySelector('.waiting-heading .eyebrow'), previousEyebrow=eyebrow.textContent; eyebrow.textContent='SIMULACIÓN PRINCIPAL';
     waiting.classList.add('lite-waiting'); waiting.classList.remove('hidden');
     waiting.querySelector('.waiting-footer').before(lobbyDetails);
-    const waitingActions=lobbyDetails.querySelector('.lite-waiting-actions'); waitingActions.querySelector('.lite-enter-wrap').append(enter);
+    const waitingActions=lobbyDetails.querySelector('.lite-waiting-actions'); lobbyDetails.querySelector('.lite-companies').before(waitingActions); waitingActions.querySelector('.lite-enter-wrap').append(enter);
     enter.textContent='Entrar al menú de decisiones'; enter.setAttribute('aria-describedby','liteEnterHelp');
     const help=document.createElement('span'); help.id='liteEnterHelp'; help.textContent='Se habilita cuando el docente inicia el ciclo.'; enter.after(help);
     $('liteCopyCode').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(data.game.code);$('liteCopyCode').setAttribute('aria-label','Código copiado');}catch{showStatus('No se pudo copiar el código.');}});
@@ -225,7 +227,7 @@
       write('liteWaitingMarket',company.district_name || 'Pendiente de asignación');
       write('waitingCompanies',`${(data.companies || []).length} empresas inscritas`);
       write('liteWaitingCount',`${(data.companies || []).length} empresas inscritas`); renderParticipants();
-      lobbyDetails.querySelector('.lite-waiting-hero').innerHTML=open?'<span class="lite-check" aria-hidden="true">✓</span><strong>Ciclo 1 habilitado</strong><span>Ya puedes entrar al menú de decisiones.</span>':'<span class="lite-dots" aria-hidden="true"><i></i><i></i><i></i></span><strong>Esperando al docente</strong><span>Tu empresa ya está inscrita. El Ciclo 1 empieza cuando el docente lo habilite.</span>';
+      lobbyDetails.querySelector('.lite-waiting-hero').innerHTML=open?`<span class="lite-check" aria-hidden="true">✓</span><strong>Ciclo ${cycle.number} habilitado</strong><span>El menú de decisiones se abre automáticamente.</span>`:'<span class="lite-dots" aria-hidden="true"><i></i><i></i><i></i></span><strong>Esperando al docente</strong><span>Tu empresa ya está inscrita. El ciclo empieza cuando el docente lo habilite.</span>';
       enter.setAttribute('aria-disabled',String(!open)); help.hidden=open;
       write('studentIntegrationNotice',open?'La partida está habilitada. Ya puedes ingresar al menú de decisiones.':'Espera a que el docente habilite el ciclo.');
       write('lobbyCode',game.code);write('lobbyGameName',game.name);write('lobbyStudent',company.name);write('lobbySegment',cycle && company.district_name ? 'Mercado: '+company.district_name : company.store || 'Empresa');
@@ -257,6 +259,17 @@
       write('studentEventImpactText',last ? global.SIDELiteEvents.text(last.event || data.cycles?.find(c=>c.id===ownResults.at(-1)?.cycle_id)?.event_id,last) : 'Los resultados oficiales se muestran después del cierre del ciclo.');
       const history=$('studentCycleHistory'); if(history)history.replaceChildren();
       refreshResults();updateEstimate();updateClock();
+      // The teacher starts the cycle on the server. Automatically open the student
+      // decision screen once per live cycle, including students who join late.
+      // Do not reopen it every poll after a student deliberately returns to the lobby.
+      if (active && open) {
+        const cycleKey=String(cycle.id || cycle.number);
+        if (!autoEnteredCycles.has(cycleKey)) {
+          autoEnteredCycles.add(cycleKey);
+          showScreen('decisionMenu');
+          select(selected);
+        }
+      }
     }
     async function refresh() {
       if (!active || refreshing) return;

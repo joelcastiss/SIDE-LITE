@@ -13,7 +13,7 @@ for(const width of [1440,390]) test(`sala sincronizada con dos estudiantes ${wid
    await expect(page.locator('#liteWaitingCode')).toHaveText('ABC123');await expect(page.locator('#liteWaitingParticipants li')).toHaveCount(2);await expect(page.locator('#enterDecisionsBtn')).toBeDisabled();await expect(page.locator('#liteWaitingMarket')).toHaveText('Santiago de Surco');
   }
   for(const page of pages)await page.evaluate(()=>{window.__started=true});
-  for(const page of pages){await expect(page.locator('#enterDecisionsBtn')).toBeEnabled({timeout:10000});await expect(page.locator('#liteWaitingState')).toHaveText('Partida en curso');await page.locator('#enterDecisionsBtn').click();await expect(page.locator('#decisionMenu')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();}
+  for(const page of pages){await expect(page.locator('#enterDecisionsBtn')).toBeEnabled({timeout:10000});await expect(page.locator('#liteWaitingState')).toHaveText('Partida en curso');await expect(page.locator('#decisionMenu')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();}
  }finally{await Promise.all(contexts.map(c=>c.close()))}
 });
 
@@ -24,4 +24,37 @@ test('la ruleta conserva la asignación al recargar',async({page})=>{
  await page.reload();
  expect(await page.evaluate(()=>SideRuleta.playOnce({partidaId:'game',companyId:'company',marketId:'surco'}))).toBe(false);
  await expect(page.locator('.rm-overlay')).toHaveCount(0);
+});
+
+test('autoentra una vez al abrir cada ciclo, no durante pausa ni en cada actualización',async({page})=>{
+ await page.goto(base+'/index.html');
+ await page.evaluate(()=>{
+   window.__cycleState='waiting';
+   window.SIDLiteGame={getGame:async()=>{
+     const state=window.__cycleState,hasCycle=state!=='waiting',second=state==='open2';
+     const cycle=hasCycle?{id:second?'cycle-2':'cycle-1',number:second?2:1,
+       status:state==='closed'?'closed':'open',paused_at:state==='paused'?new Date().toISOString():null,
+       server_now:new Date().toISOString(),ends_at:new Date(Date.now()+120000).toISOString()}:null;
+     return {game:{id:'g',name:'Aula',code:'ABCDE',cycle_count:3,costs:{basic:50,standard:80,premium:120}},
+       company:{id:'co',name:'Aurora',cash:30000,district_name:'Santiago de Surco'},
+       companies:[{id:'co',name:'Aurora'}],cycles:cycle?[cycle]:[],ownDecision:null,results:[],ranking:[]};
+   }};
+   window.SIDLiteDecisions.mount({gameId:'g',showScreen:id=>{
+     document.querySelectorAll('#app > .screen').forEach(el=>el.classList.toggle('hidden',el.id!==id));
+   }});
+ });
+ await expect(page.locator('#studentWaiting')).toBeVisible();
+ await page.evaluate(()=>window.__cycleState='paused');
+ await expect(page.locator('#liteWaitingState')).toHaveText('Ciclo pausado',{timeout:11000});
+ await expect(page.locator('#decisionMenu')).toBeHidden();
+ await page.evaluate(()=>window.__cycleState='open');
+ await expect(page.locator('#decisionMenu')).toBeVisible({timeout:11000});
+ await page.locator('#exitDecisions').click();
+ await expect(page.locator('#studentLobby')).toBeVisible();
+ await page.waitForTimeout(5200);
+ await expect(page.locator('#decisionMenu')).toBeHidden();
+ await page.evaluate(()=>window.__cycleState='closed');
+ await expect(page.locator('#liteWaitingState')).toHaveText('Ciclo cerrado',{timeout:11000});
+ await page.evaluate(()=>window.__cycleState='open2');
+ await expect(page.locator('#decisionMenu')).toBeVisible({timeout:11000});
 });
