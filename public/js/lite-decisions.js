@@ -16,7 +16,7 @@
     let active = true, data = null, draft = null, draftCycle = null, selected = 0, busy = false, deadline = null;
     // A server-confirmed cycle enters decisions once; manual navigation remains available.
     const autoEnteredCycles = new Set();
-    let refreshing = false, touched = new Set(), editable = false, seenResultCycles = null, marketWheelStarted = false;
+    let refreshing = false, refreshPending = false, touched = new Set(), editable = false, seenResultCycles = null, marketWheelStarted = false;
     const entries = [
       {key:'quality', label:'Calidad', icon:'insumos.svg', description:'Selecciona la calidad de los bolsos.'},
       {key:'quantity', label:'Cantidad', icon:'inversiones.svg', description:'Elige cuántos bolsos producir.'},
@@ -273,11 +273,12 @@
       }
     }
     async function refresh() {
-      if (!active || refreshing) return;
+      if (!active) return;
+      if (refreshing) { refreshPending=true; return; }
       refreshing=true; const started=performance.now();let timeout;
-      try { const next=await Promise.race([global.SIDLiteGame.getGame(gameId),new Promise((_,reject)=>{timeout=global.setTimeout(()=>reject(new Error('Tiempo de espera agotado')),12000);})]); if(active){render(next,started);retry.classList.add('hidden');} }
+      try { const next=await Promise.race([global.SIDLiteGame.getGame(gameId),new Promise((_,reject)=>{timeout=global.setTimeout(()=>reject(new Error('Tiempo de espera agotado')),12000);})]); if(active && !refreshPending){render(next,started);retry.classList.add('hidden');} }
       catch(error) { if(active){write('studentConnectionStatus','No se pudo actualizar la partida. Comprueba tu conexión y vuelve a intentarlo.');if(!data && results)results.textContent='No se pudieron cargar los resultados. Comprueba tu conexión y vuelve a intentarlo.';retry.classList.remove('hidden');} }
-      finally { global.clearTimeout(timeout);refreshing=false; }
+      finally { global.clearTimeout(timeout);refreshing=false;if(active && refreshPending){refreshPending=false;void refresh();} }
     }
     async function submit(confirmed) {
       if (!data || busy || !editable) return;
@@ -292,7 +293,7 @@
       finally {busy=false; void refresh();}
     }
     select(0); showScreen('studentLobby');
-    const poll=global.setInterval(refresh,5000), clock=global.setInterval(updateClock,250);
+    const poll=global.setInterval(()=>{if(!refreshing)void refresh();},5000), clock=global.setInterval(updateClock,250);
     const back=$('backToProfiles'); const onBack=()=>dispose?.(); back?.addEventListener('click',onBack);
 dispose=()=>{waitingBack?.removeEventListener('click',leaveWaiting); enterParent.insertBefore(enter,enterNext); lobbyDetails.remove(); returnWaiting.remove(); waitingTitle.textContent=previousWaitingTitle; eyebrow.textContent=previousEyebrow; if(presenceChannel)global.SIDE?.SupabaseClient?.getStudent()?.removeChannel(presenceChannel); waiting.classList.remove('lite-waiting'); waiting.classList.add('hidden'); dashboard.classList.remove('hidden'); bagViews?.dispose();active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
     void refresh();
