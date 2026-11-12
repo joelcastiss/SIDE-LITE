@@ -22,6 +22,7 @@
       {key:'marketingAmount', label:'Marketing', icon:'finanzas.svg', description:'Decide cuánto invertir en publicidad.'}
     ];
     const nav = $('decisionTabs'), cards = $('decisionCards');
+    let bagViews = null;
     if (!nav || !cards) throw new Error('No está disponible el menú de decisiones.');
     nav.replaceChildren(); cards.replaceChildren();
     const controls = {};
@@ -38,6 +39,7 @@
       nav.querySelectorAll('button').forEach((el,i) => {el.classList.toggle('active', i === index); el.setAttribute('aria-pressed',String(i === index));});
       cards.querySelectorAll('.decision-card').forEach((el,i) => {el.hidden = i !== index;});
       formScroll.scrollLeft=0; cards.scrollLeft=0; cards.querySelectorAll('.decision-card').forEach(el=>{el.scrollLeft=0;});
+      bagViews?.sync();
       const entry = entries[index]; write('categoryTitle',entry.label); write('categoryDescription',entry.description);
       const icon=$('detailCategoryIcon'); if (icon) icon.src='assets/icons/categories/'+entry.icon; context.querySelector('.lite-tip').textContent='Consejo: '+tips[index]; if(data)updateEstimate();
     }
@@ -58,13 +60,13 @@
         const group=document.createElement('div');group.className='quality-options';group.setAttribute('role','radiogroup');group.setAttribute('aria-label','Calidad de los bolsos');
         for(const [value,name,icon,description] of [['basic','Básica','◇','Menor costo de producción.'],['standard','Media','✦','Equilibrio entre costo y calidad.'],['premium','Premium','✧','Mayor calidad y reputación.']]) {
           const option=document.createElement('button');option.type='button';option.className='quality-option';option.setAttribute('role','radio');option.dataset.value=value;
-          const symbol=document.createElement('span');symbol.className='quality-icon';symbol.textContent=icon;
+          const symbol=document.createElement('span');symbol.className='bag-stage no-webgl';symbol.dataset.bag=({basic:'basica',standard:'media',premium:'premium'})[value];symbol.setAttribute('aria-hidden','true');symbol.innerHTML='<canvas></canvas><span class="bag-fallback">▱</span>';
           const label=document.createElement('strong');label.textContent=name;
           const cost=document.createElement('span');cost.className='quality-cost';cost.dataset.qualityCost=value;
           const detail=document.createElement('small');detail.textContent=description;
           const badge=document.createElement('span');badge.className='quality-selected';badge.textContent='✓ Seleccionada';
           const levels={basic:[1,1,1],standard:[2,2,2],premium:[3,3,3]}[value];const attrs=document.createElement('div');attrs.className='quality-attributes';attrs.innerHTML=['Costo','Demanda','Reputación'].map((name,i)=>`<div><span>${name}</span><span class="quality-dots" aria-label="${levels[i]} de 3">${[1,2,3].map(n=>`<i class="${n<=levels[i]?'on':''}"></i>`).join('')}</span></div>`).join('');
-          option.append(badge,symbol,label,cost,detail,attrs);option.addEventListener('click',()=>{input.value=value;change();});
+          option.append(badge,symbol,label,cost,detail,attrs);option.addEventListener('click',()=>{input.value=value;change();bagViews?.spin(value);});
           option.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;event.preventDefault();const options=[...group.querySelectorAll('button')];const delta=['ArrowRight','ArrowDown'].includes(event.key)?1:-1;const next=options[(options.indexOf(option)+delta+options.length)%options.length];next.focus();next.click();});group.append(option);
         }
         card.append(input,group); const comparison=document.createElement('div');comparison.className='quality-comparison';comparison.innerHTML='<strong>Costo total con tu cantidad actual</strong><div></div>';card.append(comparison);
@@ -94,6 +96,7 @@
       }
       cards.append(card);
     }
+    bagViews=global.SIDELiteBagViews?.create($('decisionMenu'), cards);
     const status=document.createElement('p'); status.setAttribute('role','status'); status.setAttribute('aria-live','polite'); cards.after(status);
     let statusTimer; const showStatus = message => { status.textContent=message; write('studentConnectionStatus', message); global.clearTimeout(statusTimer); statusTimer=global.setTimeout(()=>{status.textContent='';},5000); };
     const save=replaceButton('saveDecisionSection',()=>submit(false));
@@ -127,7 +130,7 @@
       nav.querySelectorAll('button').forEach((button,i)=>{button.dataset.state=data.ownDecision?.confirmed?'enviada':data.ownDecision?'borrador':touched.has(entries[i].key)?'borrador':'pendiente';button.setAttribute('aria-label',`${entries[i].label}: ${button.dataset.state}`);});
       for(const button of [save,send,top]) if(button)button.disabled=!editable || busy || !valid;
       const maxQty=unit>0?Math.max(0,Math.min(100000,Math.floor((cash-Math.max(0,marketing || 0))/unit))):100000;
-      cards.querySelectorAll('.quality-option').forEach(option=>{const checked=option.dataset.value===quality;option.setAttribute('aria-checked',String(checked));option.tabIndex=checked?0:-1;});
+      cards.querySelectorAll('.quality-option').forEach(option=>{const checked=option.dataset.value===quality;option.setAttribute('aria-checked',String(checked));option.classList.toggle('is-selected',checked);option.tabIndex=checked?0:-1;});
       cards.querySelectorAll('[data-quality-cost]').forEach(el=>{el.textContent=money(unitCost(el.dataset.qualityCost))+' / bolso';});
       const quantityRange=controls.quantity.closest('.decision-card')?.querySelector('.decision-range');
       if(quantityRange){quantityRange.max=String(maxQty);quantityRange.value=String(Math.min(maxQty,Math.max(0,qty || 0)));}
@@ -200,6 +203,13 @@
       const statement=$('studentIncomeStatement');
       if(statement){statement.replaceChildren();const heading=document.createElement('strong');heading.textContent='ESTADO DE RESULTADOS';statement.append(heading);
         const line=document.createElement('span');line.textContent=last ? `Ingresos ${money(last.revenue)} · costo de ventas ${money(last.costOfSales)} · marketing ${money(last.marketing)} · utilidad ${money(last.profit)}` : 'Aún no hay resultados oficiales.';statement.append(line);}
+      if (cycle?.status === 'open' && cycle.event_id && global.SideEventFlash) {
+        const news = global.SIDELiteEvents.describe(cycle.event_id);
+        global.SideEventFlash.show({partida:gameId, ciclo:cycle.id || cycle.number, id:cycle.event_id,
+          titulo:news.name === 'Evento no disponible' ? 'Noticia del mercado' : news.name,
+          texto:news.description+' '+news.effect, tono:news.classification.toLowerCase(),
+          host:() => !$('decisionMenu')?.classList.contains('hidden') ? $('decisionFormScroll') : $('studentLobby')?.querySelector('.lobby-content')});
+      }
       write('studentNewsList',global.SIDELiteEvents.text(cycle?.event_id));
       write('studentEventImpactText',last ? global.SIDELiteEvents.text(last.event || data.cycles?.find(c=>c.id===ownResults.at(-1)?.cycle_id)?.event_id,last) : 'Los resultados oficiales se muestran después del cierre del ciclo.');
       const history=$('studentCycleHistory'); if(history)history.replaceChildren();
@@ -227,7 +237,7 @@
     select(0); showScreen('studentLobby');
     const poll=global.setInterval(refresh,5000), clock=global.setInterval(updateClock,250);
     const back=$('backToProfiles'); const onBack=()=>dispose?.(); back?.addEventListener('click',onBack);
-dispose=()=>{active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
+dispose=()=>{bagViews?.dispose();active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
     void refresh();
     return {refresh, dispose};
   }
