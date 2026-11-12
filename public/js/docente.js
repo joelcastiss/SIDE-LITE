@@ -1236,6 +1236,8 @@ function podiumCandidates(){
   return window.SIDE_TEACHER_PODIUM.finalPodium(state.reports,gradeValue,podiumOptions());
 }
 function renderPodium(){
+  // SIDE-LITE manages this panel with its own API controller; avoid duplicate painting.
+  if (window.SIDLiteGame) return;
   const publication=publishedPodium(),sameGame=publication&&(!publication.code||publication.code===$('gameCode').value);
   const visible=Boolean(sameGame&&publication.visible),scheduled=Boolean(sameGame&&publication.scheduled);
   $('podiumSchedule').classList.toggle('hidden',!scheduled);
@@ -1279,6 +1281,8 @@ function applyPodiumResponse(id,data){
   podiumLoadError='';podiumGame=id;remotePodium=data.publication;podiumClock={time:Date.parse(data.serverTime),at:performance.now()};
 }
 async function loadPublished(){
+  // Do not let the legacy polling overwrite the SIDE-LITE podium.
+  if (window.SIDLiteGame) return;
   const id=state.partidaId,read=++podiumRead;
   if(!id){remotePodium=null;podiumLoadError='';renderPodium();return;}
   const result=await window.SIDE.PartidaService.podio(id);
