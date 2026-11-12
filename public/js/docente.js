@@ -1299,8 +1299,8 @@ $('winnerReason').addEventListener('input',()=>{$('winnerReason').dataset.dirty=
 $('podiumPublishNow').addEventListener('click',()=>podiumAction('publicar'));
 $('podiumCancelSchedule').addEventListener('click',()=>podiumAction('cancelar'));
 $('podiumReschedule').addEventListener('click',()=>{$('podiumPublishMode').value='schedule';publishPodium();});
-setInterval(()=>{if($('tab-podio').classList.contains('active'))renderPodium();},1000);
-setInterval(()=>{if($('tab-podio').classList.contains('active')&&!podiumBusy)loadPublished();},5000);
+// SIDE Lite updates the podium through its own authenticated controller.
+
 const historyController=window.SIDE_TEACHER_HISTORY?.createController({mount:$('historyContent'),status:$('historyStatus'),refresh:$('refreshHistory'),service:window.SIDE?.TeacherHistoryService,catalog:window.SIDE_DECISION_CATALOG||[]});
 function switchTab(tab){if(tab==='rondas'&&!gameStatus()?.active&&!gameStatus()?.finishedAt)return;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+tab));const titles={configuracion:'Configuración de la simulación',rondas:'Ciclos y eventos',empresas:'Empresas participantes',resultados:'Resultados',podio:'Ganador y podio',historial:'Historial · última partida',laboratorio:'Laboratorio Estratégico'};$('pageTitle').textContent=titles[tab];if(['empresas','resultados','podio'].includes(tab))loadReports();if(tab==='podio')loadPublished();if(tab==='historial')historyController?.load();if(tab==='laboratorio')window.SIDE_LAB?.open()}
 let pdfPreviewUrl=null,pdfBusy=false,pdfLogoPromise=null;
@@ -1431,21 +1431,38 @@ $('teacherLogout')?.addEventListener('click',async()=>{
 });
 
 (async function init(){
-  // Every entry to the teacher page must resolve the authoritative server role.
-  try {
-    if(!supabaseClient)throw new Error('No hay sesión docente.');
-    const {createSupabaseSession}=await import('../supabase-session.js?v=20261111-direct');
-    const session=createSupabaseSession(supabaseClient);
-    const identity=await Promise.race([session.identity(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión docente. Revisa tu conexión.')),8000))]);
-    if(identity.role!=='teacher')throw new Error('La cuenta no tiene autorización docente.');
-    window.SIDLiteGame?.useRole('teacher');
-    document.body.classList.remove('teacher-auth-pending');
-    supabaseClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')setTimeout(()=>window.location.replace('index.html?acceso=docente'),0);});
-  } catch(error) {
-    console.error('SIDE: acceso docente no autorizado',error);
-    window.location.replace('index.html?acceso=docente');
-    return;
+  let checking = false;
+  const notice = document.createElement('div');
+  notice.setAttribute('role', 'alert');
+  notice.style.cssText = 'padding:2rem;text-align:center;color:white';
+  document.body.prepend(notice);
+  async function checkTeacher() {
+    if (checking) return;
+    checking = true;
+    notice.textContent = 'Comprobando acceso docente…';
+    try {
+      if (!supabaseClient) throw Object.assign(new Error('Inicia sesión para continuar.'), {status:401});
+      const {createSupabaseSession}=await import('../supabase-session.js?v=20261111-direct');
+      const identity=await createSupabaseSession(supabaseClient).identity();
+      if(identity.role!=='teacher') throw Object.assign(new Error('La cuenta no tiene autorización docente.'), {status:403});
+      window.SIDLiteTeacherIdentity = identity;
+      document.body.classList.remove('teacher-auth-pending');
+      notice.remove();
+      document.dispatchEvent(new CustomEvent('side-lite-teacher-ready', {detail:identity}));
+      supabaseClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')setTimeout(()=>window.location.replace('index.html?acceso=docente'),0);});
+    } catch(error) {
+      notice.replaceChildren();
+      const text = document.createElement('p');
+      text.textContent = error.status === 401 ? 'Tu sesión terminó. Vuelve a iniciar sesión.' : error.status === 403 ? (error.message || 'La cuenta no tiene autorización docente.') : 'No se pudo comprobar el acceso. Revisa tu conexión e inténtalo de nuevo.';
+      notice.append(text);
+      const button = document.createElement('button'); button.type = 'button';
+      if (error.status === 401 || error.status === 403) {
+        button.textContent = 'Ir al inicio de sesión'; button.addEventListener('click',()=>window.location.replace('index.html?acceso=docente'));
+      } else { button.textContent = 'Reintentar'; button.addEventListener('click',checkTeacher); }
+      notice.append(button);
+    } finally { checking = false; }
   }
+  await checkTeacher();
   // SIDE Lite owns room state and polling through its API controller.
   // Do not start the original SIDE RPCs or local game clock here.
   return;

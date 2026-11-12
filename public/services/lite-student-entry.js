@@ -4,11 +4,10 @@
   if (!form || !global.SIDLiteGame) return;
   let mounted = false;
   let admissionVersion = 0;
-  let studentSelected = false;
+  let studentSelected = new URLSearchParams(global.location.search).has('partida');
   document.querySelectorAll('.profile-card').forEach(card => card.addEventListener('click', () => {
     admissionVersion++;
     studentSelected = card.dataset.profile === 'student';
-    if (studentSelected && !new URLSearchParams(global.location.search).has('partida')) void resume();
   }, true));
   const code = document.getElementById('gameCode');
   if (code) code.placeholder = 'Ej. A7K2M';
@@ -41,13 +40,14 @@
     if (submit?.disabled) return;
     if (submit) submit.disabled = true;
     if (message) message.textContent = 'Validando ingreso…';
+    const version = admissionVersion;
     try {
       const company = await global.SIDLiteGame.joinGame({
         code: code?.value,
         name: document.getElementById('companyLegalName')?.value,
         brand: document.getElementById('companyBrandName')?.value
       });
-      await openCompany(company);
+      if (studentSelected && version === admissionVersion) await openCompany(company);
     } catch (error) {
       if (message) message.textContent = error.message || 'No se pudo ingresar. Intenta nuevamente.';
     } finally {
@@ -58,27 +58,14 @@
     event.preventDefault();
     const button = event.currentTarget.querySelector('button'), message = document.getElementById('studentMessage');
     button.disabled = true;
+    const version = admissionVersion;
     try {
       const fields = new FormData(event.currentTarget);
-      await openCompany(await global.SIDLiteGame.recoverGame(fields.get('code'), fields.get('secret')));
+      const company = await global.SIDLiteGame.recoverGame(fields.get('code'), fields.get('secret'));
+      if (studentSelected && version === admissionVersion) await openCompany(company);
     } catch (error) { if (message) message.textContent = error.message || 'No se pudo recuperar la empresa.'; }
     finally { button.disabled = false; }
   });
   document.getElementById('backToProfiles')?.addEventListener('click', () => { mounted = false; global.localStorage.removeItem('side-lite-guest-last'); });
-  let resuming = false;
-  async function resume() {
-    if (!studentSelected || resuming || mounted) return;
-    const version = admissionVersion;
-    resuming = true;
-    try {
-      const last = JSON.parse(global.localStorage.getItem('side-lite-guest-last') || 'null');
-      if (!last?.gameId || !last.code || !global.localStorage.getItem('side-lite-guest-' + last.gameId)) return;
-      const company = await global.SIDLiteGame.joinGame({code: last.code, name: 'Estudiante', brand: 'Empresa'});
-      if (studentSelected && version === admissionVersion && company.game_id === last.gameId) await openCompany(company);
-    } catch { /* Keep the saved recovery information for the next attempt. */ }
-    finally { resuming = false; }
-  }
-  global.addEventListener('online', resume);
-  // Restore only after explicitly selecting student; a saved guest must never
-  // override teacher login or the teacher-session check on this page.
+  // Recovery is initiated explicitly with the code or recovery form.
 })(window);

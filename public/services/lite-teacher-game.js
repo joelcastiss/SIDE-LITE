@@ -4,7 +4,8 @@
   if (!api || !document.getElementById('startGame')) return;
   api.useRole('teacher');
   const $ = id => document.getElementById(id);
-  let gameId = null, gameCode = '', loading = false, timer = null;
+  let gameId = null, gameCode = '', loading = false, timer = null, refreshPromise = null, generation = 0, lastSnapshot = '';
+  let authorized = false;
   const message = text => {
     $('creationFeedback')?.classList.remove('hidden');
     if ($('creationMessage')) $('creationMessage').textContent = text;
@@ -224,15 +225,31 @@
       paint(); timer = setInterval(paint, 1000);
     }
   }
-  async function refresh() { if (gameId) render(await api.getGame(gameId)); }
+  async function refresh() {
+    if (!authorized || !gameId) return;
+    while (refreshPromise) { try { await refreshPromise; } catch { /* A previous request must not block a new selection. */ } if (!gameId) return; }
+    const id = gameId, version = generation;
+    const task = (async () => {
+      const snapshot = await api.getGame(id);
+      if (version !== generation || id !== gameId) return;
+      // server_now changes on every read; the local clock continues independently.
+      const signature = JSON.stringify(snapshot, (key, value) => key === 'server_now' ? undefined : value);
+      if (signature !== lastSnapshot) { lastSnapshot = signature; render(snapshot); }
+    })();
+    refreshPromise = task;
+    try { await task; } finally { if (refreshPromise === task) refreshPromise = null; }
+  }
   async function renderPodium() {
     const preview = $('podiumPreview'), suggestion = $('sidePodium'), state = $('podiumState');
     if (!preview) return;
-    preview.replaceChildren();
+    const targetGame = gameId, targetGeneration = generation;
+    if (preview.contains(document.activeElement)) return;
     if (!gameId) { preview.textContent = 'Crea o selecciona una partida para registrar las notas.'; return; }
     const [podium, snapshot] = await Promise.all([
       api.request('/games/' + gameId + '/podium', 'GET', undefined, 'teacher'), api.getGame(gameId)
     ]);
+    if (targetGame !== gameId || targetGeneration !== generation || preview.contains(document.activeElement)) return;
+    preview.replaceChildren();
     if (suggestion) {
       suggestion.replaceChildren();
       for (const item of snapshot.ranking || []) { const row = document.createElement('p'); row.textContent = item.name + ' · ' + Number(item.returnPercent).toFixed(1) + ' % de rentabilidad'; suggestion.append(row); }
@@ -295,7 +312,7 @@
       const capitalMax = Number($('capitalMax').value);
       if (!Number.isInteger(capitalMin) || !Number.isInteger(capitalMax) || capitalMin < 20000 || capitalMax > 100000 || capitalMin > capitalMax || capitalMin % 10000 || capitalMax % 10000) throw new Error('Elige un rango entre S/ 20.000 y S/ 100.000, en múltiplos de S/ 10.000.');
       const game = await api.createGame({name: $('gameName').value.trim(), cycleCount: Number($('cycles').value), duration: 120, capitalMin, capitalMax, costs: {basic: Number($('liteCostBasic').value), standard: Number($('liteCostStandard').value), premium: Number($('liteCostPremium').value)}, events: [...selectedEvents], marketMode: $('liteMarketMode').value});
-      gameId = game.id;
+      gameId = game.id; generation++; lastSnapshot = '';
       try { sessionStorage.setItem('side-lite-teacher-game', gameId); } catch { /* The room remains available in this tab. */ }
       await refresh(); showTab('rondas'); message('Sala creada. Código: ' + game.code);
     } catch (error) { message(error.message || 'No se pudo crear la partida.'); }
@@ -377,9 +394,52 @@
       .catch(error => { $('podiumPublishError').textContent = error.message; })
       .finally(() => { submit.disabled = false; });
   }, true);
-  try { gameId = sessionStorage.getItem('side-lite-teacher-game'); } catch { /* Session storage is optional. */ }
-  // A temporary outage must not discard the room identifier: polling can
-  // restore the view once the connection returns.
-  if (gameId) void refresh().catch(error => { message(error.message); });
-  setInterval(() => { if (gameId && !document.hidden) void refresh().catch(error => message(error.message)); }, 5000);
+  const chooser = document.createElement('article');
+  chooser.className = 'card';
+  chooser.innerHTML = '<h3>Mis partidas</h3><p>Abre una partida guardada en Supabase.</p><label>Partida<select id="liteSavedGames"><option value="">Selecciona una partida</option></select></label><button type="button" class="secondary" id="liteOpenSavedGame">Abrir partida</button> <button type="button" class="secondary" id="liteReloadSavedGames">Actualizar partidas</button><p id="liteSavedGamesStatus" role="status"></p>';
+  $('startGame').closest('.config-start-footer')?.before(chooser);
+  async function listGames() {
+    const select = $('liteSavedGames'), status = $('liteSavedGamesStatus');
+    try {
+      const games = await api.request('/games', 'GET', undefined, 'teacher');
+      const selected = select.value;
+      select.replaceChildren(new Option('Selecciona una partida', ''));
+      // The server also returns games joined as a student; only show owned games.
+      for (const game of games.filter(item => item.teacher_id === global.SIDLiteTeacherIdentity.id)) {
+        select.add(new Option(`${game.name} · ${game.code}${game.ended_at ? ' · Finalizada' : ''}`, game.id));
+      }
+      select.value = selected;
+      status.textContent = select.options.length > 1 ? '' : 'Todavía no tienes partidas.';
+      return games;
+    } catch (error) { status.textContent = error.message || 'No se pudieron cargar las partidas. Inténtalo de nuevo.'; return null; }
+  }
+  $('liteReloadSavedGames').addEventListener('click', () => void listGames());
+  $('liteMarketAssignments')?.addEventListener('focusout', () => {
+    global.setTimeout(() => { if (!$('liteMarketAssignments')?.contains(document.activeElement)) { lastSnapshot = ''; void refresh().catch(error => message(error.message)); } }, 0);
+  });
+  $('liteOpenSavedGame').addEventListener('click', async () => {
+    const id = $('liteSavedGames').value;
+    if (!id) return;
+    gameId = id; const version = ++generation; lastSnapshot = '';
+    try {
+      await refresh();
+      if (version !== generation || gameId !== id) return;
+      try { sessionStorage.setItem('side-lite-teacher-game', id); } catch {}
+      showTab('rondas');
+    } catch (error) { if (version === generation) message(error.message); }
+  });
+  async function initialize() {
+    if (authorized) return;
+    authorized = true;
+    const games = await listGames();
+    let saved; try { saved = sessionStorage.getItem('side-lite-teacher-game'); } catch {}
+    if (saved && games?.some(game => game.id === saved && game.teacher_id === global.SIDLiteTeacherIdentity.id)) {
+      gameId = saved; generation++; lastSnapshot = '';
+      try { await refresh(); showTab('rondas'); } catch (error) { message(error.message); }
+    }
+  }
+  document.addEventListener('side-lite-teacher-ready', initialize, {once:true});
+  if (global.SIDLiteTeacherIdentity) void initialize();
+  const poll = setInterval(() => { if (authorized && gameId && !document.hidden) void refresh().catch(error => message(error.message)); }, 5000);
+  global.addEventListener('pagehide', event => { if (!event.persisted) { clearInterval(poll); clearInterval(timer); } });
 })(window);

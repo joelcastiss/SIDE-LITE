@@ -656,7 +656,8 @@ function openStudentAdmission(){
   authoritativeStudentState=null;studentClock=null;studentStateFailure=null;autoEnterDecisions=false;stopStudentSync();
   message('studentMessage','');showModal('studentModal');
 }
-document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{if(card.dataset.profile==='teacher'){showModal('teacherLoginModal');}else openStudentAdmission();}));
+let profileSelectionVersion=0;
+document.querySelectorAll('.profile-card').forEach(card=>card.addEventListener('click',()=>{profileSelectionVersion++;if(card.dataset.profile==='teacher'){showModal('teacherLoginModal');}else openStudentAdmission();}));
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!$('modalRoot')?.classList.contains('hidden')){closeModal();return;}
   if(e.key!=='Escape')return;
@@ -691,12 +692,14 @@ async function teacherIdentity(session){
 }
 if(new URLSearchParams(location.search).get('acceso')==='docente'){
   showScreen('profiles');showModal('teacherLoginModal');message('loginMessage','Comprobando sesión docente…');
-  Promise.race([Promise.resolve().then(()=>teacherSession()).then(session=>teacherIdentity(session)),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión. Revisa tu conexión o inicia sesión.')),8000))]).then(()=>openTeacherPanel()).catch(error=>{message('loginMessage',error.status===401?'Inicia sesión para administrar partidas reales.':error.message||'Inicia sesión para continuar.',true)});
+  const version=profileSelectionVersion;
+  Promise.race([Promise.resolve().then(()=>teacherSession()).then(session=>teacherIdentity(session)),new Promise((_,reject)=>setTimeout(()=>reject(new Error('No se pudo comprobar la sesión. Revisa tu conexión o inicia sesión.')),8000))]).then(()=>{if(version===profileSelectionVersion)openTeacherPanel()}).catch(error=>{if(version===profileSelectionVersion)message('loginMessage',error.status===401?'Inicia sesión para administrar partidas reales.':error.message||'Inicia sesión para continuar.',true)});
 }
 $('loginForm')?.addEventListener('submit',async e=>{
   e.preventDefault();const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;
   if(!/^[^@\s]+@upch\.pe$/i.test(email)){message('loginMessage','Ingresa un correo institucional @upch.pe.',true);return;}
   const button=e.currentTarget.querySelector('[type="submit"]');if(button)button.disabled=true;let session;
+  const version=profileSelectionVersion;
   try{
     message('loginMessage','Preparando acceso seguro...');
     session=await teacherSession();
@@ -704,12 +707,11 @@ $('loginForm')?.addEventListener('submit',async e=>{
     await session.signIn({email,password});
     message('loginMessage','Comprobando perfil docente...');
     await teacherIdentity(session);
-    openTeacherPanel();
+    if(version===profileSelectionVersion)openTeacherPanel();
   }
   catch(error){
-    // Explain a failed login immediately, even if session cleanup is slow.
+    // A temporary identity/API failure must not destroy a valid Auth session.
     message('loginMessage',error.message||'No se pudo iniciar sesión.',true);
-    if(session)void session.signOut().catch(()=>{});
   }
   finally{if(button)button.disabled=false;}
 });
@@ -718,11 +720,12 @@ $('registerForm')?.addEventListener('submit',async e=>{
   if(!first||!last||name.length>80||!/^[^@\s]+@upch\.pe$/i.test(email)){message('registerMessage','Completa los datos e ingresa un correo institucional @upch.pe.',true);return;}
   if(password.length<6){message('registerMessage','La contraseña debe tener al menos 6 caracteres.',true);return;}
   const form=e.currentTarget,button=form.querySelector('[type="submit"]');if(button)button.disabled=true;
+  const version=profileSelectionVersion;
   try{
     message('registerMessage','Creando cuenta...');const session=await teacherSession();const result=await session.register({email,password,name,firstName:first,lastName:last});
-    if(!result?.session) throw new Error('No se pudo iniciar la sesión. Intenta iniciar sesión o contacta al administrador.');
+    if(!result?.session) { message('registerMessage','Revisa tu correo institucional para confirmar la cuenta y luego inicia sesión.'); return; }
     await teacherIdentity(session);
-    form.reset();openTeacherPanel();
+    form.reset();if(version===profileSelectionVersion)openTeacherPanel();
   }catch(error){message('registerMessage',error.message||'No se pudo crear la cuenta.',true);}
   finally{if(button)button.disabled=false;}
 });
@@ -2031,4 +2034,4 @@ window.addEventListener('offline',()=>{
   // unsent one. The connection indicator handles offline state without jobs.
   if(studentSyncPending())showStudentSyncStatus('pending',{code:'FETCH_ERROR',error:'Sin conexión con el servidor.'});
 });
-if(supabaseClient)supabaseClient.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')showScreen('profiles')});
+// A teacher Auth event in another tab must not navigate the student flow.

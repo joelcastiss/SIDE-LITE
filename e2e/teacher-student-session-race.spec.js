@@ -15,6 +15,8 @@ test('una recuperación estudiantil antigua no interrumpe el acceso docente',asy
  });
  expect(await page.evaluate(()=>window.testJoins)).toBe(0);
  await page.locator('[data-profile=student]').dispatchEvent('click');
+ expect(await page.evaluate(()=>window.testJoins)).toBe(0);
+ await page.locator('#studentForm').dispatchEvent('submit');
  await expect.poll(()=>page.evaluate(()=>window.testJoins)).toBe(1);
  await page.locator('[data-profile=teacher]').dispatchEvent('click');
  await page.evaluate(()=>window.finishJoin());
