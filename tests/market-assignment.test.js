@@ -15,7 +15,7 @@ test('solo el docente propietario puede asignar mercados antes del inicio', asyn
     if(q.includes('from public.lite_games where id=')) return {rows:[{id:game,teacher_id:teacher}]};
     if(q.includes('from public.lite_cycles')) return {rows:[],rowCount:started?1:0};
     if(q.includes('from public.lite_game_districts')) return {rows:[{district_id:'comas'},{district_id:'surco'}]};
-    if(q.startsWith('update public.lite_company_markets')) {if(args[1]!==company)return {rows:[]};saved={company_id:args[1],district_id:args[2],assignment_mode:args[3]};return {rows:[saved]};}
+    if(q.startsWith('insert into public.lite_company_markets')) {if(args[1]!==company)return {rows:[]};saved={company_id:args[1],district_id:args[2],assignment_mode:args[3]};return {rows:[saved]};}
     throw Error('Consulta inesperada: '+q);
   }};
   const app=createGamesApp({pool:{connect:async()=>client},verifyToken:async token=>({id:token==='teacher'?teacher:other,sessionId}),limitJoin:async()=>true});

@@ -60,3 +60,10 @@ create policy company_markets_read on public.lite_company_markets for select to 
 grant select, insert, update on public.lite_game_markets, public.lite_game_districts, public.lite_company_markets to side_lite_api;
 grant select on public.lite_districts to side_lite_api, side_lite_closer;
 grant select on public.lite_game_markets, public.lite_game_districts, public.lite_company_markets to side_lite_closer;
+
+-- Match the MFA boundary of the existing exposed game tables.
+do $$ declare t text; begin
+  foreach t in array array['lite_districts','lite_game_markets','lite_game_districts','lite_company_markets'] loop
+    execute format('create policy require_mfa on public.%I as restrictive for all to authenticated using (side_lite_private.mfa_allowed()) with check (side_lite_private.mfa_allowed())',t);
+  end loop;
+end $$;

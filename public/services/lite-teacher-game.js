@@ -17,7 +17,11 @@
   $('fixedCapitalFields')?.closest('.card')?.after(costs);
   const markets = document.createElement('article');
   markets.className = 'card';
-  markets.innerHTML = '<div class="card-title"><h3>Asignación de mercados</h3></div><p>Las empresas reciben un distrito aleatorio al ingresar. Puedes cambiarlo individualmente antes de iniciar el primer ciclo.</p><div id="liteMarketAssignments">Crea la sala para administrar las asignaciones.</div><p id="liteMarketStatus" role="status"></p>';
+  markets.innerHTML = '<div class="card-title"><h3>Asignaci\u00f3n de mercados</h3></div><label>Modalidad<select id="liteMarketMode"><option value="random">Aleatorio</option><option value="manual">Manual</option></select></label><p>En modo manual, asigna un distrito a cada empresa en Empresas antes de iniciar el primer ciclo.</p><p id="liteMarketModeStatus" role="status"></p>';
+  const assignments = document.createElement('article');
+  assignments.className = 'card';
+  assignments.innerHTML = '<h3>Asignaci\u00f3n de mercados por empresa</h3><div id="liteMarketAssignments">Crea la sala para administrar las asignaciones.</div><p id="liteMarketStatus" role="status"></p>';
+  $('companiesGrid')?.before(assignments);
   costs.after(markets);
   if ($('roundHours')) { $('roundHours').value = '0'; $('roundHours').disabled = true; }
   if ($('roundMinutes')) { $('roundMinutes').value = '2'; $('roundMinutes').disabled = true; }
@@ -158,6 +162,8 @@
   }
   function render(snapshot) {
     const game = snapshot.game, cycle = snapshot.cycles?.at(-1);
+    const modeSelect=$('liteMarketMode'); modeSelect.disabled=true; if(snapshot.marketMode) modeSelect.value=snapshot.marketMode;
+    $('liteMarketModeStatus').textContent=snapshot.marketMode ? 'Modalidad: '+(snapshot.marketMode==='manual'?'Manual':'Aleatorio') : 'Esta partida anterior no utiliza distritos.';
     const marketRows = $('liteMarketAssignments');
     if (marketRows && !marketRows.contains(document.activeElement)) {
       marketRows.replaceChildren();
@@ -168,12 +174,12 @@
         const label=document.createElement('label'); label.textContent=company.name+' · ';
         const select=document.createElement('select'); select.setAttribute('aria-label','Mercado de '+company.name); select.disabled=!!cycle || !!game.ended_at;
         for (const district of snapshot.districts) {const option=document.createElement('option');option.value=district.id;option.textContent=district.name;select.append(option);}
-        select.value=company.district_id; label.append(select);
+        const placeholder=document.createElement('option'); placeholder.value=''; placeholder.textContent='Sin asignar'; select.prepend(placeholder); select.value=company.district_id || ''; label.append(select);
         const random=document.createElement('button'); random.type='button'; random.className='secondary'; random.textContent='Asignar aleatoriamente'; random.disabled=select.disabled;
         const save=async body=>{select.disabled=true;random.disabled=true;try{await api.request('/games/'+gameId+'/markets/'+company.id,'PUT',body,'teacher');$('liteMarketStatus').textContent='Asignación guardada.';document.activeElement?.blur();await refresh();}catch(error){$('liteMarketStatus').textContent=error.message;select.disabled=false;random.disabled=false;}};
         select.addEventListener('change',()=>void save({mode:'manual',districtId:select.value}));
         random.addEventListener('click',()=>void save({mode:'random'}));
-        const mode=document.createElement('small'); mode.textContent=company.assignment_mode==='manual'?'Manual':'Aleatoria';
+        const mode=document.createElement('small'); mode.textContent=company.assignment_mode==='manual'?'Manual':company.assignment_mode==='random'?'Aleatoria':'Pendiente';
         row.append(label,random,mode); marketRows.append(row);
       }
     }
@@ -283,7 +289,7 @@
       const capitalMin = Number($('capitalMin').value);
       const capitalMax = Number($('capitalMax').value);
       if (!Number.isInteger(capitalMin) || !Number.isInteger(capitalMax) || capitalMin < 20000 || capitalMax > 100000 || capitalMin > capitalMax || capitalMin % 10000 || capitalMax % 10000) throw new Error('Elige un rango entre S/ 20.000 y S/ 100.000, en múltiplos de S/ 10.000.');
-      const game = await api.createGame({name: $('gameName').value.trim(), cycleCount: Number($('cycles').value), duration: 120, capitalMin, capitalMax, costs: {basic: Number($('liteCostBasic').value), standard: Number($('liteCostStandard').value), premium: Number($('liteCostPremium').value)}, events: [...selectedEvents], markets:true});
+      const game = await api.createGame({name: $('gameName').value.trim(), cycleCount: Number($('cycles').value), duration: 120, capitalMin, capitalMax, costs: {basic: Number($('liteCostBasic').value), standard: Number($('liteCostStandard').value), premium: Number($('liteCostPremium').value)}, events: [...selectedEvents], marketMode: $('liteMarketMode').value});
       gameId = game.id;
       try { sessionStorage.setItem('side-lite-teacher-game', gameId); } catch { /* The room remains available in this tab. */ }
       await refresh(); showTab('rondas'); message('Sala creada. Código: ' + game.code);

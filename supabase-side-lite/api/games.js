@@ -106,6 +106,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
           left join public.lite_company_markets cm on cm.game_id=co.game_id and cm.company_id=co.id
           left join public.lite_districts di on di.id=cm.district_id
           where co.game_id=$1 order by co.name`,[game.id]);
+        const {rows:[marketConfig]}=await c.query('select assignment_mode from public.lite_game_markets where game_id=$1',[game.id]);
         const {rows:districts}=await c.query(`select gd.district_id as id,d.name from public.lite_game_districts gd
           join public.lite_districts d on d.id=gd.district_id where gd.game_id=$1 order by d.name`,[game.id]);
         const {rows:cycles}=await c.query(`select id,game_id,number,starts_at,ends_at,status,event_id,paused_at,
@@ -127,7 +128,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
           inventoryValue:x.inventory.reduce((sum,b)=>sum+b.quantity*b.unitCost,0)})))
           .map(x=>({id:x.id,name:x.name,returnPercent:x.returnPercent,...(isTeacher?{cash:x.cash}:{})}));
         const companies=isTeacher?allCompanies:allCompanies.map(x=>x.id===ownCompany?.id?x:{id:x.id,name:x.name,store:x.store});
-        return {game,company:ownCompany?companies.find(x=>x.id===ownCompany.id):null,isTeacher,companies,cycles,decisions,ownDecision,results,ranking,districts:isTeacher?districts:[]};
+        return {game,company:ownCompany?companies.find(x=>x.id===ownCompany.id):null,isTeacher,companies,cycles,decisions,ownDecision,results,ranking,marketMode:marketConfig?.assignment_mode || null,districts:isTeacher?districts:[]};
       });
       return res.json(result);
     } catch(e) { return next(e); }
@@ -190,8 +191,8 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
   app.post('/api/games',async (req,res,next)=>{
     try {
       if (!validConfig(req.body)) throw fail(400,'Configuración inválida.');
-      const {name,cycleCount,capitalMin=20000,capitalMax=100000,costs,events=[],markets=false}=req.body;
-      if (typeof markets !== 'boolean') throw fail(400,'Configuración de mercados inválida.');
+      const {name,cycleCount,capitalMin=20000,capitalMax=100000,costs,events=[],marketMode=null}=req.body;
+      if (marketMode !== null && !['manual','random'].includes(marketMode)) throw fail(400,'Invalid market mode.');
       const game=await transaction(pool,async c=>{
         await requireCurrentUser(c,req.identity,true);
         let inserted;
@@ -205,8 +206,8 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         }
         if (!inserted) throw fail(503,'No se pudo generar un código.');
         for(const q of qualities) await c.query('insert into public.lite_products(game_id,quality,unit_cost) values($1,$2,$3)',[inserted.id,q,costs[q]]);
-        if (markets) {
-          await c.query("insert into public.lite_game_markets(game_id,assignment_mode) values($1,'random')",[inserted.id]);
+        if (marketMode) {
+          await c.query('insert into public.lite_game_markets(game_id,assignment_mode) values($1,$2)',[inserted.id,marketMode]);
           await c.query(`insert into public.lite_game_districts(game_id,district_id,base_demand,economic_share,standard_share,premium_share)
             select $1,id,base_demand,economic_share,standard_share,premium_share from public.lite_districts`,[inserted.id]);
         }
@@ -244,7 +245,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
           const {rows:districts}=await c.query('select district_id from public.lite_game_districts where game_id=$1 order by district_id',[game.id]);
           const {rows:[marketConfig]}=await c.query('select assignment_mode from public.lite_game_markets where game_id=$1',[game.id]);
           if (marketConfig && !districts.length) throw fail(409,'La partida no tiene distritos habilitados.');
-          if (districts.length) await c.query("insert into public.lite_company_markets(game_id,company_id,district_id,assignment_mode) values($1,$2,$3,'random')",[game.id,result.id,districts[crypto.randomInt(districts.length)].district_id]);
+          if (marketConfig?.assignment_mode === 'random') await c.query("insert into public.lite_company_markets(game_id,company_id,district_id,assignment_mode) values($1,$2,$3,'random')",[game.id,result.id,districts[crypto.randomInt(districts.length)].district_id]);
           if(recoverySecret)await c.query('insert into side_lite_private.lite_guest_recovery(company_id,secret_hash) values($1,$2)',[result.id,recoveryHash]);
           return result;
         } catch(e) { if(e.code==='23505') throw fail(409,'Ya participas en esta partida.'); throw e; }
@@ -265,8 +266,10 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         const {rows:districts}=await c.query('select district_id from public.lite_game_districts where game_id=$1 order by district_id',[game.id]);
         const district=mode==='random' ? districts[crypto.randomInt(districts.length || 1)]?.district_id : districtId;
         if (!districts.some(x=>x.district_id===district)) throw fail(400,'Distrito no habilitado.');
-        const {rows:[row]}=await c.query(`update public.lite_company_markets set district_id=$3,assignment_mode=$4
-          where game_id=$1 and company_id=$2 returning company_id,district_id,assignment_mode`,[game.id,req.params.companyId,district,mode]);
+        const {rows:[row]}=await c.query(`insert into public.lite_company_markets(game_id,company_id,district_id,assignment_mode)
+          select $1,id,$3,$4 from public.lite_companies where game_id=$1 and id=$2
+          on conflict (company_id) do update set district_id=excluded.district_id,assignment_mode=excluded.assignment_mode
+          returning company_id,district_id,assignment_mode`,[game.id,req.params.companyId,district,mode]);
         if (!row) throw fail(404,'Empresa no encontrada.');
         return row;
       });
