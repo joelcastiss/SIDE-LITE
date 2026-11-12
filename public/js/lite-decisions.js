@@ -110,14 +110,31 @@
     const waiting=$('studentWaiting'), dashboard=document.querySelector('#studentLobby .dashboard-inner');
     const enterParent=enter.parentNode, enterNext=enter.nextSibling;
     const lobbyDetails=document.createElement('div'); lobbyDetails.className='lite-waiting-details';
-    lobbyDetails.innerHTML='<div class="lite-waiting-grid"><div><span>Código de partida</span><strong id="liteWaitingCode">—</strong></div><div><span>Estado</span><strong id="liteWaitingState">Esperando al docente</strong></div><div><span>Tu mercado</span><strong id="liteWaitingMarket">Pendiente de asignación</strong></div></div><section><h2>Empresas inscritas</h2><ul id="liteWaitingParticipants"></ul></section><div class="lite-waiting-actions"></div>';
+    lobbyDetails.innerHTML=`<div class="lite-waiting-hero" role="status" aria-live="polite"></div><div class="lite-waiting-grid"><div><span>Código de partida</span><div class="lite-code"><strong id="liteWaitingCode">—</strong><button type="button" id="liteCopyCode" aria-label="Copiar código de partida">⧉</button></div></div><div><span>Estado</span><strong id="liteWaitingState">Esperando al docente</strong></div><div><span>Tu mercado</span><strong id="liteWaitingMarket">Pendiente de asignación</strong></div></div><section class="lite-companies"><div class="lite-companies-heading"><h2>Empresas inscritas</h2><span id="liteWaitingCount"></span></div><ul id="liteWaitingParticipants"></ul><div class="lite-legend"><span><i class="online"></i>Conectada</span><span><i></i>Sin actividad reciente</span></div></section><div class="lite-waiting-actions"><div class="lite-enter-wrap"></div></div>`;
     const waitingTitle=waiting.querySelector('.waiting-heading h1'), previousWaitingTitle=waitingTitle.textContent; waitingTitle.textContent='Sala de espera';
+    const eyebrow=waiting.querySelector('.waiting-heading .eyebrow'), previousEyebrow=eyebrow.textContent; eyebrow.textContent='SIMULACIÓN PRINCIPAL';
     waiting.classList.add('lite-waiting'); waiting.classList.remove('hidden');
     waiting.querySelector('.waiting-footer').before(lobbyDetails);
-    const waitingActions=lobbyDetails.querySelector('.lite-waiting-actions'); waitingActions.append(enter);
+    const waitingActions=lobbyDetails.querySelector('.lite-waiting-actions'); waitingActions.querySelector('.lite-enter-wrap').append(enter);
+    enter.textContent='Entrar al menú de decisiones'; enter.setAttribute('aria-describedby','liteEnterHelp');
+    const help=document.createElement('span'); help.id='liteEnterHelp'; help.textContent='Se habilita cuando el docente inicia el ciclo.'; enter.after(help);
+    $('liteCopyCode').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(data.game.code);$('liteCopyCode').setAttribute('aria-label','Código copiado');}catch{showStatus('No se pudo copiar el código.');}});
     const showResults=document.createElement('button'); showResults.type='button'; showResults.className='ghost-btn'; showResults.textContent='Ver noticias y resultados';
     const returnWaiting=document.createElement('button'); returnWaiting.type='button'; returnWaiting.className='ghost-btn lite-return-waiting'; returnWaiting.textContent='Volver a la sala de espera';
     waitingActions.append(showResults); dashboard.querySelector('.lobby-actions').prepend(returnWaiting);
+    let presenceChannel=null, presenceIds=new Set();
+    function connectPresence(companyId){
+      if(presenceChannel)return;
+      const client=global.SIDE?.SupabaseClient?.getStudent(); if(!client?.channel)return;
+      presenceChannel=client.channel('lite-waiting-'+gameId);
+      presenceChannel.on('presence',{event:'sync'},()=>{presenceIds=new Set(Object.values(presenceChannel.presenceState()).flat().map(p=>p.companyId));if(data)renderParticipants();});
+      for(const table of ['lite_games','lite_companies','lite_cycles']) presenceChannel.on('postgres_changes',{event:'*',schema:'public',table,filter:table==='lite_games'?'id=eq.'+gameId:'game_id=eq.'+gameId},()=>void refresh());
+      presenceChannel.subscribe(status=>{if(status==='SUBSCRIBED'){void presenceChannel.track({companyId});void refresh();}});
+    }
+    function renderParticipants(){
+      const participants=$('liteWaitingParticipants'); participants.replaceChildren();
+      for(const participant of data.companies || []) {const online=presenceIds.has(participant.id);const item=document.createElement('li');const dot=document.createElement('i');dot.className=online?'online':'';dot.setAttribute('aria-hidden','true');const name=document.createElement('span');name.textContent=participant.name;const state=document.createElement('span');state.className='sr-only';state.textContent=online?'Conectada':'Sin actividad reciente';item.append(dot,name,state);if(participant.id===data.company.id){const badge=document.createElement('b');badge.textContent='Tu empresa';item.append(badge);}participants.append(item);}
+    }
     let retry;
     const displayWaiting=()=>{waiting.classList.remove('hidden');dashboard.classList.add('hidden');if(retry)waitingActions.append(retry);};
     showResults.addEventListener('click',()=>{waiting.classList.add('hidden');dashboard.classList.remove('hidden');if(retry)dashboard.querySelector('.lobby-actions').append(retry);});
@@ -203,12 +220,13 @@
       deadline=cycle && cycle.status==='open' && !cycle.paused_at ? started+Math.max(0,Date.parse(cycle.ends_at)-Date.parse(cycle.server_now)) : null;
       const open=!!cycle && cycle.status==='open' && !cycle.paused_at && !cycle.close_requested_at && !own?.confirmed && deadline>performance.now();
       editable=open;
-      write('waitingGameName',`${game.name} · ${company.name}`); write('liteWaitingCode',game.code);
+      write('waitingGameName',`${company.name} · mercado ${company.district_name || 'pendiente de asignación'}`); connectPresence(company.id); write('liteWaitingCode',game.code);
       write('liteWaitingState',cycle?.paused_at?'Ciclo pausado':cycle?.close_requested_at?'Procesando resultados':cycle?.status==='open'?'Partida en curso':cycle?.status==='closed'?'Ciclo cerrado':'Esperando inicio del docente');
       write('liteWaitingMarket',company.district_name || 'Pendiente de asignación');
       write('waitingCompanies',`${(data.companies || []).length} empresas inscritas`);
-      const participants=$('liteWaitingParticipants'); participants.replaceChildren();
-      for(const participant of data.companies || []) { const item=document.createElement('li'); item.textContent=participant.name; participants.append(item); }
+      write('liteWaitingCount',`${(data.companies || []).length} empresas inscritas`); renderParticipants();
+      lobbyDetails.querySelector('.lite-waiting-hero').innerHTML=open?'<span class="lite-check" aria-hidden="true">✓</span><strong>Ciclo 1 habilitado</strong><span>Ya puedes entrar al menú de decisiones.</span>':'<span class="lite-dots" aria-hidden="true"><i></i><i></i><i></i></span><strong>Esperando al docente</strong><span>Tu empresa ya está inscrita. El Ciclo 1 empieza cuando el docente lo habilite.</span>';
+      enter.setAttribute('aria-disabled',String(!open)); help.hidden=open;
       write('studentIntegrationNotice',open?'La partida está habilitada. Ya puedes ingresar al menú de decisiones.':'Espera a que el docente habilite el ciclo.');
       write('lobbyCode',game.code);write('lobbyGameName',game.name);write('lobbyStudent',company.name);write('lobbySegment',cycle && company.district_name ? 'Mercado: '+company.district_name : company.store || 'Empresa');
       write('studentCycleLabel',cycle?`Ciclo ${cycle.number} de ${game.cycle_count}`:'Esperando inicio');
@@ -262,7 +280,7 @@
     select(0); showScreen('studentLobby');
     const poll=global.setInterval(refresh,5000), clock=global.setInterval(updateClock,250);
     const back=$('backToProfiles'); const onBack=()=>dispose?.(); back?.addEventListener('click',onBack);
-dispose=()=>{waitingBack?.removeEventListener('click',leaveWaiting); enterParent.insertBefore(enter,enterNext); lobbyDetails.remove(); returnWaiting.remove(); waitingTitle.textContent=previousWaitingTitle; waiting.classList.remove('lite-waiting'); waiting.classList.add('hidden'); dashboard.classList.remove('hidden'); bagViews?.dispose();active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
+dispose=()=>{waitingBack?.removeEventListener('click',leaveWaiting); enterParent.insertBefore(enter,enterNext); lobbyDetails.remove(); returnWaiting.remove(); waitingTitle.textContent=previousWaitingTitle; eyebrow.textContent=previousEyebrow; if(presenceChannel)global.SIDE?.SupabaseClient?.getStudent()?.removeChannel(presenceChannel); waiting.classList.remove('lite-waiting'); waiting.classList.add('hidden'); dashboard.classList.remove('hidden'); bagViews?.dispose();active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
     void refresh();
     return {refresh, dispose};
   }
