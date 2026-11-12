@@ -1,3 +1,4 @@
+import './js/lite-events.js';
 export const CAMPAIGNS = Object.freeze([
   {min:0,max:0,icon:'○',name:'Sin publicidad',range:'S/ 0',description:'Este ciclo venderás sin invertir en anuncios.',message:'Tu tienda sigue abierta.'},
   {min:200,max:1000,icon:'✦',name:'Publicaciones en redes',range:'S/ 200–1.000',description:'Da a conocer tus bolsos con publicaciones en Instagram y Facebook.',message:'Empieza a mostrar tu tienda.'},
@@ -7,4 +8,4 @@ export const CAMPAIGNS = Object.freeze([
   {min:8000,max:10000,icon:'✺',name:'Campaña digital intensiva',range:'S/ 8.000–10.000',description:'Combina videos, anuncios y difusión amplia para posicionar tu tienda.',message:'Haz visible tu marca.'}
 ]);
 export function campaignFor(amount){return Number.isSafeInteger(amount)?CAMPAIGNS.find(c=>amount>=c.min&&amount<=c.max)??null:null}
-export function eventDescription(event){if(!event)return 'Este ciclo no tiene un evento especial.';if(event.purchase)return event.purchase<1?`Comprar bolsos cuesta ${Math.round((1-event.purchase)*100)} % menos este ciclo.`:`Comprar bolsos cuesta ${Math.round((event.purchase-1)*100)} % más este ciclo.`;return event.demand<1?`La demanda potencial baja ${Math.round((1-event.demand)*100)} % este ciclo.`:`La demanda potencial sube ${Math.round((event.demand-1)*100)} % este ciclo.`}
+export function eventDescription(event){return globalThis.SIDELiteEvents.text(event)}

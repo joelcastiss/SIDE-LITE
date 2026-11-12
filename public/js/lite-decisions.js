@@ -196,8 +196,8 @@
       const statement=$('studentIncomeStatement');
       if(statement){statement.replaceChildren();const heading=document.createElement('strong');heading.textContent='ESTADO DE RESULTADOS';statement.append(heading);
         const line=document.createElement('span');line.textContent=last ? `Ingresos ${money(last.revenue)} · costo de ventas ${money(last.costOfSales)} · marketing ${money(last.marketing)} · utilidad ${money(last.profit)}` : 'Aún no hay resultados oficiales.';statement.append(line);}
-      write('studentNewsList',cycle?.event_id ? `Evento activo: ${cycle.event_id}` : 'Sin evento activo.');
-      write('studentEventImpactText','Los resultados oficiales se muestran después del cierre del ciclo.');
+      write('studentNewsList',global.SIDELiteEvents.text(cycle?.event_id));
+      write('studentEventImpactText',last ? global.SIDELiteEvents.text(last.event || data.cycles?.find(c=>c.id===ownResults.at(-1)?.cycle_id)?.event_id,last) : 'Los resultados oficiales se muestran después del cierre del ciclo.');
       const history=$('studentCycleHistory'); if(history)history.replaceChildren();
       refreshResults();updateEstimate();updateClock();
     }

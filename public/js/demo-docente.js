@@ -1,3 +1,4 @@
+import './lite-events.js';
 import {renderLaboratory} from '../laboratory.js';
 import {EVENTS,closeCycle,rank} from '../laboratory-engine.js';
 const $=id=>document.getElementById(id);
@@ -54,12 +55,12 @@ function renderDemo(){
  $('companiesGrid').innerHTML=game.companies.map(c=>`<article class="card"><h3>${c.name}</h3><p>Empresa simulada · edita una decisión de ejemplo</p><p>Caja: <strong>${money(c.cash)}</strong></p><form class="demo-decision" data-company="${c.id}"><label>Calidad<select name="quality"><option value="basic">Básica</option><option value="standard">Estándar</option><option value="premium">Prémium</option></select></label><label>Cantidad<input name="quantity" type="number" min="0" max="100000" step="1" value="${c.decision.quantity}" required></label><label>Precio de venta<input name="price" type="number" min="1" max="100000" step="1" value="${c.decision.price}" required></label><label>Marketing (S/ 0 o 200–10.000)<input name="marketingAmount" type="number" min="0" max="10000" step="1" value="${c.decision.marketingAmount}" required></label></form></article>`).join('');
  for(const form of document.querySelectorAll('.demo-decision')){const c=game.companies.find(item=>item.id===form.dataset.company);form.elements.quality.value=c.decision.quality;form.addEventListener('input',()=>{c.decision={quality:form.elements.quality.value,quantity:Number(form.elements.quantity.value),price:Number(form.elements.price.value),marketingAmount:Number(form.elements.marketingAmount.value)}});form.addEventListener('submit',event=>event.preventDefault())}
  const completed=game.companies.some(c=>c.results.length);
- $('resultStats').innerHTML=completed?game.companies.map(c=>{const r=c.results.at(-1);return `<article class="card"><h3>${c.name}</h3><p>Unidades vendidas: ${r.sold}</p><p>Ingresos: ${money(r.revenue)}</p><p>Costo de ventas: ${money(r.costOfSales)}</p><p>Utilidad: ${money(r.profit)}</p><p>Caja: ${money(r.cashEnd)}</p></article>`}).join(''):'<p>Los resultados simulados aparecerán al cerrar un ciclo de demostración.</p>';
+ $('resultStats').innerHTML=completed?game.companies.map(c=>{const r=c.results.at(-1);return `<article class="card"><h3>${c.name}</h3><p>Unidades vendidas: ${r.sold}</p><p>Ingresos: ${money(r.revenue)}</p><p>Costo de ventas: ${money(r.costOfSales)}</p><p>Utilidad: ${money(r.profit)}</p><p>Caja: ${money(r.cashEnd)}</p><p>${globalThis.SIDELiteEvents.text(r.event,r)}</p></article>`}).join(''):'<p>Los resultados simulados aparecerán al cerrar un ciclo de demostración.</p>';
  $('detailReports').textContent='Estos datos son simulados y no corresponden a una partida oficial.';
  const ranking=rank(game.companies.map(c=>({...c,inventoryValue:c.inventory.reduce((n,b)=>n+b.quantity*b.unitCost,0)})));
  $('sidePodium').innerHTML=ranking.map((c,i)=>`<p>${i+1}. ${c.name} · ${c.returnPercent.toFixed(1)} %</p>`).join('');$('podiumPreview').textContent='Clasificación de ejemplo, no publicada.';
  $('historyStatus').textContent=game.history.length?'Ciclos simulados durante esta visita.':'Aún no hay ciclos simulados.';
- $('historyContent').innerHTML=game.history.map(n=>`<article class="card"><h3>Ciclo ${n} · demostración</h3>${game.companies.map(c=>`<p>${c.name}: utilidad ${money(c.results[n-1].profit)}, caja ${money(c.results[n-1].cashEnd)}</p>`).join('')}</article>`).join('');
+ $('historyContent').innerHTML=game.history.map(n=>`<article class="card"><h3>Ciclo ${n} · demostración</h3><p>${globalThis.SIDELiteEvents.text(game.companies[0].results[n-1].event)}</p>${game.companies.map(c=>`<p>${c.name}: utilidad ${money(c.results[n-1].profit)}, caja ${money(c.results[n-1].cashEnd)}</p>`).join('')}</article>`).join('');
 }
 $('roundSummary').textContent='Inicia una demostración local para probar el ciclo.';updateClock();
 $('cycleNews').textContent='Sin eventos simulados.';$('eventLog').textContent='Aún no hay eventos.';
