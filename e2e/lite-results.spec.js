@@ -14,16 +14,18 @@ for(const viewport of [{width:1366,height:768},{width:390,height:844}])test(`res
     window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
   });
   await page.getByRole('button',{name:'Ver noticias y resultados'}).click();
-  await expect(page.getByText('¿Qué pasó con mi empresa?')).toBeAttached();
+  await expect(page.getByText('Resumen sencillo')).toBeAttached();
   await expect(page.getByText(/Tu posición: 2 de 2/)).toBeAttached();
-  await expect(page.getByText('Valor del inventario FIFO: S/ 50.',{exact:false})).toBeAttached();
+  await expect(page.locator('#studentFinancialDetail')).not.toContainText('FIFO');
+  await expect(page.locator('#studentFinancialDetail')).toContainText('Disponibles para vender');
+  await expect(page.locator('#studentFinancialDetail')).toContainText('20');
   const panel=page.locator('#studentFinancialDetail');
   await panel.scrollIntoViewIfNeeded();
   expect(await panel.evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(1);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
   if(process.env.SIDE_VISUAL_OUTPUT){
     await page.screenshot({path:`${process.env.SIDE_VISUAL_OUTPUT}/resultados-${viewport.width}-superior.png`});
-    await page.getByText('¿Qué pasó con mi empresa?').scrollIntoViewIfNeeded();
+    await page.getByText('Resumen sencillo').scrollIntoViewIfNeeded();
     await page.screenshot({path:`${process.env.SIDE_VISUAL_OUTPUT}/resultados-${viewport.width}-inferior.png`});
   }
   expect(errors).toEqual([]);
@@ -41,7 +43,7 @@ test('actualiza resultados propios, conserva historial y permite reintentar',asy
  await expect(page.locator('#studentFinancialDetail')).toContainText('Aún no hay resultados oficiales');
  await page.evaluate(()=>{window.__game.cycles[0].status='closed';window.__game.results=[{company_id:'mine',number:1,decision:{quantity:20,price:20},result:window.__result},{company_id:'other',number:1,result:{...window.__result,revenue:99999}}]});
  await expect(page.locator('#studentFinancialDetail')).toContainText('Ciclo 1',{timeout:8000});
- for(const text of ['Precio de venta','Costo de producción','Demanda potencial','Ventas no realizadas','Feria local'])await expect(page.locator('#studentFinancialDetail')).toContainText(text);
+ for(const text of ['Ganancia del ciclo','Dinero disponible','Demanda potencial','Demanda sin atender','Feria local'])await expect(page.locator('#studentFinancialDetail')).toContainText(text);
  await expect(page.locator('#studentFinancialDetail')).not.toContainText('99.999');
  await page.evaluate(()=>{window.__fail=true;return window.__view.refresh()});
  await expect(page.getByRole('button',{name:'Reintentar actualización'})).toBeVisible();
