@@ -15,7 +15,7 @@
     { id: 'la-molina',     name: 'La Molina',            color: '#2563eb', text: '#fff' },
     { id: 'centro-lima',   name: 'Cercado de Lima (Centro de Lima)', color: '#0f766e', text: '#fff' }
   ];
-  var SPIN_MS = 1800, HOLD_MS = 800;
+  var SPIN_MS = 2200, HOLD_MS = 800;
 
   function el(tag, cls, parent) {
     var n = document.createElement(tag); if (cls) n.className = cls; if (parent) parent.appendChild(n); return n;
@@ -26,7 +26,7 @@
     var markets = opts.markets || MARKETS;
     var idx = -1, i;
     for (i = 0; i < markets.length; i++) {
-      if (markets[i].id === opts.marketId || markets[i].name === opts.marketName) { idx = i; break; }
+      if (opts.marketId ? markets[i].id === opts.marketId : markets[i].name === opts.marketName) { idx = i; break; }
     }
     if (idx < 0) { console.warn('SideRuleta: mercado no encontrado', opts); return Promise.resolve(false); }
     var spinMs = opts.spinMs || SPIN_MS, holdMs = opts.holdMs || HOLD_MS;
