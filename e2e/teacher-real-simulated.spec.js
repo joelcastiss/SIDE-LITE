@@ -1,7 +1,6 @@
 import {test, expect} from '@playwright/test';
 import express from 'express';
 import {createRequire} from 'node:module';
-import {readFile} from 'node:fs/promises';
 const require=createRequire(import.meta.url);
 let server, base;
 test.beforeAll(async()=>{server=await new Promise(resolve=>{const s=express().use('/SIDE-LITE',express.static('.')).use(express.static('public')).listen(0,'127.0.0.1',()=>resolve(s))});base=`http://127.0.0.1:${server.address().port}`});
@@ -30,10 +29,14 @@ test('panel real: crear, iniciar y consultar cierres autorizados en API simulada
  await page.locator('#copyGameLink').click();await expect.poll(()=>page.evaluate(()=>window.copiedInvitation)).toBe(expectedUrl);
  await page.locator('#showGameQr').click();await expect(page.locator('#gameQrDialog')).toBeVisible();await expect(page.locator('#gameQrCode')).toHaveText(game.code);
  await page.addScriptTag({path:require.resolve('jsqr/dist/jsQR.js')});
- const decoded=await page.locator('#gameQrCanvas').evaluate(canvas=>{const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height);return window.jsQR(pixels.data,pixels.width,pixels.height)?.data});
+ for (const viewport of [{width:1366,height:768},{width:1920,height:1080}]) {
+  await page.setViewportSize(viewport);
+  const geometry=await page.locator('#gameQrDialog').evaluate(dialog=>{const qr=dialog.querySelector('svg').getBoundingClientRect(), rect=dialog.getBoundingClientRect();return {scroll:dialog.scrollHeight>dialog.clientHeight||dialog.scrollWidth>dialog.clientWidth,qr:{top:qr.top,bottom:qr.bottom,left:qr.left,right:qr.right},dialog:{top:rect.top,bottom:rect.bottom,left:rect.left,right:rect.right}}});
+  expect(geometry.scroll).toBe(false);expect(geometry.qr.top).toBeGreaterThanOrEqual(geometry.dialog.top);expect(geometry.qr.bottom).toBeLessThanOrEqual(geometry.dialog.bottom);expect(geometry.qr.left).toBeGreaterThanOrEqual(geometry.dialog.left);expect(geometry.qr.right).toBeLessThanOrEqual(geometry.dialog.right);
+ }
+ const decoded=await page.locator('#gameQrImage svg').evaluate(async svg=>{const image=new Image();image.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));await image.decode();const canvas=document.createElement('canvas');canvas.width=canvas.height=768;const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0,768,768);const pixels=ctx.getImageData(0,0,768,768);return window.jsQR(pixels.data,768,768)?.data});
  expect(decoded).toBe(expectedUrl);
- const dataUrl=await page.locator('#gameQrCanvas').evaluate(canvas=>canvas.toDataURL('image/png'));
- const download=page.waitForEvent('download');await page.locator('#downloadGameQr').click();const png=await download;expect(png.suggestedFilename()).toBe('SIDE-A7K2M-QR.png');expect(await readFile(await png.path())).toEqual(Buffer.from(dataUrl.split(',')[1],'base64'));await page.locator('#closeGameQr').click();
+ const download=page.waitForEvent('download');await page.locator('#downloadGameQr').click();const png=await download;expect(png.suggestedFilename()).toBe('SIDE-A7K2M-QR.png');expect(await png.failure()).toBeNull();await page.locator('#closeGameQr').click();
  await expect(page.locator('#startTimer')).toBeVisible();await page.locator('#startTimer').click();
  await expect.poll(()=>started).toBeTruthy();await page.locator('[data-tab=resultados]').click();await expect(page.locator('#detailReports')).toContainText('Empresa de prueba · Ciclo 1');await expect(page.locator('#detailReports')).toContainText('Ingresos S/ 1,200');
  await page.locator('[data-tab=historial]').click();await expect(page.locator('#historyGameSelect')).toContainText(game.name);await expect(page.locator('#historyStatus')).toContainText('Partidas finalizadas');

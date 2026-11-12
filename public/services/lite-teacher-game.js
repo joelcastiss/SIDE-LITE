@@ -262,25 +262,30 @@
   function invitationUrl() {
     const url = new URL('../', global.location.href);
     url.search = ''; url.hash = ''; url.searchParams.set('partida', gameCode);
+    if (url.protocol !== 'https:' || /^(localhost|127\.|\[::1\])/i.test(url.hostname)) throw new Error('El enlace de ingreso requiere una dirección pública HTTPS.');
     return url.href;
   }
   $('copyGameLink').disabled = true; $('showGameQr').disabled = true;
   async function copyLink() {
     if (!gameCode) return;
     try { await navigator.clipboard.writeText(invitationUrl()); $('copyGameLink').textContent = 'Enlace copiado'; setTimeout(() => { $('copyGameLink').textContent = 'Copiar enlace'; }, 2000); }
-    catch { message('No se pudo copiar el enlace.'); }
+    catch (error) { message(error.message || 'No se pudo copiar el enlace.'); }
   }
   $('showGameQr').addEventListener('click', async () => {
     if (!gameCode) return;
     try {
-      await global.SIDELiteQRCode.toCanvas($('gameQrCanvas'), invitationUrl(), {width: 768, margin: 4, errorCorrectionLevel: 'M'});
+      const svg = await global.SIDELiteQRCode.toString(invitationUrl(), {type: 'svg', margin: 4, errorCorrectionLevel: 'M', color: {dark: '#000000', light: '#ffffff'}});
+      $('gameQrImage').innerHTML = svg;
       $('gameQrCode').textContent = gameCode; $('gameQrDialog').showModal();
-    } catch { message('No se pudo generar el código QR.'); }
+    } catch (error) { message(error.message || 'No se pudo generar el código QR.'); }
   });
   $('closeGameQr').addEventListener('click', () => $('gameQrDialog').close());
-  $('downloadGameQr').addEventListener('click', () => {
-    const link = document.createElement('a'); link.download = 'SIDE-' + gameCode + '-QR.png';
-    link.href = $('gameQrCanvas').toDataURL('image/png'); link.click();
+  $('downloadGameQr').addEventListener('click', async () => {
+    try {
+      const dataUrl = await global.SIDELiteQRCode.toDataURL(invitationUrl(), {width: 768, margin: 4, errorCorrectionLevel: 'M', color: {dark: '#000000', light: '#ffffff'}});
+      const link = document.createElement('a'); link.download = 'SIDE-' + gameCode + '-QR.png';
+      link.href = dataUrl; link.click();
+    } catch (error) { message(error.message || 'No se pudo descargar el código QR.'); }
   });
   async function create() {
     if (loading) return;
