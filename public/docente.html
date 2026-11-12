@@ -7,7 +7,7 @@
   <title>SIDE — Panel Docente</title>
   <link rel="stylesheet" href="css/design-system.css?v=20261112">
   <link rel="stylesheet" href="css/docente.css?v=20261110-invitacion">
-  <link rel="stylesheet" href="css/laboratorio.css?v=20261112">
+  <link rel="stylesheet" href="css/laboratorio.css?v=20261112-side">
   <link rel="stylesheet" href="css/responsive.css?v=20261009-mobile">
   <link rel="stylesheet" href="css/faculty-theme.css?v=20261022-cancelar-rojo">
   <style>body.teacher-auth-pending .app-shell { visibility: hidden; }</style>
@@ -157,9 +157,9 @@
       <article class="card podium-publish"><div class="card-title"><h3>Podio final del profesor</h3><span>Solo notas docentes</span></div><p class="hint">Guarda las notas en Empresas, también después de terminar todos los ciclos. Al finalizar se evalúan todas las empresas participantes, aunque estén desconectadas o inactivas. La vista previa se actualiza con cada nota; pulsa PUBLICAR PODIO para elegir Ahora o Programar (de 1 minuto a 72 horas). La programación se cumple aunque cierres el panel. Las 24 horas empiezan al publicarse. En empates se ordena por nombre.</p><label>Justificación<textarea id="winnerReason" rows="3" placeholder="Criterios utilizados por el docente..."></textarea></label><button id="publishPodium" class="primary">PUBLICAR PODIO</button><div id="podiumSchedule" class="podium-schedule hidden"><span id="podiumScheduledAt"></span><strong id="podiumCountdown"></strong><div class="podium-actions"><button id="podiumPublishNow" class="primary" type="button">Publicar ahora</button><button id="podiumReschedule" class="secondary" type="button">Reprogramar</button><button id="podiumCancelSchedule" class="secondary" type="button">Cancelar programación</button></div></div><p id="publishStatus" class="publish-status" role="status"></p></article>
     </section>
     <section id="tab-laboratorio" class="tab-panel teacher-workspace" aria-labelledby="lab-heading">
-      <article class="card lab"><div class="section-head"><div><h2 id="lab-heading">Laboratorio Estratégico</h2><p>Explora decisiones y resultados de ciclos cerrados.</p></div></div>
-      <div class="lab-controls"><label>Código de partida<select id="lab-game"></select></label><label>Empresa<select id="lab-company"></select></label><label>Ciclo cerrado<select id="lab-cycle"></select></label><button type="button" id="lab-refresh" class="secondary">Actualizar datos</button><button type="button" id="lab-demo" class="secondary" hidden>Activar demostración local</button></div>
-      <div class="lab-tabs" role="group" aria-label="Vistas del laboratorio"><button type="button" data-lab-tab="results" aria-pressed="true">Ver resultados</button><button type="button" data-lab-tab="scenario" aria-pressed="false">Probar otra decisión</button><button type="button" data-lab-tab="compare" aria-pressed="false">Comparar empresas</button></div>
+      <article class="card lab"><div class="section-head"><div class="teacher-section-title"><span class="teacher-section-icon" aria-hidden="true"><img src="assets/icons/teacher/resultados.svg" alt=""></span><div><h2 id="lab-heading">Laboratorio Estratégico</h2><p>Explora decisiones y resultados de ciclos cerrados.</p></div></div></div>
+      <div class="lab-controls"><label>Código de partida<select id="lab-game" class="side-field"></select></label><label>Empresa<select id="lab-company" class="side-field"></select></label><label>Ciclo cerrado<select id="lab-cycle" class="side-field"></select></label><button type="button" id="lab-refresh" class="secondary side-button">Actualizar datos</button><button type="button" id="lab-demo" class="secondary side-button" hidden>Activar demostración local</button></div>
+      <div class="lab-tabs" role="group" aria-label="Vistas del laboratorio"><button type="button" class="side-button" data-lab-tab="results" aria-pressed="true">Ver resultados</button><button type="button" class="side-button" data-lab-tab="scenario" aria-pressed="false">Probar otra decisión</button><button type="button" class="side-button" data-lab-tab="compare" aria-pressed="false">Comparar empresas</button></div>
       <p id="lab-status" role="status" aria-live="polite"></p><div id="lab-content"></div></article>
     </section>
     <section id="tab-historial" class="tab-panel teacher-workspace" aria-labelledby="historyHeading">

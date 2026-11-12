@@ -1,0 +1,28 @@
+import {test,expect} from '@playwright/test';
+import express from 'express';
+let server,base;
+test.beforeAll(async()=>{server=await new Promise(resolve=>{const s=express().use('/SIDE-LITE',express.static('.')).use(express.static('public')).listen(0,'127.0.0.1',()=>resolve(s))});base=`http://127.0.0.1:${server.address().port}`});
+test.afterAll(async()=>new Promise(resolve=>server.close(resolve)));
+for(const width of [1900,768,390]) test(`laboratorio real conserva el shell y los resultados a ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});
+ const game={id:'game1',code:'A7K2M',name:'Prueba',cycle_count:3,enabled_events:[],costs:{basic:50,standard:80,premium:120}};
+ const cycles=[1,2,3].map(number=>({id:'c'+number,number,status:'closed'}));
+ const result=profit=>({revenue:10000,costOfSales:8000,marketing:1000,profit,cashEnd:1250000,sold:100});
+ const records=[{cycle_id:'c1',company_id:'co1',result:result(1000)},{cycle_id:'c3',company_id:'co1',result:result(-1000)}];
+ await page.route('https://joelcastiss.github.io/**',async route=>{const u=new URL(route.request().url());await route.fulfill({response:await route.fetch({url:base+u.pathname+u.search})})});
+ await page.route('**/vendor/supabase-js/supabase.js*',route=>route.fulfill({contentType:'application/javascript',body:`window.supabase={createClient:()=>({supabaseUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',auth:{getSession:async()=>({data:{session:{access_token:'test-teacher',user:{email_confirmed_at:'yes'}}}}),onAuthStateChange:()=>({data:{subscription:{}}})}})};`}));
+ await page.route('https://hwwwoblfpsqqrkxvclag.supabase.co/**',route=>{const req=route.request(),path=new URL(req.url()).pathname.split('/api')[1],headers={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,PUT,OPTIONS','access-control-allow-headers':'authorization,apikey,content-type'};if(req.method()==='OPTIONS')return route.fulfill({status:204,headers});let json={};if(path==='/me')json={id:'t1',display_name:'Docente',role:'teacher'};else if(path==='/catalog')json=[];else if(path==='/games')json=[game];else if(path==='/games/game1/laboratory')json={cycles,companies:[{id:'co1',name:'Empresa'}],records};else if(path==='/games/game1')json={isTeacher:true,game,companies:[],decisions:[],cycles:[],results:[],ranking:[]};return route.fulfill({status:200,headers,json})});
+ await page.goto('https://joelcastiss.github.io/SIDE-LITE/public/docente.html');
+ await expect(page.locator('[data-tab=laboratorio]')).toBeVisible();await page.locator('[data-tab=laboratorio]').click();
+ await expect(page.locator('.lab-finance')).toBeVisible();
+ await expect(page.locator('.sidebar')).toBeVisible();
+ const first=await page.locator('.lab-finance th').first().evaluate(el=>{const s=getComputedStyle(el),t=el.closest('table').getBoundingClientRect();return {bg:s.backgroundColor,color:s.color,width:el.getBoundingClientRect().width/t.width,transform:s.textTransform}});
+ expect(first.bg).not.toBe(first.color);expect(first.width).toBeGreaterThan(.35);expect(first.width).toBeLessThan(.45);expect(first.transform).toBe('uppercase');
+ await expect(page.locator('.lab-evolution-single')).toContainText('Ciclo 1');
+ await page.locator('#lab-cycle').selectOption('c3');
+ await expect(page.locator('.lab-finance-profit td')).toContainText('−S/ 1,000');await expect(page.locator('.lab-finance-cash td')).toContainText('S/ 1,250,000');
+ const contrasts=await page.locator('.lab-finance').evaluate(root=>{const lum=c=>{const rgb=c.match(/[\d.]+/g).slice(0,3).map(x=>Number(x)/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]};return [...root.querySelectorAll('th,td')].map(el=>{const s=getComputedStyle(el),a=lum(s.color),b=lum(s.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)})});for(const contrast of contrasts)expect(contrast).toBeGreaterThanOrEqual(4.5);
+ await expect(page.locator('.lab-evolution-zero')).toHaveCount(1);await expect(page.locator('.lab-evolution-area svg line')).toHaveCount(0);await expect(page.locator('.lab-evolution-area')).toHaveAttribute('aria-label',/Ciclo 2: No disponible/);
+ await expect(page.locator('.lab-evolution-cycles summary')).toHaveCount(3);await page.locator('.lab-evolution-cycles summary').nth(2).click();await expect(page.locator('.lab-evolution-cycles details').nth(2)).toContainText('-1,000');
+ const geometry=await page.evaluate(()=>({viewport:innerWidth,scroll:document.documentElement.scrollWidth,table:document.querySelector('.lab-finance table').getBoundingClientRect().width,container:document.querySelector('.lab-finance').getBoundingClientRect().width}));expect(geometry.scroll).toBeLessThanOrEqual(geometry.viewport);expect(geometry.table).toBeLessThanOrEqual(geometry.container);
+});
