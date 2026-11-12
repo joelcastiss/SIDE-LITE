@@ -1,0 +1,3 @@
+-- Historical remote migration: a private HTTP extension was temporarily
+-- installed and then removed in 20261110064116. Its net effect is empty.
+-- Do not recreate it when building a fresh environment.

@@ -23,6 +23,32 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      history-postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: local_test_only
+          POSTGRES_DB: side_lite_supabase_test
+        ports:
+          - 55481:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d side_lite_supabase_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      upgrade-postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: local-test-only
+          POSTGRES_DB: side_lite_incremental
+        ports:
+          - 56639:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d side_lite_incremental"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       SIDE_TEST_DISPOSABLE: 'YES'
       SIDE_TEST_REAL_120: 'YES'
@@ -35,3 +61,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node scripts/test-supabase-isolated.mjs
+      - name: Replay deployed migration history on a clean cluster
+        run: node scripts/test-supabase-history-replay.mjs
+        env:
+          SIDE_LITE_TEST_DATABASE_URL: postgresql://postgres:local_test_only@127.0.0.1:55481/side_lite_supabase_test
+      - name: Verify the historical upgrade preserves existing data
+        run: node supabase-side-lite/incremental/test-upgrade.mjs
+        env:
+          SIDE_INCREMENTAL_DISPOSABLE: 'YES'

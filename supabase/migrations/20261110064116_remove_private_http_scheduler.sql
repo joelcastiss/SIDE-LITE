@@ -1,0 +1,3 @@
+-- Historical remote migration: the temporary private HTTP extension was
+-- removed. No action is needed on a fresh environment; in particular do not
+-- drop an unrelated HTTP extension that may already be in use.

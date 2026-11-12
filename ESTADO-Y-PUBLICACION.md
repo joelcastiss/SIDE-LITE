@@ -9,7 +9,7 @@ Esta carpeta es una copia independiente de `side-lite/` de `feature/side-lite` d
 - `remote/`: API privada, BFF, identidad Neon, cierre y migraciones de desarrollo. La integración está restringida explícitamente a la rama y hosts de desarrollo; no cambiar esos controles sin revisar seguridad.
 - `js/`, `css/`, `index.html`, `assets/`: versión de práctica y motor económico compartido.
 - `tests/` y `e2e/`: pruebas unitarias y recorridos; los recorridos live requieren infraestructura y cuentas aisladas.
-- `supabase/migrations/`: migraciones del servidor local, no aplicar a SIDE ni a una base expuesta.
+- `server/migrations/`: migraciones del servidor local. `supabase/migrations/` contiene el historial reconciliado del proyecto SIDE-LITE; ver `docs/reconciliacion-historial-supabase.md`.
 
 ## Estado y pruebas del 7 de noviembre de 2026
 
