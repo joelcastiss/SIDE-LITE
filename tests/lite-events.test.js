@@ -16,5 +16,7 @@ test('catálogo explica todos los eventos y sus efectos reales',()=>{
   assert.equal(globalThis.SIDELiteEvents.text(result.event),text);
  }
  assert.match(globalThis.SIDELiteEvents.text(null),/Neutro/);
+ assert.match(globalThis.SIDELiteEvents.text({label:'Feria local',demand:1.15}),/Feria local.*15 %/);
+ assert.match(globalThis.SIDELiteEvents.text({purchase:0.9}),/Evento del ciclo.*10 % menos/);
  assert.ok(!globalThis.SIDELiteEvents.text('evento_desconocido').includes('evento_desconocido'));
 });
