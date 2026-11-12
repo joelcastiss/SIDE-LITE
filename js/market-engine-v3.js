@@ -11,7 +11,7 @@ const affinity = {
 
 /** Return integer demand per company; inventory limits sales in the close engine.
  * Unallocated fractions and stockouts are not redistributed. */
-export function allocateDistrictDemand({baseDemand, shares, companies, demandFactor=1}) {
+export function allocateDistrictDemand({baseDemand, shares, companies, demandFactor=1, event=null}) {
   if (!Number.isSafeInteger(baseDemand) || baseDemand < 0 || !Number.isFinite(demandFactor) || demandFactor < 0 ||
       !Array.isArray(shares) || shares.length !== 3 || shares.some(x=>!Number.isFinite(x) || x<=0) ||
       Math.abs(shares.reduce((a,b)=>a+b,0)-1)>1e-9 || !Array.isArray(companies)) throw new Error('Mercado inválido');
@@ -22,9 +22,10 @@ export function allocateDistrictDemand({baseDemand, shares, companies, demandFac
     if (!c.decision) return {id:c.id, weights:[0,0,0]};
     const {quality,price,marketingAmount}=c.decision;
     if (!qualities.includes(quality) || !Number.isSafeInteger(price) || price<1) throw new Error('Decisión inválida');
-    const marketing=marketingFactor(marketingAmount);
-    const priceFactor=Math.max(.1,Math.min(2,100/price));
-    return {id:c.id,weights:affinity[quality].map(a=>a*priceFactor*marketing)};
+    const marketing=1+(marketingFactor(marketingAmount)-1)*(event?.marketingStrength ?? 1);
+    const priceFactor=Math.pow(Math.max(.1,Math.min(2,100/price)),event?.priceSensitivity ?? 1);
+    const qualityFactor=event?.quality?.[quality] ?? 1;
+    return {id:c.id,weights:affinity[quality].map(a=>a*priceFactor*marketing*qualityFactor)};
   });
   const allocations=Object.fromEntries(eligible.map(c=>[c.id,0]));
   const total=Math.floor(baseDemand*demandFactor);
@@ -38,7 +39,7 @@ export function allocateDistrictDemand({baseDemand, shares, companies, demandFac
     // The outside option represents shoppers who buy elsewhere or do not buy.
     // It prevents price and marketing from cancelling out for a sole seller.
     const weight=1+eligible.reduce((sum,c)=>sum+c.weights[segment],0);
-    for (const c of eligible) allocations[c.id]+=Math.floor(pools[segment]*c.weights[segment]/weight);
+    for (const c of eligible) allocations[c.id]+=Math.floor(pools[segment]*c.weights[segment]/weight+1e-9);
   }
   return allocations;
 }

@@ -30,7 +30,7 @@ begin
   end loop;
   for i in 1..coalesce(array_length(ids,1),0) loop
     allocation:=0;
-    for seg in 1..3 loop if weights[seg]>0 then allocation:=allocation+floor(pools[seg]*all_weights[(i-1)*3+seg]/weights[seg])::integer; end if; end loop;
+    for seg in 1..3 loop if weights[seg]>0 then allocation:=allocation+floor(pools[seg]*all_weights[(i-1)*3+seg]/weights[seg]+1e-9::float8)::integer; end if; end loop;
     answer:=answer||jsonb_build_object(ids[i],allocation);
   end loop;
   return answer;

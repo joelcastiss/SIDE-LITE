@@ -12,6 +12,7 @@ function database({ badSecond = false, missingSecret = false } = {}) {
       if (q.startsWith('select c.id')) return state.status === 'open' ? [{ id: 'cycle', game_id: 'game', seed: missingSecret ? null : 'seed', event_id: null }] : [];
       if (q.startsWith('select id, costs')) return [{ id: 'game', costs: { basic: 20, standard: 30, premium: 40 } }];
       if (q.startsWith('select id, cash, inventory')) return [{ id: 'company', cash: state.cash, inventory: [] }, ...(badSecond ? [{ id: 'bad', cash: -1, inventory: [] }] : [])];
+      if (q.startsWith('select rule_version')) return [];
       if (q.startsWith('select quality')) return [{ quality: 'basic', quantity: 10, price: 100, marketing_amount: 0 }];
       if (q.startsWith('insert into')) { state.results.push(values[3]); return []; }
       if (q.startsWith('update public.lite_companies')) { state.cash = values[0]; return []; }

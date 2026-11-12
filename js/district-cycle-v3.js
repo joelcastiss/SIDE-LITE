@@ -24,7 +24,7 @@ export function closeDistrictCycle({district,companies,costs,event=null}) {
     if(quantity)stock.push({quantity,unitCost});
     return {...c,cash,stock,purchase,unitCost,marketing:marketingAmount};
   });
-  const allocation=allocateDistrictDemand({baseDemand:district.baseDemand,shares:district.shares,companies:prepared,demandFactor});
+  const allocation=allocateDistrictDemand({baseDemand:district.baseDemand,shares:district.shares,companies:prepared,demandFactor,event});
   return prepared.map(c=>{
     const demand=allocation[c.id],available=c.stock.reduce((sum,b)=>safe(sum+b.quantity),0);
     const sold=c.decision?Math.min(demand,available):0;let left=sold,costOfSales=0;

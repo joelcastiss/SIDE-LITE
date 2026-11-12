@@ -4,6 +4,8 @@ import {reportApiError} from './error-reporting.js';
 import express from 'express';
 import crypto from 'node:crypto';
 import {EVENTS, RULES, closeCycle, rank} from '../../js/engine.js';
+import {DISTRICT_EVENTS} from '../../js/district-events-v3.js';
+const ALL_EVENTS=[...EVENTS,...DISTRICT_EVENTS];
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const integer = (v, min, max) => Number.isSafeInteger(v) && v >= min && v <= max;
@@ -45,8 +47,8 @@ function validConfig(body) {
     && duration === 120 && integer(capitalMin,20000,100000) && integer(capitalMax,capitalMin,100000)
     && capitalMin%10000===0 && capitalMax%10000===0 && costs && typeof costs === 'object'
     && qualities.every(q=>integer(costs[q],1,100000)) && Array.isArray(events)
-    && events.length <= EVENTS.length && new Set(events).size === events.length
-    && events.every(id=>typeof id === 'string' && EVENTS.some(event=>event.id === id));
+    && events.length <= ALL_EVENTS.length && new Set(events).size === events.length
+    && events.every(id=>typeof id === 'string' && (body?.marketMode ? ALL_EVENTS : EVENTS).some(event=>event.id === id));
 }
 
 /** Verify token server-side; limitJoin must use a shared, durable store and fail closed. */
@@ -67,7 +69,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
   app.get('/api/catalog',async (req,res,next)=>{
     try {
       await transaction(pool,async c=>{await requireCurrentUser(c,req.identity);});
-      return res.json(EVENTS);
+      return res.json(ALL_EVENTS);
     } catch(e) { return next(e); }
   });
   app.get('/api/games',async (req,res,next)=>{
@@ -207,7 +209,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         if (!inserted) throw fail(503,'No se pudo generar un código.');
         for(const q of qualities) await c.query('insert into public.lite_products(game_id,quality,unit_cost) values($1,$2,$3)',[inserted.id,q,costs[q]]);
         if (marketMode) {
-          await c.query('insert into public.lite_game_markets(game_id,assignment_mode) values($1,$2)',[inserted.id,marketMode]);
+          await c.query("insert into public.lite_game_markets(game_id,assignment_mode,rule_version) values($1,$2,'district-v3')",[inserted.id,marketMode]);
           await c.query(`insert into public.lite_game_districts(game_id,district_id,base_demand,economic_share,standard_share,premium_share)
             select $1,id,base_demand,economic_share,standard_share,premium_share from public.lite_districts`,[inserted.id]);
         }
@@ -348,7 +350,8 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         if (!secret) throw fail(503,'El ciclo no está disponible.');
         // Use the unchanged economic engine for affordability/validation only.
         // Never send its calculated future result or the seed to this client.
-        try { closeCycle({cash:company.cash,batches:company.inventory,costs:game.costs,event:cycle.event_id,
+        try { const v3event=DISTRICT_EVENTS.find(e=>e.id===cycle.event_id); const costs=v3event?.purchase ? Object.fromEntries(Object.entries(game.costs).map(([k,v])=>[k,Math.round(v*v3event.purchase)])) : game.costs;
+          closeCycle({cash:company.cash,batches:company.inventory,costs,event:v3event?null:cycle.event_id,
           seed:secret.seed,companyId:company.id,decision:{quality,quantity,price,marketingAmount}}); }
         catch { throw fail(400,'La decisión no es válida o supera el capital disponible.'); }
         const {rows:[decision]}=await c.query(`insert into public.lite_decisions(game_id,cycle_id,company_id,quality,quantity,price,marketing_amount,confirmed)

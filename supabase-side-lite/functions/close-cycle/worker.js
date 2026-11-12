@@ -1,4 +1,5 @@
 import { closeCycle } from '../../../js/engine.js';
+import { closeDistrictCycle } from '../../../js/district-cycle-v3.js';
 
 // Every call owns a single transaction. All submit/pause/start operations MUST
 // lock the same cycle row before checking its state, deadline or decisions.
@@ -21,12 +22,31 @@ export async function closeOne(sql, excluded = [], gameId = null) {
       const [game] = await tx`select id, costs from public.lite_games where id = ${cycle.game_id}`;
       if (!game) throw new Error('Missing game');
       const companies = await tx`select id, cash, inventory from public.lite_companies where game_id = ${game.id} order by id for update`;
+      const [configuration] = await tx`select rule_version from public.lite_game_markets where game_id = ${game.id}`;
+      const decisions = new Map();
       for (const company of companies) {
         const [d] = await tx`select quality, quantity, price, marketing_amount from public.lite_decisions where cycle_id = ${cycle.id} and game_id = ${game.id} and company_id = ${company.id} and confirmed`;
-        const decision = d ? { quality: d.quality, quantity: d.quantity, price: d.price, marketingAmount: d.marketing_amount } : null;
-        const result = closeCycle({ cash: company.cash, batches: company.inventory, costs: game.costs, event: cycle.event_id, seed: cycle.seed, companyId: company.id, decision });
-        await tx`insert into public.lite_results (game_id, cycle_id, company_id, result) values (${game.id}, ${cycle.id}, ${company.id}, ${tx.json(result)})`;
-        await tx`update public.lite_companies set cash = ${result.cashEnd}, inventory = ${tx.json(result.inventory)} where id = ${company.id} and game_id = ${game.id}`;
+        decisions.set(company.id,d ? { quality:d.quality, quantity:d.quantity, price:d.price, marketingAmount:d.marketing_amount } : null);
+      }
+      let calculated;
+      if (configuration?.rule_version === 'district-v3') {
+        const markets = await tx`select cm.company_id, cm.district_id, gd.base_demand, gd.economic_share, gd.standard_share, gd.premium_share from public.lite_company_markets cm join public.lite_game_districts gd on gd.game_id=cm.game_id and gd.district_id=cm.district_id where cm.game_id=${game.id}`;
+        const [eventRow] = cycle.event_id ? await tx`select effect from public.lite_events where id=${cycle.event_id}` : [];
+        if(cycle.event_id && !eventRow) throw new Error('Missing event');
+        const groups = new Map();
+        for (const company of companies) {
+          const market=markets.find(m=>m.company_id===company.id); if(!market) throw new Error('Missing district');
+          if(!groups.has(market.district_id)) groups.set(market.district_id,{district:{id:market.district_id,baseDemand:market.base_demand,shares:[+market.economic_share,+market.standard_share,+market.premium_share]},companies:[]});
+          groups.get(market.district_id).companies.push({id:company.id,cash:company.cash,batches:company.inventory,decision:decisions.get(company.id)});
+        }
+        calculated = [...groups.values()].flatMap(group=>closeDistrictCycle({...group,costs:game.costs,event:eventRow?.effect || null}));
+      } else {
+        calculated=companies.map(company=>({companyId:company.id,...closeCycle({cash:company.cash,batches:company.inventory,costs:game.costs,event:cycle.event_id,seed:cycle.seed,companyId:company.id,decision:decisions.get(company.id)})}));
+      }
+      for (const result of calculated) {
+        const {companyId,...legacy}=result; const stored=configuration?.rule_version === 'district-v3' ? result : legacy;
+        await tx`insert into public.lite_results (game_id, cycle_id, company_id, result) values (${game.id}, ${cycle.id}, ${companyId}, ${tx.json(stored)})`;
+        await tx`update public.lite_companies set cash = ${stored.cashEnd}, inventory = ${tx.json(stored.inventory)} where id = ${companyId} and game_id = ${game.id}`;
       }
       await tx`update public.lite_cycles set status = 'closed' where id = ${cycle.id} and status = 'open'`;
       return cycle.id;

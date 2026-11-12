@@ -1,10 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {EVENTS,closeCycle} from '../js/engine.js';
+import {DISTRICT_EVENTS} from '../js/district-events-v3.js';
 import '../public/js/lite-events.js';
 
 test('catálogo explica todos los eventos y sus efectos reales',()=>{
- assert.deepEqual([...globalThis.SIDELiteEvents.ids].sort(),EVENTS.map(e=>e.id).sort());
+ assert.deepEqual([...globalThis.SIDELiteEvents.ids].sort(),[...EVENTS,...DISTRICT_EVENTS].map(e=>e.id).sort());
  for(const event of EVENTS){
   const text=globalThis.SIDELiteEvents.text(event.id);
   const factor=event.demand??event.purchase;
