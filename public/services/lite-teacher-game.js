@@ -31,23 +31,99 @@
   }
   const eventSection = document.querySelector('.events-config-summary');
   const selectedEvents = new Set();
+  let pendingEvents = new Set();
+  let eventCatalog = [];
+  let eventCatalogError = '';
+  const eventStyle = document.createElement('style');
+  eventStyle.textContent = `
+    .lite-event-summary-head {display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+    .lite-event-summary-head h3{margin:0;color:#26c9f5;text-transform:uppercase;font-size:1rem}
+    .lite-event-summary-head p{margin:10px 0 0;color:#aab8c9}
+    .lite-event-summary-line{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:20px}
+    .lite-event-summary-chip{background:#143451;color:#f2f8ff;padding:10px 15px;border-radius:999px;font-size:.88rem}
+    .lite-event-picker{border:1px solid #26c9f5;border-radius:18px;background:#091a30;color:#eef6ff;padding:24px;width:min(760px,calc(100vw - 24px));max-height:85vh}
+    .lite-event-picker::backdrop{background:rgba(1,8,20,.78)}
+    .lite-event-picker header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .lite-event-picker h3{margin:0}.lite-event-picker-controls{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+    .lite-event-picker-controls input{flex:1;min-width:170px;padding:10px}
+    .lite-event-picker-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:48vh;overflow:auto}
+    .lite-event-picker-list label{display:flex;gap:9px;align-items:flex-start;padding:12px;border:1px solid #285170;border-radius:10px;cursor:pointer}
+    .lite-event-picker-list input{margin-top:3px}
+    .lite-event-picker footer{margin-top:18px;display:flex;justify-content:flex-end}
+    @media(max-width:600px){.lite-event-picker-list{grid-template-columns:1fr}.lite-event-picker{padding:16px}}
+  `;
+  document.head.append(eventStyle);
+  const eventDialog = document.createElement('dialog');
+  eventDialog.className = 'lite-event-picker';
+  eventDialog.setAttribute('aria-label', 'Seleccionar eventos');
+  eventDialog.innerHTML = '<header><h3>Seleccionar eventos</h3><button type="button" class="secondary" id="liteCloseEventPicker" aria-label="Cerrar">Cerrar</button></header><p>Elige qué eventos podrán ocurrir durante la partida.</p><div class="lite-event-picker-controls"><input id="liteEventSearch" type="search" placeholder="Buscar evento" aria-label="Buscar evento"><button type="button" class="secondary" id="liteSelectAllEvents">Seleccionar todos</button><button type="button" class="secondary" id="liteClearEvents">Quitar todos</button></div><div id="liteEventPickerList" class="lite-event-picker-list"></div><footer><button type="button" class="primary" id="liteDoneEventPicker">Confirmar selección</button></footer>';
+  document.body.append(eventDialog);
+  const eventList = eventDialog.querySelector('#liteEventPickerList');
+  const eventSearch = eventDialog.querySelector('#liteEventSearch');
+  function renderEventSummary() {
+    const summary = eventSection?.querySelector('#enabledEventsSummary');
+    if (!summary) return;
+    summary.replaceChildren();
+    const count = document.createElement('strong');
+    count.textContent = selectedEvents.size + ' habilitados';
+    summary.append(count);
+    const labels = eventCatalog.filter(x => selectedEvents.has(x.id)).slice(0,3);
+    for (const item of labels) {
+      const chip = document.createElement('span'); chip.className = 'lite-event-summary-chip'; chip.textContent = item.label; summary.append(chip);
+    }
+    if (selectedEvents.size > labels.length) {
+      const more = document.createElement('span'); more.textContent = 'Y ' + (selectedEvents.size - labels.length) + ' más · consulta la selección'; summary.append(more);
+    }
+    if (eventCatalogError) { const error = document.createElement('p'); error.textContent = eventCatalogError; summary.append(error); }
+  }
+  function renderEventPicker() {
+    eventList.replaceChildren();
+    const search = eventSearch.value.trim().toLocaleLowerCase('es');
+    const filtered = eventCatalog.filter(item => item.label.toLocaleLowerCase('es').includes(search));
+    for (const item of filtered) {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'checkbox'; input.value = item.id; input.checked = pendingEvents.has(item.id); input.disabled = !!gameId;
+      input.addEventListener('change', () => {
+        if (input.checked) pendingEvents.add(item.id); else pendingEvents.delete(item.id);
+      });
+      label.append(input, document.createTextNode(item.label)); eventList.append(label);
+    }
+    if (!filtered.length) eventList.textContent = eventCatalogError || 'No se encontraron eventos.';
+    eventDialog.querySelector('#liteSelectAllEvents').disabled = !!gameId || !eventCatalog.length;
+    eventDialog.querySelector('#liteClearEvents').disabled = !!gameId || !eventCatalog.length;
+  }
   if (eventSection) {
     eventSection.replaceChildren();
-    const heading = document.createElement('h3'); heading.textContent = 'Eventos habilitados';
-    const help = document.createElement('p'); help.textContent = 'Selecciona los eventos del catálogo SIDE Lite que pueden ocurrir durante la partida.';
-    const list = document.createElement('div'); list.className = 'lite-event-list';
-    eventSection.append(heading, help, list);
+    const heading = document.createElement('div'); heading.className = 'lite-event-summary-head';
+    const titleGroup = document.createElement('div');
+    titleGroup.innerHTML = '<h3>Eventos habilitados</h3><p>Selecciona los eventos que podrán ocurrir desde el Ciclo 1.</p>';
+    const open = document.createElement('button'); open.type = 'button'; open.className = 'secondary'; open.id = 'liteOpenEventPicker'; open.textContent = 'Seleccionar eventos';
+    open.addEventListener('click', () => { pendingEvents = new Set(selectedEvents); eventSearch.value = ''; renderEventPicker(); eventDialog.showModal(); });
+    heading.append(titleGroup,open);
+    const summary = document.createElement('div'); summary.id = 'enabledEventsSummary'; summary.className = 'lite-event-summary-line'; summary.setAttribute('aria-live','polite');
+    eventSection.append(heading,summary);
+    renderEventSummary();
     void api.request('/catalog', 'GET', undefined, 'teacher').then(catalog => {
       if (!Array.isArray(catalog)) throw new Error('Catálogo inválido.');
-      for (const item of catalog) {
-        const label = document.createElement('label');
-        const input = document.createElement('input'); input.type = 'checkbox'; input.value = item.id;
-        input.disabled = !!gameId; input.checked = selectedEvents.has(item.id);
-        input.addEventListener('change', () => input.checked ? selectedEvents.add(item.id) : selectedEvents.delete(item.id));
-        label.append(input, document.createTextNode(' ' + item.label)); list.append(label);
-      }
-    }).catch(error => { help.textContent = error.message || 'No se pudo cargar el catálogo de eventos.'; });
+      eventCatalog = catalog; eventCatalogError = ''; renderEventSummary(); renderEventPicker();
+    }).catch(error => { eventCatalogError = error.message || 'No se pudo cargar el catálogo.'; renderEventSummary(); });
   }
+  eventDialog.querySelector('#liteCloseEventPicker').addEventListener('click', () => eventDialog.close());
+  eventDialog.querySelector('#liteDoneEventPicker').addEventListener('click', () => {
+    if (!gameId) { selectedEvents.clear(); for (const id of pendingEvents) selectedEvents.add(id); renderEventSummary(); }
+    eventDialog.close();
+  });
+  eventDialog.querySelector('#liteSelectAllEvents').addEventListener('click', () => {
+    if (gameId) return;
+    for (const item of eventCatalog) pendingEvents.add(item.id);
+    renderEventPicker();
+  });
+  eventDialog.querySelector('#liteClearEvents').addEventListener('click', () => {
+    if (gameId) return;
+    pendingEvents.clear(); renderEventPicker();
+  });
+  eventSearch.addEventListener('input', renderEventPicker);
   const pauseButton = document.createElement('button'); pauseButton.type = 'button'; pauseButton.className = 'mini'; pauseButton.id = 'litePauseCycle'; pauseButton.hidden = true;
   $('startTimer')?.after(pauseButton);
   document.querySelector('.config-start-footer p').textContent = 'Piloto: cada ciclo dura 120 segundos. Al vencer, el docente debe cerrarlo para calcular los resultados.';
@@ -81,7 +157,7 @@
     gameCode = game.code;
     selectedEvents.clear();
     for (const id of game.enabled_events || []) selectedEvents.add(id);
-    eventSection?.querySelectorAll('input').forEach(input => { input.checked = selectedEvents.has(input.value); input.disabled = true; });
+    renderEventSummary(); renderEventPicker();
     const cancelButton = $('liteCancelGame');
     if (cancelButton) { cancelButton.hidden = !!game.ended_at || !!(cycle && cycle.number >= game.cycle_count && cycle.status === 'closed'); cancelButton.disabled = cycle?.status === 'open'; cancelButton.title = cancelButton.disabled ? 'Cierra el ciclo vencido antes de cancelar la partida.' : ''; }
     pauseButton.hidden = cycle?.status !== 'open' || !!cycle?.close_requested_at || !!game.ended_at;
