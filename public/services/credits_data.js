@@ -5,6 +5,12 @@
   // objetos nuevos mantiene el contenido desacoplado del HTML y de Supabase.
   global.SIDE_CREDITS = Object.freeze([
     Object.freeze({
+      id: 'three-side-bags', title: 'Three.js r128', author: 'Three.js authors',
+      source: 'Three.js', sourceUrl: 'https://threejs.org/', license: 'MIT',
+      licenseUrl: 'https://opensource.org/license/mit',
+      assets: Object.freeze(['vendor/side-bags/three.min.js']), attributionRequired: true
+    }),
+    Object.freeze({
       id: 'shop-cash-register',
       title: 'Cash register',
       author: 'Poly by Google',
