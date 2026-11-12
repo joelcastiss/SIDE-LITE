@@ -18,6 +18,12 @@
   if ($('roundHours')) { $('roundHours').value = '0'; $('roundHours').disabled = true; }
   if ($('roundMinutes')) { $('roundMinutes').value = '2'; $('roundMinutes').disabled = true; }
   if ($('cycles')) { $('cycles').min = '3'; $('cycles').max = '6'; $('cycles').step = '3'; }
+  // Official games assign each company a server-generated capital.
+  $('capitalModeRandom').checked = true;
+  $('capitalModeFixed').closest('label').hidden = true;
+  $('fixedCapitalFields').classList.add('hidden');
+  $('randomCapitalFields').classList.remove('hidden');
+  for (const [id, value] of [['capitalMin', '20000'], ['capitalMax', '100000']]) { const input = $(id); input.value = value; input.min = '20000'; input.max = '100000'; input.step = '10000'; }
   const unsupported = ['demandLosOlivos', 'taxRegime', 'startDate'];
   for (const id of unsupported) { const card = $(id)?.closest('.card'); if (card) { card.hidden = true; card.style.display = 'none'; } }
   for (const selector of ['.integration-note', '.native-choice-row:has(#cycleModeManual)', '#manualCycleDisclaimer', '#automaticCycleConfig']) {
@@ -99,7 +105,7 @@
     if ($('advanceRound')) $('advanceRound').disabled = $('startTimer')?.disabled || false;
     if ($('companiesLiveStatus')) $('companiesLiveStatus').textContent = `${snapshot.companies.length} empresas registradas`;
     const grid = $('companiesGrid');
-    if (grid) { grid.replaceChildren(); for (const company of snapshot.companies) { const card = document.createElement('article'); card.className = 'card'; const title = document.createElement('h3'); title.textContent = company.name; const detail = document.createElement('p'); detail.textContent = `${company.store || ''} · ${snapshot.decisions?.some(d => d.company_id === company.id && d.confirmed) ? 'Decisión confirmada' : 'Decisión pendiente'}`; card.append(title, detail); grid.append(card); } }
+    if (grid) { grid.replaceChildren(); for (const company of snapshot.companies) { const card = document.createElement('article'); card.className = 'card'; const title = document.createElement('h3'); title.textContent = company.name; const detail = document.createElement('p'); detail.textContent = `${company.store || ''} · ${snapshot.decisions?.some(d => d.company_id === company.id && d.confirmed) ? 'Decisión confirmada' : 'Decisión pendiente'}`; const capital = document.createElement('p'); capital.textContent = `Capital inicial: S/ ${Number(company.initial_capital).toLocaleString('es-PE')} · Caja disponible: S/ ${Number(company.cash).toLocaleString('es-PE')}`; card.append(title, detail, capital); grid.append(card); } }
     const reports = $('detailReports');
     if (reports) { reports.replaceChildren(); for (const item of snapshot.ranking || []) { const line = document.createElement('p'); line.textContent = `${item.name}: ${Number(item.returnPercent).toFixed(1)} % de rentabilidad`; reports.append(line); } for (const item of snapshot.results || []) { const line = document.createElement('p'); const company = snapshot.companies.find(c => c.id === item.company_id); line.textContent = `${company?.name || 'Empresa'} · Ciclo ${item.number} · Ventas ${Number(item.result?.sold || 0)} · Ingresos S/ ${Number(item.result?.revenue || 0).toLocaleString('es-PE')} · Costos S/ ${Number(item.result?.costOfSales || 0).toLocaleString('es-PE')} · Utilidad S/ ${Number(item.result?.profit || 0).toLocaleString('es-PE')} · Caja S/ ${Number(item.result?.cashEnd || 0).toLocaleString('es-PE')}`; reports.append(line); } }
     clearInterval(timer);
@@ -174,9 +180,9 @@
     if (loading) return;
     loading = true;
     try {
-      const fixed = document.querySelector('input[name="capitalMode"]:checked')?.value !== 'random';
-      const capitalMin = Number(fixed ? $('capital').value : $('capitalMin').value);
-      const capitalMax = Number(fixed ? $('capital').value : $('capitalMax').value);
+      const capitalMin = Number($('capitalMin').value);
+      const capitalMax = Number($('capitalMax').value);
+      if (!Number.isInteger(capitalMin) || !Number.isInteger(capitalMax) || capitalMin < 20000 || capitalMax > 100000 || capitalMin > capitalMax || capitalMin % 10000 || capitalMax % 10000) throw new Error('Elige un rango entre S/ 20.000 y S/ 100.000, en múltiplos de S/ 10.000.');
       const game = await api.createGame({name: $('gameName').value.trim(), cycleCount: Number($('cycles').value), duration: 120, capitalMin, capitalMax, costs: {basic: Number($('liteCostBasic').value), standard: Number($('liteCostStandard').value), premium: Number($('liteCostPremium').value)}, events: [...selectedEvents]});
       gameId = game.id;
       try { sessionStorage.setItem('side-lite-teacher-game', gameId); } catch { /* The room remains available in this tab. */ }

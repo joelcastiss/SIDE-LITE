@@ -40,9 +40,9 @@ async function hasTeacherGrant(c, identity) {
 }
 
 function validConfig(body) {
-  const {name,cycleCount,duration=120,capitalMin=30000,capitalMax=100000,costs,events=[]}=body || {};
+  const {name,cycleCount,duration=120,capitalMin=20000,capitalMax=100000,costs,events=[]}=body || {};
   return typeof name === 'string' && name.trim().length >= 2 && name.length <= 80 && [3,6].includes(cycleCount)
-    && duration === 120 && integer(capitalMin,10000,1000000) && integer(capitalMax,capitalMin,1000000)
+    && duration === 120 && integer(capitalMin,20000,100000) && integer(capitalMax,capitalMin,100000)
     && capitalMin%10000===0 && capitalMax%10000===0 && costs && typeof costs === 'object'
     && qualities.every(q=>integer(costs[q],1,100000)) && Array.isArray(events)
     && events.length <= EVENTS.length && new Set(events).size === events.length
@@ -185,7 +185,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
   app.post('/api/games',async (req,res,next)=>{
     try {
       if (!validConfig(req.body)) throw fail(400,'Configuración inválida.');
-      const {name,cycleCount,capitalMin=30000,capitalMax=100000,costs,events=[]}=req.body;
+      const {name,cycleCount,capitalMin=20000,capitalMax=100000,costs,events=[]}=req.body;
       const game=await transaction(pool,async c=>{
         await requireCurrentUser(c,req.identity,true);
         let inserted;

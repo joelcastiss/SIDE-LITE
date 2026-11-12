@@ -41,7 +41,8 @@ for(const cycles of [3,6]) test(`partida local de ${cycles} ciclos con dos estud
   const companyA=await call(first,'/join','POST',{code:game.code,name:'Empresa Aurora'});
   const companyB=await call(second,'/join','POST',{code:game.code,name:'Empresa Bahia'});
   for(const company of [companyA,companyB]){
-   expect(company.initial_capital).toBeGreaterThanOrEqual(30000);
+   expect(company.initial_capital).toBeGreaterThanOrEqual(20000);
+   expect(company.initial_capital % 10000).toBe(0);
    expect(company.initial_capital).toBeLessThanOrEqual(100000);
    expect(company.cash).toBe(company.initial_capital);
   }

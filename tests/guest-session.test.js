@@ -7,7 +7,7 @@ const identities={a:{id:first,sessionId:sid,isAnonymous:true},b:{id:second,sessi
 function fixture(){const companies=[],hashes=new Map();const client={release(){},async query(sql,args=[]){
  const q=sql.replace(/\s+/g,' ').toLowerCase();if(/^(begin|commit|rollback)/.test(q))return {rows:[]};
  if(q.includes('lock_active_identity'))return {rows:[{active:true}]};if(q.includes('api_mfa_ready'))return {rows:[{allowed:true}]};
- if(q.includes('from public.lite_games where code='))return {rows:['AABBCCDD','A7K2M'].includes(args[0])?[{id:game,capital_min:30000,capital_max:30000,ended_at:null}]:[]};
+ if(q.includes('from public.lite_games where code='))return {rows:['AABBCCDD','A7K2M'].includes(args[0])?[{id:game,capital_min:20000,capital_max:100000,ended_at:null}]:[]};
  if(q.includes('api_find_guest_join')){const found=companies.find(c=>c.student_id===args[0]&&c.game_id===args[2]&&hashes.get(c.id)?.equals(args[3]));return {rows:found?[found]:[]}}
  if(q.includes('from public.lite_cycles'))return {rows:[]};if(q.includes('from public.lite_stores'))return {rows:[{id:store}]};
  if(q.startsWith('insert into public.lite_companies')){if(companies.some(c=>c.student_id===args[1]||c.name.toLowerCase()===args[2].toLowerCase()))throw Object.assign(Error('duplicate'),{code:'23505'});const c={id:randomUUID(),game_id:args[0],student_id:args[1],name:args[2],brand_name:args[5],initial_capital:args[4],cash:args[4],inventory:[]};companies.push(c);return {rows:[c]}}
@@ -28,3 +28,23 @@ test('acepta códigos nuevos y anteriores; rechaza formatos inválidos antes de 
  for(const code of ['A7K2M','a7k2m','AABBCCDD']){const result=await post('/api/join','a',{code,name:'Empresa',brand:'Marca',recoverySecret:secret});assert.equal(result.status,201,code)}
  for(const code of ['A7K2','A7K2M9','ZZZZZZZZ','A7K-2','A7K2M ','']){const result=await post('/api/join','a',{code,name:'Empresa',brand:'Marca',recoverySecret:secret});assert.equal(result.status,400,code)}
 })});
+
+
+test('capital de empresas es un múltiplo válido, inicializa caja y sobrevive a un reintento',async()=>{
+ const capitals=new Set();
+ for(let i=0;i<40;i++) await serve(async({post,companies})=>{
+  const body={code:'AABBCCDD',name:'Empresa',brand:'Marca',recoverySecret:'x'.repeat(43),initial_capital:25500,cash:37800};
+  const first=await post('/api/join','a',body);
+  assert.equal(first.status,201);
+  assert.ok(first.body.initial_capital>=20000 && first.body.initial_capital<=100000);
+  assert.equal(first.body.initial_capital%10000,0);
+  assert.equal(first.body.cash,first.body.initial_capital);
+  capitals.add(first.body.initial_capital);
+  companies[0].cash-=1000;
+  const retry=await post('/api/join','a',body);
+  assert.equal(retry.body.initial_capital,first.body.initial_capital);
+  assert.equal(retry.body.cash,first.body.initial_capital-1000);
+  assert.equal(companies.length,1);
+ });
+ assert.ok(capitals.size>1,'Las empresas pueden recibir importes diferentes');
+});

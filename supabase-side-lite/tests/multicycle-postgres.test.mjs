@@ -32,10 +32,10 @@ test('three and six cycles persist official results for two students', async t =
     const request=async(method,path,token,body)=>{const response=await fetch(`http://127.0.0.1:${server.address().port}/api${path}`,{method,headers:{authorization:`Bearer token${token}`,...(body?{'content-type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});return {status:response.status,body:await response.json()};};
     const costs={basic:30,standard:50,premium:70};
     for (const count of [3,6]) {
-      const game=await request('POST','/games',0,{name:`Partida ${count}`,cycleCount:count,duration:120,capitalMin:30000,capitalMax:30000,costs,events:[]});
+      const game=await request('POST','/games',0,{name:`Partida ${count}`,cycleCount:count,duration:120,capitalMin:20000,capitalMax:100000,costs,events:[]});
       assert.equal(game.status,201);
       const players=[];
-      for(let i=1;i<=2;i++) {const joined=await request('POST','/join',i,{code:game.body.code,name:`Empresa ${i}`});assert.equal(joined.status,201);players.push(joined.body);}
+      for(let i=1;i<=2;i++) {const joined=await request('POST','/join',i,{code:game.body.code,name:`Empresa ${i}`});assert.equal(joined.status,201);assert.ok(joined.body.initial_capital>=20000 && joined.body.initial_capital<=100000);assert.equal(joined.body.initial_capital%10000,0);assert.equal(joined.body.cash,joined.body.initial_capital);players.push(joined.body);}
       for(let n=1;n<=count;n++) {
         const started=await request('POST',`/games/${game.body.id}/start`,0,{});
         assert.equal(started.status,201);assert.equal(started.body.number,n);
@@ -77,6 +77,8 @@ test('three and six cycles persist official results for two students', async t =
           const own=await request('GET',`/games/${game.body.id}`,i+1);
           assert.equal(own.status,200);
           assert.equal(own.body.company.id,players[i].id);
+          assert.equal(own.body.company.initial_capital,players[i].initial_capital);
+          assert.equal(view.body.companies.find(c=>c.id===players[i].id).initial_capital,players[i].initial_capital);
           assert.equal(own.body.results.length,n);
           assert.ok(own.body.results.every(row=>row.company_id===players[i].id));
           assert.deepEqual(own.body.results.find(row=>row.cycle_id===started.body.id).result,expected[i]);

@@ -180,7 +180,7 @@
       editable=open;
       write('lobbyCode',game.code);write('lobbyGameName',game.name);write('lobbyStudent',company.name);write('lobbySegment',company.store || 'Empresa');
       write('studentCycleLabel',cycle?`Ciclo ${cycle.number} de ${game.cycle_count}`:'Esperando inicio');
-      write('roundLabel',cycle?`CICLO ${cycle.number} · ${company.name}`:company.name);write('cashBalance',money(company.cash));write('studentCashResult',money(company.cash));
+      write('roundLabel',cycle?`CICLO ${cycle.number} · ${company.name}`:company.name);write('cashMovement',`Capital inicial: ${money(company.initial_capital)}`);write('cashBalance',money(company.cash));write('studentCashResult',money(company.cash));
       write('studentTimerNote',cycle?.paused_at?'Ciclo pausado':cycle?.close_requested_at?'Procesando resultados':cycle?.status==='closed'?'Ciclo cerrado':cycle?'Ciclo en curso':'Esperando inicio del docente');
       write('studentConnectionStatus',own?.confirmed?'Decisión confirmada.':open?'Puedes tomar tus decisiones.':'Espera la apertura del ciclo o los resultados.');
       if(enter){enter.classList.remove('hidden');enter.disabled=!open;}
