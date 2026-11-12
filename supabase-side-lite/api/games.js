@@ -100,9 +100,14 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         const {rows:[ownCompany]}=await c.query('select id from public.lite_companies where game_id=$1 and student_id=$2',[game.id,req.identity.id]);
         const isTeacher=teacher && game.teacher_id===req.identity.id;
         if (!isTeacher && !ownCompany) throw fail(403,'Sin acceso a esta partida.');
-        const {rows:allCompanies}=await c.query(`select co.id,co.name,co.initial_capital,co.cash,co.inventory,s.name as store
+        const {rows:allCompanies}=await c.query(`select co.id,co.name,co.initial_capital,co.cash,co.inventory,s.name as store,
+          cm.district_id,cm.assignment_mode,di.name as district_name
           from public.lite_companies co join public.lite_stores s on s.id=co.store_id
+          left join public.lite_company_markets cm on cm.game_id=co.game_id and cm.company_id=co.id
+          left join public.lite_districts di on di.id=cm.district_id
           where co.game_id=$1 order by co.name`,[game.id]);
+        const {rows:districts}=await c.query(`select gd.district_id as id,d.name from public.lite_game_districts gd
+          join public.lite_districts d on d.id=gd.district_id where gd.game_id=$1 order by d.name`,[game.id]);
         const {rows:cycles}=await c.query(`select id,game_id,number,starts_at,ends_at,status,event_id,paused_at,
           close_requested_at,clock_timestamp() as server_now from public.lite_cycles where game_id=$1 order by number`,[game.id]);
         const current=cycles.at(-1);
@@ -122,7 +127,7 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
           inventoryValue:x.inventory.reduce((sum,b)=>sum+b.quantity*b.unitCost,0)})))
           .map(x=>({id:x.id,name:x.name,returnPercent:x.returnPercent,...(isTeacher?{cash:x.cash}:{})}));
         const companies=isTeacher?allCompanies:allCompanies.map(x=>x.id===ownCompany?.id?x:{id:x.id,name:x.name,store:x.store});
-        return {game,company:ownCompany?companies.find(x=>x.id===ownCompany.id):null,isTeacher,companies,cycles,decisions,ownDecision,results,ranking};
+        return {game,company:ownCompany?companies.find(x=>x.id===ownCompany.id):null,isTeacher,companies,cycles,decisions,ownDecision,results,ranking,districts:isTeacher?districts:[]};
       });
       return res.json(result);
     } catch(e) { return next(e); }
@@ -185,7 +190,8 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
   app.post('/api/games',async (req,res,next)=>{
     try {
       if (!validConfig(req.body)) throw fail(400,'Configuración inválida.');
-      const {name,cycleCount,capitalMin=20000,capitalMax=100000,costs,events=[]}=req.body;
+      const {name,cycleCount,capitalMin=20000,capitalMax=100000,costs,events=[],markets=false}=req.body;
+      if (typeof markets !== 'boolean') throw fail(400,'Configuración de mercados inválida.');
       const game=await transaction(pool,async c=>{
         await requireCurrentUser(c,req.identity,true);
         let inserted;
@@ -199,6 +205,11 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         }
         if (!inserted) throw fail(503,'No se pudo generar un código.');
         for(const q of qualities) await c.query('insert into public.lite_products(game_id,quality,unit_cost) values($1,$2,$3)',[inserted.id,q,costs[q]]);
+        if (markets) {
+          await c.query("insert into public.lite_game_markets(game_id,assignment_mode) values($1,'random')",[inserted.id]);
+          await c.query(`insert into public.lite_game_districts(game_id,district_id,base_demand,economic_share,standard_share,premium_share)
+            select $1,id,base_demand,economic_share,standard_share,premium_share from public.lite_districts`,[inserted.id]);
+        }
         return inserted;
       });
       return res.status(201).json(game);
@@ -230,11 +241,36 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
           const {rows:[result]}=await c.query(`insert into public.lite_companies(game_id,student_id,name,store_id,initial_capital,cash,brand_name)
             values($1,$2,$3,$4,$5,$5,$6) returning id,game_id,student_id,name,brand_name,store_id,initial_capital,cash,inventory`,
             [game.id,req.identity.id,name.trim(),store.id,capital,brand?.trim()||null]);
+          const {rows:districts}=await c.query('select district_id from public.lite_game_districts where game_id=$1 order by district_id',[game.id]);
+          const {rows:[marketConfig]}=await c.query('select assignment_mode from public.lite_game_markets where game_id=$1',[game.id]);
+          if (marketConfig && !districts.length) throw fail(409,'La partida no tiene distritos habilitados.');
+          if (districts.length) await c.query("insert into public.lite_company_markets(game_id,company_id,district_id,assignment_mode) values($1,$2,$3,'random')",[game.id,result.id,districts[crypto.randomInt(districts.length)].district_id]);
           if(recoverySecret)await c.query('insert into side_lite_private.lite_guest_recovery(company_id,secret_hash) values($1,$2)',[result.id,recoveryHash]);
           return result;
         } catch(e) { if(e.code==='23505') throw fail(409,'Ya participas en esta partida.'); throw e; }
       });
       return res.status(201).json(recoverySecret?{...company,recoverySecret}:company);
+    } catch(e) { return next(e); }
+  });
+  app.put('/api/games/:id/markets/:companyId',async (req,res,next)=>{
+    try {
+      if (!UUID.test(req.params.id) || !UUID.test(req.params.companyId)) throw fail(400,'Selección inválida.');
+      const {mode,districtId}=req.body || {};
+      if (!['manual','random'].includes(mode) || (mode==='manual' && typeof districtId!=='string')) throw fail(400,'Asignación inválida.');
+      const assignment=await transaction(pool,async c=>{
+        await requireCurrentUser(c,req.identity,true);
+        const {rows:[game]}=await c.query('select id,teacher_id,ended_at from public.lite_games where id=$1 for update',[req.params.id]);
+        if (!game || game.teacher_id!==req.identity.id) throw fail(403,'Sin acceso a esta partida.');
+        if (game.ended_at || (await c.query('select 1 from public.lite_cycles where game_id=$1 limit 1',[game.id])).rowCount) throw fail(409,'La asignación está bloqueada después del inicio.');
+        const {rows:districts}=await c.query('select district_id from public.lite_game_districts where game_id=$1 order by district_id',[game.id]);
+        const district=mode==='random' ? districts[crypto.randomInt(districts.length || 1)]?.district_id : districtId;
+        if (!districts.some(x=>x.district_id===district)) throw fail(400,'Distrito no habilitado.');
+        const {rows:[row]}=await c.query(`update public.lite_company_markets set district_id=$3,assignment_mode=$4
+          where game_id=$1 and company_id=$2 returning company_id,district_id,assignment_mode`,[game.id,req.params.companyId,district,mode]);
+        if (!row) throw fail(404,'Empresa no encontrada.');
+        return row;
+      });
+      return res.json(assignment);
     } catch(e) { return next(e); }
   });
   app.post('/api/guest/recover',async(req,res,next)=>{
@@ -267,6 +303,11 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         const number=(previous?.number || 0)+1;
         if(number>game.cycle_count) throw fail(409,'La partida ha terminado.');
         if(!(await c.query('select 1 from public.lite_companies where game_id=$1 limit 1',[game.id])).rowCount) throw fail(400,'La partida no tiene participantes.');
+        const {rows:[unassigned]}=await c.query(`select exists(select 1 from public.lite_game_markets gm
+          join public.lite_companies co on co.game_id=gm.game_id
+          left join public.lite_company_markets cm on cm.game_id=co.game_id and cm.company_id=co.id
+          where gm.game_id=$1 and cm.company_id is null) as missing`,[game.id]);
+        if (unassigned?.missing) throw fail(409,'Todas las empresas deben tener un distrito asignado.');
         const event=game.enabled_events.length ? game.enabled_events[crypto.randomInt(game.enabled_events.length)] : null;
         // The insert trigger sets the two timestamps from the database clock.
         const {rows:[created]}=await c.query(`insert into public.lite_cycles(game_id,number,ends_at,event_id)

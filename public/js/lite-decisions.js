@@ -14,7 +14,7 @@
     dispose?.();
     $('decisionMenu')?.classList.add('lite-decision-mode');
     let active = true, data = null, draft = null, draftCycle = null, selected = 0, busy = false, deadline = null;
-    let refreshing = false, touched = new Set(), editable = false, seenResultCycles = null;
+    let refreshing = false, touched = new Set(), editable = false, seenResultCycles = null, marketWheelStarted = false;
     const entries = [
       {key:'quality', label:'Calidad', icon:'insumos.svg', description:'Selecciona la calidad de los bolsos.'},
       {key:'quantity', label:'Cantidad', icon:'inversiones.svg', description:'Elige cuántos bolsos producir.'},
@@ -166,6 +166,10 @@
     function render(next, started) {
       data=next; const game=data.game, company=data.company, cycle=data.cycles?.at(-1), own=data.ownDecision;
       if (!company) throw new Error('No hay una empresa asociada a esta sesión.');
+      if (!marketWheelStarted && cycle && company.district_id && global.SideRuleta && !$('studentLobby')?.classList.contains('hidden')) {
+        marketWheelStarted=true;
+        void global.SideRuleta.playOnce({partidaId:gameId,companyId:company.id,marketId:company.district_id});
+      }
       const ownResults=(data.results||[]).filter(row=>row.company_id===company.id).slice().sort((a,b)=>Number(a.number)-Number(b.number));
       const resultCycles=new Set(ownResults.map(row=>String(row.cycle_id || row.number)));
       const justClosed=seenResultCycles && [...resultCycles].some(id=>!seenResultCycles.has(id));
@@ -178,7 +182,7 @@
       deadline=cycle && cycle.status==='open' && !cycle.paused_at ? started+Math.max(0,Date.parse(cycle.ends_at)-Date.parse(cycle.server_now)) : null;
       const open=!!cycle && cycle.status==='open' && !cycle.paused_at && !cycle.close_requested_at && !own?.confirmed && deadline>performance.now();
       editable=open;
-      write('lobbyCode',game.code);write('lobbyGameName',game.name);write('lobbyStudent',company.name);write('lobbySegment',company.store || 'Empresa');
+      write('lobbyCode',game.code);write('lobbyGameName',game.name);write('lobbyStudent',company.name);write('lobbySegment',cycle && company.district_name ? 'Mercado: '+company.district_name : company.store || 'Empresa');
       write('studentCycleLabel',cycle?`Ciclo ${cycle.number} de ${game.cycle_count}`:'Esperando inicio');
       write('roundLabel',cycle?`CICLO ${cycle.number} · ${company.name}`:company.name);write('cashMovement',`Capital inicial: ${money(company.initial_capital)}`);write('cashBalance',money(company.cash));write('studentCashResult',money(company.cash));
       write('studentTimerNote',cycle?.paused_at?'Ciclo pausado':cycle?.close_requested_at?'Procesando resultados':cycle?.status==='closed'?'Ciclo cerrado':cycle?'Ciclo en curso':'Esperando inicio del docente');

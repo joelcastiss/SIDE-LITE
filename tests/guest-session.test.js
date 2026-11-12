@@ -10,6 +10,8 @@ function fixture(){const companies=[],hashes=new Map();const client={release(){}
  if(q.includes('from public.lite_games where code='))return {rows:['AABBCCDD','A7K2M'].includes(args[0])?[{id:game,capital_min:20000,capital_max:100000,ended_at:null}]:[]};
  if(q.includes('api_find_guest_join')){const found=companies.find(c=>c.student_id===args[0]&&c.game_id===args[2]&&hashes.get(c.id)?.equals(args[3]));return {rows:found?[found]:[]}}
  if(q.includes('from public.lite_cycles'))return {rows:[]};if(q.includes('from public.lite_stores'))return {rows:[{id:store}]};
+ if(q.includes('from public.lite_game_districts'))return {rows:[]};
+ if(q.includes('from public.lite_game_markets'))return {rows:[]};
  if(q.startsWith('insert into public.lite_companies')){if(companies.some(c=>c.student_id===args[1]||c.name.toLowerCase()===args[2].toLowerCase()))throw Object.assign(Error('duplicate'),{code:'23505'});const c={id:randomUUID(),game_id:args[0],student_id:args[1],name:args[2],brand_name:args[5],initial_capital:args[4],cash:args[4],inventory:[]};companies.push(c);return {rows:[c]}}
  if(q.startsWith('insert into side_lite_private.lite_guest_recovery')){hashes.set(args[0],Buffer.from(args[1]));return {rows:[]}}
  if(q.includes('api_recover_guest')){const found=companies.find(c=>c.game_id===game&&args[2]==='AABBCCDD'&&hashes.get(c.id)?.equals(args[3]));if(!found)return {rows:[]};found.student_id=args[0];hashes.set(found.id,Buffer.from(args[4]));return {rows:[{id:found.id,game_id:found.game_id,name:found.name}]}}
