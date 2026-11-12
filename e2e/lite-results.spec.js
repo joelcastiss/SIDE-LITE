@@ -13,6 +13,7 @@ for(const viewport of [{width:1366,height:768},{width:390,height:844}])test(`res
     window.SIDLiteGame={getGame:async()=>({game:{name:'Prueba',code:'DEMO',cycle_count:3,costs:{basic:10,standard:20,premium:30}},company:{id:'mine',name:'Mi empresa',cash:1050,initial_capital:1000},cycles:[{id:'c1',number:1,status:'closed'}],ownDecision:null,ranking:[{id:'other',name:'Empresa 2',returnPercent:20},{id:'mine',name:'Mi empresa',returnPercent:10}],results:[{company_id:'mine',number:1,result}]}),request:async()=>({})};
     window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
   });
+  await page.getByRole('button',{name:'Ver noticias y resultados'}).click();
   await expect(page.getByText('¿Qué pasó con mi empresa?')).toBeAttached();
   await expect(page.getByText(/Tu posición: 2 de 2/)).toBeAttached();
   await expect(page.getByText('Valor del inventario FIFO: S/ 50.',{exact:false})).toBeAttached();
@@ -35,6 +36,7 @@ test('actualiza resultados propios, conserva historial y permite reintentar',asy
   window.__fail=false;window.SIDLiteGame={getGame:async()=>{if(window.__fail)throw Error('fallo');return structuredClone(window.__game)},request:async()=>({})};
   window.__result=result;window.__view=window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
  });
+ await page.getByRole('button',{name:'Ver noticias y resultados'}).click();
  await expect(page.locator('#studentTimerNote')).toHaveText('Procesando resultados oficiales');
  await expect(page.locator('#studentFinancialDetail')).toContainText('Aún no hay resultados oficiales');
  await page.evaluate(()=>{window.__game.cycles[0].status='closed';window.__game.results=[{company_id:'mine',number:1,decision:{quantity:20,price:20},result:window.__result},{company_id:'other',number:1,result:{...window.__result,revenue:99999}}]});

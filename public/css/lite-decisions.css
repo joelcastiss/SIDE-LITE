@@ -202,3 +202,19 @@
 @media (min-width:801px) and (min-height:651px) {
  #decisionMenu.lite-decision-mode #decisionFormScroll { overflow-y:auto; overflow-x:hidden; }
 }
+
+/* Sala de espera Lite: identidad y acceso en una sola vista. */
+.lite-waiting .waiting-tutorial-mount,.lite-waiting .waiting-clock{display:none}
+.lite-waiting .student-waiting-content{max-width:1050px;margin:auto}
+.lite-waiting .waiting-heading h1{font-size:clamp(1.8rem,4vw,3rem)}
+.lite-waiting-details{margin:1.5rem 0;padding:clamp(1rem,3vw,2rem);border:1px solid rgba(95,190,255,.35);border-radius:18px;background:rgba(4,22,55,.8);color:#fff}
+.lite-waiting-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.lite-waiting-grid div{padding:1rem;border-radius:12px;background:rgba(31,100,164,.2)}
+.lite-waiting-grid span,.lite-waiting-grid strong{display:block;overflow-wrap:anywhere}
+.lite-waiting-grid span{font-size:.8rem;color:#a9d5f8;margin-bottom:.4rem}
+.lite-waiting-details h2{font-size:1.1rem;margin:1.5rem 0 .5rem}
+.lite-waiting-details ul{display:flex;flex-wrap:wrap;gap:.5rem;list-style:none;padding:0}
+.lite-waiting-details li{border:1px solid rgba(95,190,255,.35);border-radius:999px;padding:.4rem .8rem}
+.lite-waiting-actions{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin-top:1.5rem}
+.lite-waiting-actions .lobby-start{width:auto;max-width:100%}
+@media(max-width:600px){.lite-waiting-grid{grid-template-columns:1fr}.lite-waiting-actions>*{width:100%!important}.lite-waiting-details{margin:1rem 0}}

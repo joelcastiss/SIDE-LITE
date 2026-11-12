@@ -105,9 +105,27 @@
     if(save){save.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12l3 3v15H4V3h1zm3 0v6h8V3M8 21v-8h8v8"/></svg>';save.querySelector('small').textContent='Guarda la sección; puedes editar';}
     if(send){send.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3l-6.5 18-3-7-8.5-2.5zm8.5 2.5L21 3"/></svg>';send.querySelector('small').textContent='Confirma; no editable en este ciclo';}
     replaceButton('exitDecisions',()=>showScreen('studentLobby'));
-    const enter=replaceButton('enterDecisionsBtn',()=>{showScreen('decisionMenu');select(selected);});
+    const enter=replaceButton('enterDecisionsBtn',()=>{if (!editable || deadline === null || performance.now() >= deadline) return; showScreen('decisionMenu');select(selected);});
+    enter.classList.remove('hidden'); enter.disabled=true;
+    const waiting=$('studentWaiting'), dashboard=document.querySelector('#studentLobby .dashboard-inner');
+    const enterParent=enter.parentNode, enterNext=enter.nextSibling;
+    const lobbyDetails=document.createElement('div'); lobbyDetails.className='lite-waiting-details';
+    lobbyDetails.innerHTML='<div class="lite-waiting-grid"><div><span>Código de partida</span><strong id="liteWaitingCode">—</strong></div><div><span>Estado</span><strong id="liteWaitingState">Esperando al docente</strong></div><div><span>Tu mercado</span><strong id="liteWaitingMarket">Pendiente de asignación</strong></div></div><section><h2>Empresas inscritas</h2><ul id="liteWaitingParticipants"></ul></section><div class="lite-waiting-actions"></div>';
+    const waitingTitle=waiting.querySelector('.waiting-heading h1'), previousWaitingTitle=waitingTitle.textContent; waitingTitle.textContent='Sala de espera';
+    waiting.classList.add('lite-waiting'); waiting.classList.remove('hidden');
+    waiting.querySelector('.waiting-footer').before(lobbyDetails);
+    const waitingActions=lobbyDetails.querySelector('.lite-waiting-actions'); waitingActions.append(enter);
+    const showResults=document.createElement('button'); showResults.type='button'; showResults.className='ghost-btn'; showResults.textContent='Ver noticias y resultados';
+    const returnWaiting=document.createElement('button'); returnWaiting.type='button'; returnWaiting.className='ghost-btn lite-return-waiting'; returnWaiting.textContent='Volver a la sala de espera';
+    waitingActions.append(showResults); dashboard.querySelector('.lobby-actions').prepend(returnWaiting);
+    let retry;
+    const displayWaiting=()=>{waiting.classList.remove('hidden');dashboard.classList.add('hidden');if(retry)waitingActions.append(retry);};
+    showResults.addEventListener('click',()=>{waiting.classList.add('hidden');dashboard.classList.remove('hidden');if(retry)dashboard.querySelector('.lobby-actions').append(retry);});
+    returnWaiting.addEventListener('click',displayWaiting);
+    const waitingBack=$('waitingBackToProfiles'); const leaveWaiting=()=>$('backToProfiles')?.click(); waitingBack?.addEventListener('click',leaveWaiting);
+    displayWaiting();
     const results=$('studentFinancialDetail');
-    const retry=document.createElement('button');retry.type='button';retry.className='ghost-btn hidden';retry.textContent='Reintentar actualización';retry.addEventListener('click',()=>void refresh());$('studentConnectionStatus')?.after(retry);
+    retry=document.createElement('button');retry.type='button';retry.className='ghost-btn hidden';retry.textContent='Reintentar actualización';retry.addEventListener('click',()=>void refresh());waitingActions.append(retry);
     function refreshResults() { if (results && data) global.SIDELiteResults.render(results, data); }
     function updateEstimate() {
       if (!draft || !data) return;
@@ -169,7 +187,7 @@
     function render(next, started) {
       data=next; const game=data.game, company=data.company, cycle=data.cycles?.at(-1), own=data.ownDecision;
       if (!company) throw new Error('No hay una empresa asociada a esta sesión.');
-      if (!marketWheelStarted && cycle && company.district_id && global.SideRuleta && !$('studentLobby')?.classList.contains('hidden')) {
+      if (!marketWheelStarted && company.district_id && global.SideRuleta && !$('studentLobby')?.classList.contains('hidden')) {
         marketWheelStarted=true;
         void global.SideRuleta.playOnce({partidaId:gameId,companyId:company.id,marketId:company.district_id});
       }
@@ -185,6 +203,13 @@
       deadline=cycle && cycle.status==='open' && !cycle.paused_at ? started+Math.max(0,Date.parse(cycle.ends_at)-Date.parse(cycle.server_now)) : null;
       const open=!!cycle && cycle.status==='open' && !cycle.paused_at && !cycle.close_requested_at && !own?.confirmed && deadline>performance.now();
       editable=open;
+      write('waitingGameName',`${game.name} · ${company.name}`); write('liteWaitingCode',game.code);
+      write('liteWaitingState',cycle?.paused_at?'Ciclo pausado':cycle?.close_requested_at?'Procesando resultados':cycle?.status==='open'?'Partida en curso':cycle?.status==='closed'?'Ciclo cerrado':'Esperando inicio del docente');
+      write('liteWaitingMarket',company.district_name || 'Pendiente de asignación');
+      write('waitingCompanies',`${(data.companies || []).length} empresas inscritas`);
+      const participants=$('liteWaitingParticipants'); participants.replaceChildren();
+      for(const participant of data.companies || []) { const item=document.createElement('li'); item.textContent=participant.name; participants.append(item); }
+      write('studentIntegrationNotice',open?'La partida está habilitada. Ya puedes ingresar al menú de decisiones.':'Espera a que el docente habilite el ciclo.');
       write('lobbyCode',game.code);write('lobbyGameName',game.name);write('lobbyStudent',company.name);write('lobbySegment',cycle && company.district_name ? 'Mercado: '+company.district_name : company.store || 'Empresa');
       write('studentCycleLabel',cycle?`Ciclo ${cycle.number} de ${game.cycle_count}`:'Esperando inicio');
       write('roundLabel',cycle?`CICLO ${cycle.number} · ${company.name}`:company.name);write('cashMovement',`Capital inicial: ${money(company.initial_capital)}`);write('cashBalance',money(company.cash));write('studentCashResult',money(company.cash));
@@ -203,7 +228,7 @@
       const statement=$('studentIncomeStatement');
       if(statement){statement.replaceChildren();const heading=document.createElement('strong');heading.textContent='ESTADO DE RESULTADOS';statement.append(heading);
         const line=document.createElement('span');line.textContent=last ? `Ingresos ${money(last.revenue)} · costo de ventas ${money(last.costOfSales)} · marketing ${money(last.marketing)} · utilidad ${money(last.profit)}` : 'Aún no hay resultados oficiales.';statement.append(line);}
-      if (cycle?.status === 'open' && cycle.event_id && global.SideEventFlash) {
+      if (cycle?.status === 'open' && cycle.event_id && global.SideEventFlash && waiting.classList.contains('hidden')) {
         const news = global.SIDELiteEvents.describe(cycle.event_id);
         global.SideEventFlash.show({partida:gameId, ciclo:cycle.id || cycle.number, id:cycle.event_id,
           titulo:news.name === 'Evento no disponible' ? 'Noticia del mercado' : news.name,
@@ -237,7 +262,7 @@
     select(0); showScreen('studentLobby');
     const poll=global.setInterval(refresh,5000), clock=global.setInterval(updateClock,250);
     const back=$('backToProfiles'); const onBack=()=>dispose?.(); back?.addEventListener('click',onBack);
-dispose=()=>{bagViews?.dispose();active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
+dispose=()=>{waitingBack?.removeEventListener('click',leaveWaiting); enterParent.insertBefore(enter,enterNext); lobbyDetails.remove(); returnWaiting.remove(); waitingTitle.textContent=previousWaitingTitle; waiting.classList.remove('lite-waiting'); waiting.classList.add('hidden'); dashboard.classList.remove('hidden'); bagViews?.dispose();active=false;global.clearTimeout(statusTimer);global.clearInterval(poll);global.clearInterval(clock);back?.removeEventListener('click',onBack);status.remove();retry.remove();context.remove();formScroll.insertBefore(footer,footerNext);$('decisionMenu')?.classList.remove('lite-decision-mode');};
     void refresh();
     return {refresh, dispose};
   }
