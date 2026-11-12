@@ -3,7 +3,7 @@ create or replace function pg_temp.side_market_demand(p_base integer, p_shares f
 returns jsonb language plpgsql set search_path = '' as $$
 declare
   total integer := floor(p_base*p_factor); pools integer[]; raw float8[]; remaining integer;
-  weights float8[] := array[0,0,0]::float8[]; item jsonb; ids text[] := array[]::text[];
+  weights float8[] := array[1,1,1]::float8[]; item jsonb; ids text[] := array[]::text[];
   all_weights float8[] := array[]::float8[]; w float8; price_factor float8; market_factor float8;
   quality text; v_amount integer; idx integer := 0; seg integer; i integer; answer jsonb := '{}'::jsonb; allocation integer;
 begin

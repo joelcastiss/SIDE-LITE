@@ -35,8 +35,9 @@ export function allocateDistrictDemand({baseDemand, shares, companies, demandFac
     if (remainder-- > 0) pools[i]++;
   }
   for (let segment=0;segment<3;segment++) {
-    const weight=eligible.reduce((sum,c)=>sum+c.weights[segment],0);
-    if (!weight) continue;
+    // The outside option represents shoppers who buy elsewhere or do not buy.
+    // It prevents price and marketing from cancelling out for a sole seller.
+    const weight=1+eligible.reduce((sum,c)=>sum+c.weights[segment],0);
     for (const c of eligible) allocations[c.id]+=Math.floor(pools[segment]*c.weights[segment]/weight);
   }
   return allocations;

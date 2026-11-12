@@ -19,3 +19,8 @@ test('no hay ventas para decisiones ausentes y se rechazan entradas inválidas',
  assert.throws(()=>allocateDistrictDemand({baseDemand:10,shares:[.3,.4,.2],companies:[]}));
  assert.throws(()=>allocateDistrictDemand({baseDemand:10,shares:[.3,.4,.3],companies:[{id:'a'},{id:'a'}]}));
 });
+
+test('precio y publicidad afectan la demanda aun sin competidores',()=>{
+ const run=(price,marketingAmount)=>allocateDistrictDemand({baseDemand:900,shares:[.5,.35,.15],companies:[{id:'a',decision:decision('basic',price,marketingAmount)}]}).a;
+ assert.ok(run(50,0)>run(100,0));assert.ok(run(100,10000)>run(100,0));
+});
