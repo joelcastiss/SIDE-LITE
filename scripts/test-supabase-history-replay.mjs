@@ -49,6 +49,6 @@ try {
   const {rows: [result]} = await db.query("select to_regclass('side_lite_private.migration_replay_marker') is null as cleaned");
   if (!result.cleaned) throw Error('El marcador temporal de reconstrucción no se eliminó.');
 } finally { await db.end(); }
-const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', 'supabase-side-lite/tests/games-postgres.test.mjs', 'supabase-side-lite/tests/join-limiter-postgres.test.mjs', 'supabase-side-lite/tests/multicycle-postgres.test.mjs', 'supabase-side-lite/tests/podium-postgres.test.mjs', 'supabase-side-lite/tests/manual-close-postgres.test.mjs'], {stdio: 'inherit', env: process.env});
+const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', 'supabase-side-lite/tests/games-postgres.test.mjs', 'supabase-side-lite/tests/markets-postgres.test.mjs', 'supabase-side-lite/tests/join-limiter-postgres.test.mjs', 'supabase-side-lite/tests/multicycle-postgres.test.mjs', 'supabase-side-lite/tests/podium-postgres.test.mjs', 'supabase-side-lite/tests/manual-close-postgres.test.mjs'], {stdio: 'inherit', env: process.env});
 if (result.error) throw result.error;
 if (result.status !== 0) process.exit(result.status || 1);
