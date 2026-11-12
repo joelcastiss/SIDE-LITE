@@ -27,12 +27,13 @@ try {
     }
     await run(path.join('supabase-side-lite/supabase/migrations',migration));
   }
+  await run('supabase/migrations/20261112124748_district_market_catalog.sql');
   await run('supabase-side-lite/tests/legacy-tables-security.sql');
   await run('supabase-side-lite/tests/postgres-rls-smoke.sql');
   await run('supabase-side-lite/tests/postgres-server-roles.sql');
   await run('supabase-side-lite/tests/postgres-auth-bridge.sql');
   await run('supabase-side-lite/tests/postgres-mfa.sql');
 } finally { await db.end(); }
-const test=spawnSync(process.execPath,['--test','--test-concurrency=1','supabase-side-lite/tests/games-postgres.test.mjs','supabase-side-lite/tests/join-limiter-postgres.test.mjs','supabase-side-lite/tests/multicycle-postgres.test.mjs','supabase-side-lite/tests/podium-postgres.test.mjs','supabase-side-lite/tests/manual-close-postgres.test.mjs'],{stdio:'inherit',env:process.env});
+const test=spawnSync(process.execPath,['--test','--test-concurrency=1','supabase-side-lite/tests/games-postgres.test.mjs','supabase-side-lite/tests/markets-postgres.test.mjs','supabase-side-lite/tests/join-limiter-postgres.test.mjs','supabase-side-lite/tests/multicycle-postgres.test.mjs','supabase-side-lite/tests/podium-postgres.test.mjs','supabase-side-lite/tests/manual-close-postgres.test.mjs'],{stdio:'inherit',env:process.env});
 if(test.error) throw test.error;
 if(test.status!==0) process.exit(test.status || 1);
