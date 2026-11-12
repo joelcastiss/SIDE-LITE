@@ -3,6 +3,13 @@
   const form = document.getElementById('studentForm');
   if (!form || !global.SIDLiteGame) return;
   let mounted = false;
+  let admissionVersion = 0;
+  let studentSelected = false;
+  document.querySelectorAll('.profile-card').forEach(card => card.addEventListener('click', () => {
+    admissionVersion++;
+    studentSelected = card.dataset.profile === 'student';
+    if (studentSelected && !new URLSearchParams(global.location.search).has('partida')) void resume();
+  }, true));
   const code = document.getElementById('gameCode');
   if (code) code.placeholder = 'Ej. A7K2M';
   async function openCompany(company) {
@@ -60,17 +67,18 @@
   document.getElementById('backToProfiles')?.addEventListener('click', () => { mounted = false; global.localStorage.removeItem('side-lite-guest-last'); });
   let resuming = false;
   async function resume() {
-    if (resuming || mounted) return;
+    if (!studentSelected || resuming || mounted) return;
+    const version = admissionVersion;
     resuming = true;
     try {
       const last = JSON.parse(global.localStorage.getItem('side-lite-guest-last') || 'null');
       if (!last?.gameId || !last.code || !global.localStorage.getItem('side-lite-guest-' + last.gameId)) return;
       const company = await global.SIDLiteGame.joinGame({code: last.code, name: 'Estudiante', brand: 'Empresa'});
-      if (company.game_id === last.gameId) await openCompany(company);
+      if (studentSelected && version === admissionVersion && company.game_id === last.gameId) await openCompany(company);
     } catch { /* Keep the saved recovery information for the next attempt. */ }
     finally { resuming = false; }
   }
   global.addEventListener('online', resume);
-  // Invitation links always show the prefilled form; submitting it safely reopens a remembered company.
-  if (!new URLSearchParams(global.location.search).has('partida')) void resume();
+  // Restore only after explicitly selecting student; a saved guest must never
+  // override teacher login or the teacher-session check on this page.
 })(window);

@@ -189,7 +189,13 @@
   }
   global.SIDLiteGame = {
     request, createGame, joinGame, recoverGame,
-    getGame: id => request('/games/' + id),
+    getGame: async id => {
+      const role = activeRole;
+      const game = await request('/games/' + id, 'GET', undefined, role);
+      if (typeof game?.isTeacher !== 'boolean' || game.isTeacher !== (role === 'teacher'))
+        throw new Error('La sesión no tiene el permiso esperado para esta partida. Vuelve a iniciar sesión.');
+      return game;
+    },
     startGame: id => request('/games/' + id + '/start', 'POST', {}, 'teacher'),
     useRole: role => { if (!['teacher', 'student'].includes(role)) throw new Error('Perfil inválido.'); activeRole = role; }
   };
