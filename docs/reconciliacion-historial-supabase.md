@@ -14,6 +14,8 @@ temporal permite reproducir la instantánea de permisos que la actualización
 incremental verifica; se elimina antes de ejecutar esa actualización. Los permisos
 amplios de las tablas heredadas se revocan en la misma migración. En una base
 existente con esas versiones registradas, Supabase no vuelve a ejecutar el SQL.
+La reconstrucción conserva los finales de línea históricos de las funciones antes
+de verificar sus hashes, tanto en Windows como en Linux.
 
 Las versiones históricas que instalaron y retiraron temporalmente la extensión
 HTTP se conservan como operaciones vacías: su efecto final era ninguno y así no

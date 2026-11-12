@@ -23,7 +23,8 @@ try {
       // Existing noninstitutional accounts must survive the new signup rule.
       await db.query("insert into auth.users(id,email,is_anonymous) values ('78000000-0000-4000-8000-000000000001','existing@example.test',false)");
     }
-    await db.query(await readFile(`supabase/migrations/${file}`, 'utf8'));
+    // Exercise the LF checkout used by Linux CI even when developing on Windows.
+    await db.query((await readFile(`supabase/migrations/${file}`, 'utf8')).replace(/\r\n/g, '\n'));
     console.log(`OK ${file}`);
   }
   await db.query("update auth.users set email=email where id='78000000-0000-4000-8000-000000000001'");

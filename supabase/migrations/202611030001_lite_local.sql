@@ -6,7 +6,7 @@ begin
     if to_regclass('public.lite_profiles') is not null then
       raise exception 'SIDE-LITE baseline requires an empty application schema';
     end if;
-    execute $side_core$
+    execute replace(replace($side_core$
 -- SIDE-LITE: local preparation only. Review and test before any remote use.
 -- The application server must authenticate every write and use transactions.
 -- This migration deliberately does not expose write RPCs, configure Cron,
@@ -251,7 +251,7 @@ create policy cycles_member_read on public.lite_cycles for select to authenticat
 create policy decisions_private_read on public.lite_decisions for select to authenticated using (side_lite_private.owns_company(company_id) or side_lite_private.is_approved_teacher(game_id));
 create policy results_private_read on public.lite_results for select to authenticated using (side_lite_private.owns_company(company_id) or side_lite_private.is_approved_teacher(game_id));
 
-$side_core$;
+$side_core$, E'\r\n', E'\n'), E'\n', E'\r\n');
     create table side_lite_private.migration_replay_marker (id boolean primary key default true check(id));
     revoke all on side_lite_private.migration_replay_marker from public, anon, authenticated, service_role;
   end if;
