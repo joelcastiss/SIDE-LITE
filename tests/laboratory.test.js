@@ -26,3 +26,12 @@ test('el gráfico original de evolución usa cierres reales y no une ciclos ause
  assert.equal((html.match(/stroke="#167f9d"/g)||[]).length,1);
  assert.match(laboratoryLineChart('Sin datos',[[1,null]]),/No disponible/);
 });
+
+test('evolución Lite conserva huecos y línea de cero en tres ciclos',()=>{
+ const chart=laboratoryLineChart('Evolución de la utilidad',[[1,1000],[2,null],[3,-500]],'S/',{student:true});
+ assert.match(chart,/Ciclo 2: No disponible/);
+ assert.match(chart,/lab-evolution-zero/);
+ assert.equal((chart.match(/<line /g)||[]).length,0);
+ assert.match(chart,/>C3<\/summary>/);
+ assert.match(laboratoryLineChart('Evolución',[], 'S/',{student:true}),/faltan cierres/);
+});

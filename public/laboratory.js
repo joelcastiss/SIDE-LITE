@@ -15,10 +15,11 @@ export function simulateLaboratory({cash=30000,costs={basic:50,standard:80,premi
 
 // Adapted from SIDE1 js/laboratorio.js: lineChart. Only the source of cycle
 // numbers and monetary values differs; no SIDE1 backend or economic model is used.
-export function laboratoryLineChart(title, rows, unit='S/') {
+export function laboratoryLineChart(title, rows, unit='S/', options={}) {
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const fmt=(n,u)=>n==null?'No disponible':u==='S/'?'S/ '+n.toLocaleString('es-PE',{maximumFractionDigits:2}):n.toLocaleString('es-PE',{maximumFractionDigits:2})+' '+u;
  const normalized=rows.map(([cycle,value])=>[Number(cycle),value==null?null:Number(value)]).filter(([cycle,value])=>Number.isSafeInteger(cycle)&&cycle>0&&cycle<=6&&(value===null||Number.isFinite(value))).sort((a,b)=>a[0]-b[0]);
+ if(!options.student){
  const valid=normalized.filter(r=>r[1]!=null);if(!valid.length)return `<div class="lab-chart"><h3>${esc(title)}</h3><p>No disponible: faltan cierres con este indicador.</p></div>`;
  const vals=valid.map(r=>r[1]),min=Math.min(0,...vals),max=Math.max(0,...vals),range=max-min||1;
  const last=Math.max(1,...normalized.map(r=>r[0])),x=c=>last===1?300:50+(c-1)*500/(last-1),y=v=>180-(v-min)/range*150;
@@ -27,6 +28,19 @@ export function laboratoryLineChart(title, rows, unit='S/') {
  const dots=points.filter(Boolean).map(p=>`<g tabindex="0"><title>Ciclo ${p.cycle}: ${esc(fmt(p.value,unit))}</title><circle cx="${p.x}" cy="${p.y}" r="6" fill="#126582"/><text x="${p.x}" y="${Math.max(14,p.y-12)}" text-anchor="middle" class="lab-point-value">${esc(fmt(p.value,unit))}</text></g>`).join('');
  const labels=Array.from({length:last},(_,i)=>`<text x="${x(i+1)}" y="205" text-anchor="middle">${i+1}</text>`).join('');
  return `<div class="lab-chart"><div class="lab-chart-head"><h3>${esc(title)}</h3><span>Escala: ${esc(unit)} · eje horizontal: ciclo</span></div><svg class="lab-line-chart" viewBox="0 0 600 220" role="img" aria-label="${esc(title+': '+normalized.map(([c,v])=>'ciclo '+c+' '+fmt(v,unit)).join('; '))}"><line x1="50" y1="${y(0)}" x2="550" y2="${y(0)}" stroke="#55748a" stroke-width="1" stroke-dasharray="5 4"/><text x="12" y="${y(0)+4}">0</text>${segments}${dots}${labels}</svg><p class="lab-line-note">Cada punto es un cierre disponible; una interrupción indica datos ausentes.</p></div>`;
+ }
+ const valid=normalized.filter(r=>r[1]!=null);
+ const head=`<div class="lab-chart-head"><h3>${esc(title)}</h3></div>`;
+ if(!valid.length)return `<div class="lab-chart lab-evolution">${head}<p class="lab-evolution-empty">No disponible: faltan cierres con este indicador.</p></div>`;
+ if(valid.length===1){const [cycle,value]=valid[0];return `<div class="lab-chart lab-evolution">${head}<div class="lab-evolution-single" role="img" aria-label="${esc(`Ciclo ${cycle}: ${fmt(value,unit)}`)}"><span class="lab-evolution-dot" aria-hidden="true"></span><div><strong>Ciclo ${cycle} · utilidad ${esc(fmt(value,unit))}</strong><p>La evolución aparecerá al cerrar más ciclos.</p></div></div></div>`;}
+ const vals=valid.map(r=>r[1]),min=Math.min(0,...vals),max=Math.max(0,...vals),range=max-min||1;
+ const last=Math.max(1,...normalized.map(r=>r[0])),x=c=>(c-1)*100/(last-1),y=v=>100-(v-min)/range*100;
+ const points=normalized.map(([cycle,value])=>value==null?null:{cycle,value,x:x(cycle),y:y(value)});
+ let segments='';for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(a&&b&&b.cycle===a.cycle+1)segments+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="var(--lab-cyan)" vector-effect="non-scaling-stroke" stroke-width="3"/>`;}
+ const dots=points.filter(Boolean).map(p=>`<i class="lab-evolution-mark" style="left:${p.x}%;top:${p.y}%"></i>`).join('');
+ const ticks=[max,(max+min)/2,min];
+ const desc=title+': '+normalized.map(([c,v])=>'Ciclo '+c+': '+fmt(v,unit)).join('; ');
+ return `<div class="lab-chart lab-evolution">${head}<div class="lab-evolution-plot"><div class="lab-evolution-y">${ticks.map(v=>`<span>${esc(fmt(v,unit))}</span>`).join('')}</div><div class="lab-evolution-area" role="img" aria-label="${esc(desc)}"><div class="lab-evolution-grid"><i></i><i></i><i></i>${min<0&&max>0?`<i class="lab-evolution-zero" style="top:${y(0)}%"></i>`:''}</div><svg class="lab-line-chart" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${segments}</svg>${dots}</div><div aria-hidden="true"></div><div class="lab-evolution-cycles" style="--lab-cycle-count:${last}">${Array.from({length:last},(_,i)=>{const row=normalized.find(r=>r[0]===i+1);return `<details><summary title="Ciclo ${i+1}: ${esc(fmt(row?.[1]??null,unit))}">C${i+1}</summary><span>Ciclo ${i+1}: ${esc(fmt(row?.[1]??null,unit))}</span></details>`;}).join('')}</div></div><p class="lab-line-note">Toca un ciclo para ver su valor. Las interrupciones indican datos ausentes.</p></div>`;
 }
 
 /** Original SIDE laboratory, backed only by authorized closed results and a local Lite simulation. */

@@ -27,3 +27,12 @@ test('muestra la lista vacía y permite volver a consultar ante un error',async(
  await page.goto(base+'/fixture');await page.evaluate(()=>document.dispatchEvent(new CustomEvent('side-lite-laboratory-open')));
  await expect(page.locator('#lab-status')).toHaveText('No hay partidas disponibles.');await page.evaluate(()=>window.fail=true);await page.getByRole('button',{name:'Actualizar'}).click();await expect(page.locator('#lab-status')).toHaveText('Servicio no disponible');
 });
+
+test('presenta un ciclo y distingue utilidad positiva y negativa',async({page})=>{
+ await page.addInitScript(()=>{window.SIDLiteGame={request:async(path)=>path==='/games'?[{id:'game',name:'Prueba',code:'ABC'}]:{cycles:[{id:'one',number:1},{id:'two',number:2}],companies:[{id:'company',name:'Empresa'}],records:[{cycle_id:'one',company_id:'company',result:{revenue:10000,profit:1000,cashEnd:41000,sold:100,costOfSales:8000,marketing:1000}},{cycle_id:'two',company_id:'company',result:{revenue:10000,profit:-1000,cashEnd:1250000,sold:100,costOfSales:10000,marketing:1000}}]}}});
+ await page.goto(base+'/fixture');await page.evaluate(()=>document.dispatchEvent(new CustomEvent('side-lite-laboratory-open')));
+ const table=page.getByRole('table',{name:'Resultado económico'});await expect(table).toBeVisible();
+ await expect(table.locator('.lab-finance-profit')).toHaveClass(/is-positive/);await expect(table.locator('.lab-finance-profit td')).toContainText('+S/ 1,000');
+ await expect(page.locator('#lab-content')).toContainText('Ciclo 1 · utilidad S/ 1,000');await expect(page.locator('#lab-content')).toContainText('La evolución aparecerá al cerrar más ciclos.');
+ await page.locator('#lab-cycle').selectOption('two');await expect(table.locator('.lab-finance-profit')).toHaveClass(/is-negative/);await expect(table.locator('.lab-finance-profit td')).toContainText('−S/ 1,000');await expect(table).toContainText('S/ 1,250,000');
+});

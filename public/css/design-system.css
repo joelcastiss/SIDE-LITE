@@ -24,6 +24,13 @@
   --side-success-strong: #5be89a;
   --side-danger: #ff8b9a;
   --side-danger-strong: #ff6d7d;
+  /* Colores existentes del laboratorio para texto sobre superficies claras. */
+  --side-paper: #edf5fa;
+  --side-paper-ink: #0b2542;
+  --side-paper-muted: #31516a;
+  --side-paper-line: #cadce7;
+  --side-success-ink: #146c43;
+  --side-danger-ink: #a32132;
 
   --side-font: Montserrat, Arial, sans-serif;
   --side-text-xs: .75rem;
