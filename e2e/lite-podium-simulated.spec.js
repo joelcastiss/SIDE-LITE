@@ -21,6 +21,11 @@ for (const viewport of [{width:1366,height:768},{width:390,height:844}]) test(`p
  await expect(page.locator('#sidePodium')).toContainText('9.9 %');
  const input=page.getByLabel('Nota de Empresa A');await expect(input).toBeVisible();await input.fill('19');
  await page.waitForTimeout(6500);await expect(input).toHaveValue('19');
+ await page.locator('[data-tab=empresas]').click();await page.locator('[data-tab=podio]').click();
+ await expect(page.getByLabel('Nota de Empresa A')).toHaveValue('19');
+ await page.locator('#publishPodium').click();await page.locator('#confirmPodiumPublish').click();
+ await expect(page.locator('#podiumPublishError')).toContainText('Guarda todas las notas');
+ await page.locator('#cancelPodiumPublish').click();
  await page.locator('#podiumPreview').getByRole('button',{name:'Guardar nota'}).click();
  await expect(page.locator('#publishStatus')).toContainText('Nota guardada');expect(grade).toBe(19);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);

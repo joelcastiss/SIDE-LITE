@@ -6,6 +6,7 @@
   const $ = id => document.getElementById(id);
   let gameId = null, gameCode = '', loading = false, timer = null, refreshPromise = null, generation = 0, lastSnapshot = '';
   let authorized = false;
+  const gradeDrafts = new Map();
   const message = text => {
     $('creationFeedback')?.classList.remove('hidden');
     if ($('creationMessage')) $('creationMessage').textContent = text;
@@ -279,16 +280,21 @@
       suggestion.replaceChildren();
       for (const item of snapshot.ranking || []) { const row = document.createElement('p'); row.textContent = item.name + ' · ' + new Intl.NumberFormat('es-PE', {minimumFractionDigits:1, maximumFractionDigits:1}).format(Number(item.returnPercent)) + ' % de rentabilidad'; suggestion.append(row); }
     }
-    for (const company of podium.companies || []) {
+    const companies = [...(podium.companies || [])].sort((a, b) =>
+      (a.grade == null && b.grade == null ? 0 : a.grade == null ? 1 : b.grade == null ? -1 : Number(b.grade) - Number(a.grade)) || a.name.localeCompare(b.name, 'es'));
+    for (const company of companies) {
       const row = document.createElement('div'); row.className = 'value-row';
       const label = document.createElement('label'); label.textContent = company.name;
-      const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.max = '20'; input.step = '0.01'; input.value = company.grade ?? ''; input.setAttribute('aria-label', 'Nota de ' + company.name);
+      const draftKey = targetGame + ':' + company.id;
+      const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.max = '20'; input.step = '0.01'; input.value = gradeDrafts.get(draftKey) ?? company.grade ?? ''; input.setAttribute('aria-label', 'Nota de ' + company.name);
+      input.addEventListener('input', () => gradeDrafts.set(draftKey, input.value));
       const save = document.createElement('button'); save.type = 'button'; save.className = 'secondary'; save.textContent = 'Guardar nota';
       save.addEventListener('click', async () => {
+        const submitted = input.value;
         const value = Number(input.value);
         if (!input.value.trim() || !Number.isFinite(value) || value < 0 || value > 20) { $('publishStatus').textContent = 'La nota debe estar entre 0 y 20.'; return; }
         save.disabled = true;
-        try { await api.request('/games/' + gameId + '/grades/' + company.id, 'PUT', {grade:value}, 'teacher'); $('publishStatus').textContent = 'Nota guardada.'; }
+        try { await api.request('/games/' + targetGame + '/grades/' + company.id, 'PUT', {grade:value}, 'teacher'); if (gradeDrafts.get(draftKey) === submitted) gradeDrafts.delete(draftKey); $('publishStatus').textContent = 'Nota guardada.'; }
         catch (error) { $('publishStatus').textContent = error.message; }
         finally { save.disabled = false; }
       });
@@ -412,6 +418,7 @@
   $('podiumPublishMode')?.addEventListener('change', () => $('podiumDelayFields')?.classList.toggle('hidden', $('podiumPublishMode').value !== 'schedule'));
   document.addEventListener('submit', event => {
     if (event.target.id !== 'podiumPublishForm') return;
+    if ([...gradeDrafts.keys()].some(key => key.startsWith(gameId + ':'))) { event.preventDefault(); event.stopImmediatePropagation(); $('podiumPublishError').textContent = 'Guarda todas las notas modificadas antes de publicar.'; return; }
     event.preventDefault(); event.stopImmediatePropagation();
     const delayMinutes = $('podiumPublishMode').value === 'schedule' ? Number($('podiumHours').value) * 60 + Number($('podiumMinutes').value) : 0;
     if (!Number.isSafeInteger(delayMinutes) || delayMinutes < 0 || delayMinutes > 4320 || ($('podiumPublishMode').value === 'schedule' && delayMinutes === 0)) { $('podiumPublishError').textContent = 'Elige entre 1 minuto y 72 horas.'; return; }
