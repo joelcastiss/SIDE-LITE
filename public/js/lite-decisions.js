@@ -307,7 +307,7 @@
       if (!active) return;
       if (refreshing) { refreshPending=true; return; }
       refreshing=true; const started=performance.now();let timeout;
-      try { const next=await Promise.race([global.SIDLiteGame.getGame(gameId),new Promise((_,reject)=>{timeout=global.setTimeout(()=>reject(new Error('Tiempo de espera agotado')),12000);})]); if(active && !refreshPending){render(next,started);retry.classList.add('hidden');void refreshPodium();} }
+      try { const next=await Promise.race([global.SIDLiteGame.getGame(gameId),new Promise((_,reject)=>{timeout=global.setTimeout(()=>reject(new Error('Tiempo de espera agotado')),12000);})]); if(active && !refreshPending){render(next,started);retry.classList.add('hidden');if(next.cycles?.some(c=>c.number===next.game.cycle_count&&c.status==='closed'))void refreshPodium();} }
       catch(error) { if(active){write('studentConnectionStatus','No se pudo actualizar la partida. Comprueba tu conexión y vuelve a intentarlo.');if(!data && results)results.textContent='No se pudieron cargar los resultados. Comprueba tu conexión y vuelve a intentarlo.';retry.classList.remove('hidden');} }
       finally { global.clearTimeout(timeout);refreshing=false;if(active && refreshPending){refreshPending=false;void refresh();} }
     }
