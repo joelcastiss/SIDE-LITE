@@ -18,7 +18,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test e2e/teacher-recovery-supabase-isolated.spec.js e2e/supabase-original-auth-mock.spec.js e2e/teacher-session-security.spec.js e2e/teacher-real-simulated.spec.js e2e/teacher-recovery.spec.js e2e/lite-decisions-isolated.spec.js e2e/lite-waiting.spec.js e2e/lite-teacher-results.spec.js e2e/lite-results.spec.js --workers=1
+      - run: npx playwright test e2e/teacher-recovery-supabase-isolated.spec.js e2e/supabase-original-auth-mock.spec.js e2e/teacher-session-security.spec.js e2e/teacher-real-simulated.spec.js e2e/teacher-recovery.spec.js e2e/lite-decisions-isolated.spec.js e2e/lite-waiting.spec.js e2e/lite-teacher-results.spec.js e2e/lite-results.spec.js e2e/lite-podium-simulated.spec.js --workers=1
       - run: node --check e2e/full-two-students-local.spec.js
   multiplayer:
     runs-on: ubuntu-latest
