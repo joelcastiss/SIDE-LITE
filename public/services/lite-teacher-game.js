@@ -146,9 +146,10 @@
   const closeButton = $('cutRound');
   if (closeButton) { closeButton.textContent = 'Cerrar ciclo vencido'; closeButton.disabled = true; }
   for (const id of ['viewPdf', 'downloadPdf', 'resultCompanySelect', 'refreshReports', 'cancelGame', 'clearEvents', 'saveAll']) if ($(id)) { $(id).hidden = true; $(id).style.display = 'none'; }
-  $('resultCompanySelect')?.closest('label')?.setAttribute('hidden', '');
-  if ($('resultsPdfHint')) $('resultsPdfHint').hidden = true;
-  if ($('resultStats')) $('resultStats').hidden = true;
+  const legacyCompanyFilter = $('resultCompanySelect')?.closest('label');
+  if (legacyCompanyFilter) { legacyCompanyFilter.hidden = true; legacyCompanyFilter.style.display = 'none'; }
+  if ($('resultsPdfHint')) { $('resultsPdfHint').hidden = true; $('resultsPdfHint').style.display = 'none'; }
+  if ($('resultStats')) { $('resultStats').hidden = true; $('resultStats').style.display = 'none'; }
   document.querySelectorAll('.nav-btn').forEach(button => {
     if (!['configuracion', 'rondas', 'empresas', 'resultados', 'podio', 'laboratorio', 'historial'].includes(button.dataset.tab)) { button.hidden = true; button.style.display = 'none'; }
   });
