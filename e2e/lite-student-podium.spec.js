@@ -3,6 +3,19 @@ import express from 'express';
 let server,base;
 test.beforeAll(async()=>{server=await new Promise(resolve=>{const s=express().use(express.static('public')).listen(0,'127.0.0.1',()=>resolve(s))});base=`http://127.0.0.1:${server.address().port}`});
 test.afterAll(async()=>new Promise(resolve=>server.close(resolve)));
+test('consulta el podio solo después del cierre del último ciclo',async({page})=>{
+ await page.goto(base+'/index.html');
+ await page.evaluate(()=>{
+  window.__cycles=[{id:'c1',number:1,status:'closed'}];window.__podiumRequests=0;
+  window.SIDLiteGame={getGame:async()=>({game:{name:'Prueba',code:'DEMO',cycle_count:3,costs:{basic:10,standard:20,premium:30}},company:{id:'a',name:'A',cash:1000},companies:[],cycles:window.__cycles,ranking:[],results:[]}),request:async()=>{window.__podiumRequests++;return {published:null}}};
+  window.__view=window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
+ });
+ await expect(page.locator('#enterDecisionsBtn')).toBeVisible();
+ await page.evaluate(()=>window.__view.refresh());
+ await expect.poll(()=>page.evaluate(()=>window.__podiumRequests)).toBe(0);
+ await page.evaluate(()=>{window.__cycles.push({id:'c3',number:3,status:'closed'});window.__view.refresh()});
+ await expect.poll(()=>page.evaluate(()=>window.__podiumRequests)).toBeGreaterThan(0);
+});
 for(const {width,height} of [{width:360,height:800},{width:390,height:844},{width:430,height:932},{width:768,height:1024},{width:1366,height:768}])test(`publicación estudiantil estable ${width}`,async({page})=>{
  await page.setViewportSize({width,height});await page.goto(base+'/index.html');
  await page.evaluate(()=>{

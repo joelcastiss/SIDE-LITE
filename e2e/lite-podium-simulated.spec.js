@@ -5,14 +5,14 @@ test.beforeAll(async()=>{server=await new Promise(resolve=>{const s=express().us
 test.afterAll(async()=>new Promise(resolve=>server.close(resolve)));
 for (const viewport of [{width:1366,height:768},{width:390,height:844}]) test(`podio conserva la nota durante la actualización ${viewport.width}`,async({page})=>{
  await page.setViewportSize(viewport);
- let created=false, grade=18;
+ let created=false, grade=18, publication;
  const game={id:'game1',code:'A7K2M',name:'Podio',cycle_count:3,enabled_events:[],costs:{basic:50,standard:80,premium:120}};
  await page.route('https://joelcastiss.github.io/**',async route=>{const u=new URL(route.request().url());await route.fulfill({response:await route.fetch({url:base+u.pathname+u.search})})});
  await page.route('**/vendor/supabase-js/supabase.js*',route=>route.fulfill({contentType:'application/javascript',body:`window.supabase={createClient:()=>({supabaseUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',auth:{getSession:async()=>({data:{session:{access_token:'test',user:{email_confirmed_at:'yes'}}}}),onAuthStateChange:()=>({data:{subscription:{}}})}})};`}));
  await page.route('https://hwwwoblfpsqqrkxvclag.supabase.co/**',route=>{
   const req=route.request(),path=new URL(req.url()).pathname.split('/api')[1],headers={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,PUT,OPTIONS','access-control-allow-headers':'authorization,apikey,content-type'};
   if(req.method()==='OPTIONS')return route.fulfill({status:204,headers});
-  let json={};if(path==='/me')json={id:'t1',display_name:'Docente',role:'teacher'};else if(path==='/catalog')json=[];else if(path==='/games'&&req.method()==='POST'){created=true;json=game}else if(path==='/games')json=created?[game]:[];else if(path==='/games/game1/podium')json={companies:[{id:'co1',name:'Empresa A',grade}],finished:true};else if(path==='/games/game1/grades/co1'){grade=req.postDataJSON().grade;json={}}else if(path==='/games/game1')json={isTeacher:true,game,companies:[{id:'co1',name:'Empresa A',cash:30000}],decisions:[],cycles:[],results:[],ranking:[{name:'Empresa A',returnPercent:9.85}]};
+  let json={};if(path==='/me')json={id:'t1',display_name:'Docente',role:'teacher'};else if(path==='/catalog')json=[];else if(path==='/games'&&req.method()==='POST'){created=true;json=game}else if(path==='/games')json=created?[game]:[];else if(path==='/games/game1/podium'){if(req.method()==='POST')publication=req.postDataJSON();json={companies:[{id:'co1',name:'Empresa A',grade}],finished:true}}else if(path==='/games/game1/grades/co1'){grade=req.postDataJSON().grade;json={}}else if(path==='/games/game1')json={isTeacher:true,game,companies:[{id:'co1',name:'Empresa A',cash:30000}],decisions:[],cycles:[],results:[],ranking:[{name:'Empresa A',returnPercent:9.85}]};
   return route.fulfill({status:200,headers,json});
  });
  await page.goto('https://joelcastiss.github.io/SIDE-LITE/public/docente.html');
@@ -28,5 +28,8 @@ for (const viewport of [{width:1366,height:768},{width:390,height:844}]) test(`p
  await page.locator('#cancelPodiumPublish').click();
  await page.locator('#podiumPreview').getByRole('button',{name:'Guardar nota'}).click();
  await expect(page.locator('#publishStatus')).toContainText('Nota guardada');expect(grade).toBe(19);
+ await page.locator('#winnerReason').fill('Criterios de evaluación');await page.locator('#publishPodium').click();await page.locator('#confirmPodiumPublish').click();
+ await expect.poll(()=>publication).toEqual({reason:'Criterios de evaluación',delayMinutes:0});
+ await expect(page.locator('#podiumDialog')).toBeHidden();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
 });

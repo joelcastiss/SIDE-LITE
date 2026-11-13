@@ -12,7 +12,7 @@ async function withApp({collisions=0,authorized=true}={},fn){
   if(q.includes('lock_active_identity'))return {rows:[{active:true}]};
   if(q.includes('api_mfa_ready'))return {rows:[{allowed:true}]};
   if(q.includes('api_lock_teacher'))return {rows:[{authorized}]};
-  if(q.includes('insert into public.lite_games')){assert.match(q,/on conflict\s*\(code\)\s*do nothing/);codes.push(args[2]);return {rows:codes.length<=collisions?[]:[{id:randomUUID(),code:args[2]}]};}
+  if(q.includes('insert into public.lite_games')){assert.match(q,/on conflict\s*\(code\)\s*do nothing/);assert.equal(args[3],3,'el número de ciclos seleccionado llega a la inserción');codes.push(args[2]);return {rows:codes.length<=collisions?[]:[{id:randomUUID(),code:args[2]}]};}
   if(q.includes('insert into public.lite_products'))return {rows:[]};
   throw Error('SQL inesperado: '+q);
  }};
