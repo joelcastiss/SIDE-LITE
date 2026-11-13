@@ -146,6 +146,9 @@
   const closeButton = $('cutRound');
   if (closeButton) { closeButton.textContent = 'Cerrar ciclo vencido'; closeButton.disabled = true; }
   for (const id of ['viewPdf', 'downloadPdf', 'resultCompanySelect', 'refreshReports', 'cancelGame', 'clearEvents', 'saveAll']) if ($(id)) { $(id).hidden = true; $(id).style.display = 'none'; }
+  $('resultCompanySelect')?.closest('label')?.setAttribute('hidden', '');
+  if ($('resultsPdfHint')) $('resultsPdfHint').hidden = true;
+  if ($('resultStats')) $('resultStats').hidden = true;
   document.querySelectorAll('.nav-btn').forEach(button => {
     if (!['configuracion', 'rondas', 'empresas', 'resultados', 'podio', 'laboratorio', 'historial'].includes(button.dataset.tab)) { button.hidden = true; button.style.display = 'none'; }
   });
@@ -220,7 +223,7 @@
     if (grid) { grid.replaceChildren(); for (const company of snapshot.companies) { const card = document.createElement('article'); card.className = 'card'; const title = document.createElement('h3'); title.textContent = company.name; const detail = document.createElement('p'); detail.textContent = `${company.store || ''} · ${snapshot.decisions?.some(d => d.company_id === company.id && d.confirmed) ? 'Decisión confirmada' : 'Decisión pendiente'}`; const capital = document.createElement('p'); capital.textContent = `Capital inicial: S/ ${Number(company.initial_capital).toLocaleString('es-PE')} · Caja disponible: S/ ${Number(company.cash).toLocaleString('es-PE')}`; card.append(title, detail, capital); grid.append(card); } }
     if ($('cycleNews')) $('cycleNews').textContent = globalThis.SIDELiteEvents.text(cycle?.event_id);
     const reports = $('detailReports');
-    if (reports) { reports.replaceChildren(); for (const item of snapshot.ranking || []) { const line = document.createElement('p'); line.textContent = `${item.name}: ${Number(item.returnPercent).toFixed(1)} % de rentabilidad`; reports.append(line); } for (const item of snapshot.results || []) { const line = document.createElement('p'); const company = snapshot.companies.find(c => c.id === item.company_id); line.textContent = `${company?.name || 'Empresa'} · Ciclo ${item.number} · Ventas ${Number(item.result?.sold || 0)} · Ingresos S/ ${Number(item.result?.revenue || 0).toLocaleString('es-PE')} · Costos S/ ${Number(item.result?.costOfSales || 0).toLocaleString('es-PE')} · Utilidad S/ ${Number(item.result?.profit || 0).toLocaleString('es-PE')} · Caja S/ ${Number(item.result?.cashEnd || 0).toLocaleString('es-PE')}`; reports.append(line); const eventLine=document.createElement('p'); eventLine.textContent=globalThis.SIDELiteEvents.text(item.result?.event || snapshot.cycles?.find(c=>c.id===item.cycle_id)?.event_id,item.result); reports.append(eventLine); } }
+    if (reports) global.SIDELiteTeacherResults?.render(reports, snapshot);
     clearInterval(timer);
     if (closeButton) { closeButton.hidden = cycle?.status !== 'open' || !!game.ended_at; closeButton.style.display = closeButton.hidden ? 'none' : ''; closeButton.disabled = true; }
     if (cycle?.status === 'open') {
