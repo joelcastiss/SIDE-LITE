@@ -139,7 +139,8 @@
     }
     let retry;
     const displayWaiting=()=>{waiting.classList.remove('hidden');dashboard.classList.add('hidden');if(retry)waitingActions.append(retry);};
-    showResults.addEventListener('click',()=>{waiting.classList.add('hidden');dashboard.classList.remove('hidden');if(retry)dashboard.querySelector('.lobby-actions').append(retry);});
+    const displayResults=()=>{waiting.classList.add('hidden');dashboard.classList.remove('hidden');if(retry)dashboard.querySelector('.lobby-actions').append(retry);};
+    showResults.addEventListener('click',displayResults);
     returnWaiting.addEventListener('click',displayWaiting);
     const waitingBack=$('waitingBackToProfiles'); const leaveWaiting=()=>$('backToProfiles')?.click(); waitingBack?.addEventListener('click',leaveWaiting);
     displayWaiting();
@@ -212,9 +213,9 @@
       }
       const ownResults=(data.results||[]).filter(row=>row.company_id===company.id).slice().sort((a,b)=>Number(a.number)-Number(b.number));
       const resultCycles=new Set(ownResults.map(row=>String(row.cycle_id || row.number)));
-      const justClosed=seenResultCycles && [...resultCycles].some(id=>!seenResultCycles.has(id));
+      const justClosed=[...resultCycles].some(id=>!seenResultCycles?.has(id));
       seenResultCycles=resultCycles;
-      if(justClosed && !$('decisionMenu')?.classList.contains('hidden'))showScreen('studentLobby');
+      if(justClosed){showScreen('studentLobby');displayResults();}
       if (draftCycle !== (cycle?.id || null)) {
         draftCycle=cycle?.id || null; touched=new Set(); draft={quality:own?.quality || 'basic',quantity:own?.quantity ?? 0,price:own?.price ?? 100,marketingAmount:own?.marketing_amount ?? 0};
         for(const [key,input] of Object.entries(controls)) input.value=draft[key];
@@ -253,10 +254,9 @@
       write('studentEventImpactText',last ? global.SIDELiteEvents.text(last.event || data.cycles?.find(c=>c.id===ownResults.at(-1)?.cycle_id)?.event_id,last) : 'Los resultados oficiales se muestran después del cierre del ciclo.');
       const history=$('studentCycleHistory'); if(history)history.replaceChildren();
       refreshResults();updateEstimate();updateClock();
-      // The teacher starts the cycle on the server. Automatically open the student
-      // decision screen once per live cycle, including students who join late.
-      // Do not reopen it every poll after a student deliberately returns to the lobby.
-      if (active && open) {
+      // Enter automatically only before the first result. Later cycles remain
+      // accessible from the waiting room after the student reviews results.
+      if (active && open && !ownResults.length) {
         const cycleKey=String(cycle.id || cycle.number);
         if (!autoEnteredCycles.has(cycleKey)) {
           autoEnteredCycles.add(cycleKey);

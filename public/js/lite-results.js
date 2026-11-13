@@ -31,7 +31,7 @@
       let grid=add(section,'div',undefined,'lite-result-grid');
       const card=(label,value)=>{const el=add(grid,'div',undefined,'lite-result-card');add(el,'span',label);add(el,'strong',value);};
       const amount=key=>valid(v[key])?money(v[key]):'—';
-      card('Ganancia del ciclo',amount('profit'));card('Dinero disponible',amount('cashEnd'));card('Ingresos por ventas',amount('revenue'));card('Marketing',amount('marketing'));
+      card('Ganancia del ciclo',amount('profit'));card('Dinero disponible',amount('cashEnd'));card('Ingresos por ventas',amount('revenue'));card('Costo de ventas',amount('costOfSales'));card('Marketing',amount('marketing'));
       add(section,'h5','Tus bolsos');grid=add(section,'div',undefined,'lite-result-grid');
       const sold=valid(v.sold)?Number(v.sold):null, demand=valid(v.demand)?Number(v.demand):null;
       const available=sold!==null&&m.inventory!==null?sold+m.inventory:null;

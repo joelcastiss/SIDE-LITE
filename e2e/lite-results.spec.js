@@ -13,7 +13,7 @@ for(const viewport of [{width:1366,height:768},{width:390,height:844}])test(`res
     window.SIDLiteGame={getGame:async()=>({game:{name:'Prueba',code:'DEMO',cycle_count:3,costs:{basic:10,standard:20,premium:30}},company:{id:'mine',name:'Mi empresa',cash:1050,initial_capital:1000},cycles:[{id:'c1',number:1,status:'closed'}],ownDecision:null,ranking:[{id:'other',name:'Empresa 2',returnPercent:20},{id:'mine',name:'Mi empresa',returnPercent:10}],results:[{company_id:'mine',number:1,result}]}),request:async()=>({})};
     window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
   });
-  await page.getByRole('button',{name:'Ver noticias y resultados'}).click();
+  await expect(page.locator('#studentFinancialDetail')).toContainText('Ciclo 1');
   await expect(page.getByText('Resumen sencillo')).toBeAttached();
   await expect(page.getByText(/Tu posición: 2 de 2/)).toBeAttached();
   await expect(page.locator('#studentFinancialDetail')).not.toContainText('FIFO');
@@ -29,6 +29,22 @@ for(const viewport of [{width:1366,height:768},{width:390,height:844}])test(`res
     await page.screenshot({path:`${process.env.SIDE_VISUAL_OUTPUT}/resultados-${viewport.width}-inferior.png`});
   }
   expect(errors).toEqual([]);
+});
+test('muestra el cierre aunque el siguiente ciclo ya haya comenzado y permite continuar',async({page})=>{
+ await page.goto(base+'/index.html');
+ await page.evaluate(()=>{
+  const result={cashStart:1000,cashEnd:1100,purchase:100,unitCost:10,marketing:0,revenue:200,costOfSales:100,profit:100,sold:10,inventory:[]};
+  window.__game={game:{name:'Prueba',code:'DEMO',cycle_count:3,costs:{basic:10,standard:20,premium:30}},company:{id:'mine',name:'Mi empresa',cash:1100,initial_capital:1000},cycles:[{id:'c1',number:1,status:'closed'},{id:'c2',number:2,status:'open',server_now:new Date().toISOString(),ends_at:new Date(Date.now()+120000).toISOString()}],ownDecision:null,ranking:[],results:[{company_id:'mine',cycle_id:'c1',number:1,result}]};
+  window.SIDLiteGame={getGame:async()=>structuredClone(window.__game),request:async()=>({})};
+  window.__view=window.SIDELiteDecisions.mount({gameId:'test',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
+ });
+ await expect(page.locator('#studentFinancialDetail')).toBeVisible();
+ await expect(page.locator('#studentFinancialDetail')).toContainText('Ciclo 1');
+ await page.evaluate(()=>window.__view.refresh());
+ await expect(page.locator('#studentFinancialDetail')).toBeVisible();
+ await page.getByRole('button',{name:'Volver a la sala de espera'}).click();
+ await page.getByRole('button',{name:'Entrar al menú de decisiones'}).click();
+ await expect(page.locator('#decisionMenu')).toBeVisible();
 });
 test('actualiza resultados propios, conserva historial y permite reintentar',async({page})=>{
  await page.goto(base+'/index.html');
