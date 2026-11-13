@@ -1,5 +1,7 @@
 # Registro docente con Supabase
 
+**Política vigente para pruebas:** `20261113035244_automatic_teacher_test_access` habilita una concesión docente automática para registros nuevos del dominio exacto `@upch.pe`. La confirmación de correo desactivada no acredita control del buzón: cualquier persona puede registrarse con una dirección ajena no ocupada. Esta configuración solo es apropiada para el entorno de pruebas autorizado y no debe considerarse autenticación institucional. Conserva autorizaciones y revocaciones existentes, sin alterar partidas. Las notas históricas siguientes preceden a este cambio.
+
 La migración `supabase-side-lite/supabase/migrations/20261110193520_automatic_institutional_teacher.sql` prepara la asignación docente a cuentas `@upch.pe`. No recrea tablas ni altera partidas. Los permisos revocados previamente permanecen revocados. El disparador existente crea el perfil y guarda el curso. La migración fue probada en un entorno aislado y aplicada al proyecto de producción.
 
 En el panel del proyecto Supabase, en **Authentication → Sign In / Providers → Email**, habilita el registro por correo y desactiva **Confirm email**. En **Authentication → Attack Protection → CAPTCHA**, desactiva CAPTCHA si está habilitado. El propietario confirmó que estos ajustes están configurados en el proyecto remoto. Con la confirmación desactivada, Supabase confirma automáticamente la identidad para permitir el acceso; no demuestra que la dirección exista o pertenezca al profesor. Cualquier persona puede registrarse usando un correo ficticio `@upch.pe`.

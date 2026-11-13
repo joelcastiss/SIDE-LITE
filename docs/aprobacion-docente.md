@@ -1,5 +1,7 @@
 # Autorización docente
 
+**Política vigente para pruebas:** la migración `20261113035244_automatic_teacher_test_access` sustituye el requisito de atribución independiente por una concesión automática para nuevos registros `@upch.pe`. Con la confirmación de correo desactivada, cualquiera puede escribir una dirección ajena y obtener acceso docente: este mecanismo no comprueba la titularidad del buzón y solo es apropiado para el entorno de pruebas autorizado. No modifica las concesiones existentes ni reactiva las revocadas. El procedimiento siguiente describe la política anterior y no se aplica tras esa migración.
+
 El registro de una cuenta no concede permisos docentes. Un administrador debe verificar la identidad y aprobar expresamente el acceso. La autorización se vincula al UUID de Auth y al correo confirmado; una cuenta anónima, bloqueada, sin correo confirmado o con una autorización revocada no obtiene permisos docentes. Un correo institucional por sí solo no acredita la condición de docente.
 
 La migración `20261113025642_independent_teacher_authorization` conserva las autorizaciones activas anteriores y registra las que no tienen aprobador en `side_lite_private.teacher_grants_pending_review`. Al aplicarla se verificaron nueve autorizaciones activas y nueve pendientes de revisión. La institución debe revisar su origen por un canal independiente; el registro pendiente no equivale a una aprobación y no revoca el acceso automáticamente.
