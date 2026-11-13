@@ -720,12 +720,12 @@ $('registerForm')?.addEventListener('submit',async e=>{
   if(!first||!last||name.length>80||!/^[^@\s]+@upch\.pe$/i.test(email)){message('registerMessage','Completa los datos e ingresa un correo institucional @upch.pe.',true);return;}
   if(password.length<6){message('registerMessage','La contraseña debe tener al menos 6 caracteres.',true);return;}
   const form=e.currentTarget,button=form.querySelector('[type="submit"]');if(button)button.disabled=true;
-  const version=profileSelectionVersion;
   try{
     message('registerMessage','Creando cuenta...');const session=await teacherSession();const result=await session.register({email,password,name,firstName:first,lastName:last});
-    if(!result?.session) { message('registerMessage','Revisa tu correo institucional para confirmar la cuenta y luego inicia sesión.'); return; }
-    await teacherIdentity(session);
-    form.reset();if(version===profileSelectionVersion)openTeacherPanel();
+    if(!result?.user?.id) throw new Error('No se pudo confirmar el registro. Inténtalo de nuevo.');
+    form.reset();
+    if(result?.session) await session.signOut().catch(()=>{});
+    message('registerMessage',result?.session?'Cuenta creada. Tu acceso docente está pendiente de aprobación':'Solicitud recibida. Revisa tu correo institucional para confirmar la cuenta. El acceso docente requiere aprobación. Si ya tienes una cuenta, inicia sesión.');
   }catch(error){message('registerMessage',error.message||'No se pudo crear la cuenta.',true);}
   finally{if(button)button.disabled=false;}
 });

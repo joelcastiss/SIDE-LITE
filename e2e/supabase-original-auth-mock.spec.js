@@ -10,7 +10,7 @@ window.SIDE=window.SIDE||{};
 const fakeUser=()=>JSON.parse(localStorage.getItem('test-user')||'null');
 const active=()=>localStorage.getItem('test-session')==='yes';
 const sb={supabaseUrl:'https://hwwwoblfpsqqrkxvclag.supabase.co',auth:{
- signUp:async({email,password,options})=>{localStorage.setItem('test-user',JSON.stringify({email,password,user_metadata:options.data}));localStorage.setItem('test-session','yes');return {data:{session:{access_token:'fake'}},error:null}},
+ signUp:async({email,password,options})=>{const mode=localStorage.getItem('test-signup-mode');if(mode==='error')return {error:{message:'Registro rechazado'}};if(mode==='empty')return {data:{user:null,session:null},error:null};if(mode==='confirmation')return {data:{user:{id:'pending'},session:null},error:null};localStorage.setItem('test-user',JSON.stringify({email,password,user_metadata:options.data}));localStorage.setItem('test-session','yes');return {data:{user:{id:'test-user'},session:{access_token:'fake'}},error:null}},
  signInWithPassword:async({email,password})=>{const u=fakeUser();if(!u||u.email!==email||u.password!==password)return {error:{message:'Credenciales incorrectas'}};localStorage.setItem('test-session','yes');return {data:{},error:null}},
  signOut:async()=>{localStorage.removeItem('test-session');return {data:{},error:null}},
  getSession:async()=>({data:{session:active()?{access_token:'fake',user:{...fakeUser(),id:'test-user',email_confirmed_at:'2026-01-01T00:00:00Z'}}:null},error:null}),
@@ -22,7 +22,8 @@ for (const viewport of [{width:1280,height:800},{width:390,height:844}]) {
  test(`registro e ingreso simulado ${viewport.width}px`,async({page})=>{
   await page.setViewportSize(viewport);
   await page.route('**/services/supabase_client.js*',route=>route.fulfill({status:200,contentType:'application/javascript',body:fakeClient}));
-  await page.route('https://hwwwoblfpsqqrkxvclag.supabase.co/**',route=>route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({id:'test-user',display_name:'Ana Prueba',role:'teacher'})}));
+  let role='student',identityCalls=0;
+  await page.route('https://hwwwoblfpsqqrkxvclag.supabase.co/**',route=>{identityCalls++;return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({id:'test-user',display_name:'Ana Prueba',role})})});
   await page.goto(base+'/index.html');
   await page.locator('#startBtn').click({timeout:20000});
   await page.locator('[data-profile=teacher]').click();
@@ -32,17 +33,31 @@ for (const viewport of [{width:1280,height:800},{width:390,height:844}]) {
   await page.locator('#registerForm button[type=submit]').click();
   await expect(page.locator('#registerMessage')).toContainText('@upch.pe');
   expect(await page.evaluate(()=>localStorage.getItem('test-user'))).toBeNull();
-  await page.locator('#registerEmail').fill('ana.ficticia@upch.pe');await page.locator('#registerForm button[type=submit]').click();
-  await expect(page).toHaveURL(/docente\.html/);
+  await page.locator('#registerEmail').fill('ana.ficticia@upch.pe');
+  for(const [mode,expected] of [['error','Registro rechazado'],['empty','No se pudo confirmar el registro'],['confirmation','Solicitud recibida']]){
+   await page.evaluate(value=>localStorage.setItem('test-signup-mode',value),mode);
+   await page.locator('#registerForm button[type=submit]').click();
+   await expect(page.locator('#registerMessage')).toContainText(expected);
+   await expect(page.locator('#registerMessage')).not.toContainText('Cuenta creada');
+  }
+  await page.evaluate(()=>localStorage.removeItem('test-signup-mode'));
+  await page.locator('#registerName').fill('Ana');await page.locator('#registerLastName').fill('Prueba');
+  await page.locator('#registerEmail').fill('ana.ficticia@upch.pe');await page.locator('#registerPassword').fill('password-prueba-123');
+  await page.locator('#registerForm button[type=submit]').click();
+  await expect(page.locator('#registerMessage')).toHaveText('Cuenta creada. Tu acceso docente está pendiente de aprobación');
+  expect(identityCalls).toBe(0);
+  expect(await page.evaluate(()=>localStorage.getItem('test-session'))).toBeNull();
   const user=await page.evaluate(()=>JSON.parse(localStorage.getItem('test-user')));
   expect(user.user_metadata).toMatchObject({display_name:'Ana Prueba',nombre:'Ana',apellido:'Prueba'});
   expect(user.user_metadata).not.toHaveProperty('curso');
-  await page.locator('#teacherLogout').click();
-  await expect(page).toHaveURL(/index\.html/);
+  await page.locator('#teacherRegisterModal [data-switch=login]').click();
   await page.locator('#loginEmail').fill('ana.ficticia@upch.pe');
   await page.locator('#loginPassword').fill('incorrecta');await page.locator('#loginForm button[type=submit]').click();
   await expect(page.locator('#loginMessage')).toContainText('Credenciales incorrectas');
   await page.locator('#loginPassword').fill('password-prueba-123');await page.locator('#loginForm button[type=submit]').click();
+  await expect(page.locator('#loginMessage')).toContainText('Esta cuenta no tiene un perfil docente');
+  role='teacher';
+  await page.locator('#loginForm button[type=submit]').click();
   await expect(page).toHaveURL(/docente\.html/);
   await expect(page.locator('body')).toContainText('Configuración');
   await page.reload();

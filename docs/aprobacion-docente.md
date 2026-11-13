@@ -29,4 +29,6 @@ returning user_id, approved_email, granted_by, granted_at;
 
 La restricción se aplicó y verificó en el proyecto SIDE-LITE mediante la migración `20261113025642_independent_teacher_authorization`. Cada nueva concesión requiere una decisión administrativa independiente.
 
+La prueba integral real del registro, inicio de sesión y autorización independiente con una cuenta institucional controlada sigue pendiente. Las pruebas de navegador de este cambio usan respuestas simuladas y no acreditan el funcionamiento del correo o de una cuenta real.
+
 En una instalación nueva deben aplicarse todas las migraciones en orden. La migración histórica `20261110193520_automatic_institutional_teacher` reintrodujo el acceso automático; la migración `20261113025642` lo desactiva. No debe detenerse la instalación antes de aplicar esta última.
