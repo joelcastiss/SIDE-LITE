@@ -27,6 +27,18 @@
   if ($('roundHours')) { $('roundHours').value = '0'; $('roundHours').disabled = true; }
   if ($('roundMinutes')) { $('roundMinutes').value = '2'; $('roundMinutes').disabled = true; }
   if ($('cycles')) { $('cycles').min = '3'; $('cycles').max = '6'; $('cycles').step = '3'; }
+  // Lite owns the cycle selector: the legacy SIDE controller keeps separate local state.
+  function syncCycleCount(value) {
+    const count = Number(value);
+    if (![3, 6].includes(count)) return false;
+    if ($('cycles')) $('cycles').value = String(count);
+    if ($('configCycleCount')) $('configCycleCount').textContent = '1 / ' + count;
+    if ($('configReadySummary') && !gameId) $('configReadySummary').textContent = count + ' ciclos de 2 minutos cada uno.';
+    return true;
+  }
+  $('cycles')?.addEventListener('input', event => syncCycleCount(event.currentTarget.value));
+  $('cycles')?.addEventListener('change', event => syncCycleCount(event.currentTarget.value));
+  syncCycleCount($('cycles')?.value);
   // Official games assign each company a server-generated capital.
   $('capitalModeRandom').checked = true;
   $('capitalModeFixed').closest('label').hidden = true;
@@ -195,6 +207,8 @@
       }
     }
     gameCode = game.code;
+    syncCycleCount(game.cycle_count);
+    if ($('configCycleCount')) $('configCycleCount').textContent = `${cycle?.number || 1} / ${game.cycle_count}`;
     selectedEvents.clear();
     for (const id of game.enabled_events || []) selectedEvents.add(id);
     renderEventSummary(); renderEventPicker();
@@ -322,7 +336,9 @@
       const capitalMin = Number($('capitalMin').value);
       const capitalMax = Number($('capitalMax').value);
       if (!Number.isInteger(capitalMin) || !Number.isInteger(capitalMax) || capitalMin < 20000 || capitalMax > 100000 || capitalMin > capitalMax || capitalMin % 10000 || capitalMax % 10000) throw new Error('Elige un rango entre S/ 20.000 y S/ 100.000, en múltiplos de S/ 10.000.');
-      const game = await api.createGame({name: $('gameName').value.trim(), cycleCount: Number($('cycles').value), duration: 120, capitalMin, capitalMax, costs: {basic: Number($('liteCostBasic').value), standard: Number($('liteCostStandard').value), premium: Number($('liteCostPremium').value)}, events: [...selectedEvents], marketMode: $('liteMarketMode').value});
+      const cycleCount = Number($('cycles').value);
+      if (![3, 6].includes(cycleCount)) throw new Error('Selecciona 3 o 6 ciclos.');
+      const game = await api.createGame({name: $('gameName').value.trim(), cycleCount, duration: 120, capitalMin, capitalMax, costs: {basic: Number($('liteCostBasic').value), standard: Number($('liteCostStandard').value), premium: Number($('liteCostPremium').value)}, events: [...selectedEvents], marketMode: $('liteMarketMode').value});
       gameId = game.id; generation++; lastSnapshot = '';
       try { sessionStorage.setItem('side-lite-teacher-game', gameId); } catch { /* The room remains available in this tab. */ }
       await refresh(); showTab('rondas'); message('Sala creada. Código: ' + game.code);
