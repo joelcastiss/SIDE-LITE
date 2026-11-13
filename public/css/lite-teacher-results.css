@@ -27,3 +27,5 @@
 .lite-result-empty p{margin:0;line-height:1.6;color:#c6d7e6}
 @media(max-width:1050px){.lite-result-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.lite-result-company{padding:13px}.lite-result-summary{gap:8px}.lite-result-summary .lite-result-metric{padding:10px}.lite-result-list{grid-template-columns:minmax(0,1fr)}.lite-result-detail-grid{grid-template-columns:minmax(0,1fr)}}
+
+.lite-result-comparison{padding:15px;border:1px solid #235178;border-radius:12px;background:#0e2948}.lite-result-comparison h5{margin:0 0 5px;color:#fff;font-size:16px}.lite-result-comparison p:not(.lite-result-caption){margin:8px 0 0;color:#fff;font-size:14px}.lite-result-explanation p{margin:10px 0 0;color:#d7e5f2;font-size:13px;line-height:1.5}
