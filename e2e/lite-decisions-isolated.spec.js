@@ -9,7 +9,7 @@ async function mount(page){
   localStorage.setItem('SIDE_COACHMARK_V1_student_lite','1');
   window.__requests=[];window.__own=null;
   const now=Date.now();
-  window.SIDLiteGame={getGame:async()=>({game:{id:'g1',name:'demo1',code:'DEMO',cycle_count:3,costs:{basic:50,standard:80,premium:120}},company:{name:'demo1',cash:30000,store:'Tienda'},cycles:[{id:'c1',number:1,status:'open',server_now:new Date(now).toISOString(),ends_at:new Date(now+600000).toISOString()}],ownDecision:window.__own,ranking:[],results:[]}),request:async(path,method,payload)=>{window.__requests.push({path,method,payload});window.__own={...payload,marketing_amount:payload.marketingAmount};return {};}};
+  window.SIDLiteGame={getGame:async()=>({game:{id:'g1',name:'demo1',code:'DEMO',cycle_count:3,costs:{basic:50,standard:80,premium:120}},company:{name:'demo1',cash:30000,store:'Tienda'},cycles:[{id:'c1',number:1,status:'open',server_now:new Date(now).toISOString(),ends_at:new Date(now+600000).toISOString()}],ownDecision:window.__own,ranking:[],results:[]}),request:async(path,method,payload)=>{if(method==='GET')return {};window.__requests.push({path,method,payload});window.__own={...payload,marketing_amount:payload.marketingAmount};return {};}};
   window.SIDELiteDecisions.mount({gameId:'g1',showScreen:id=>{document.querySelectorAll('.screen').forEach(el=>el.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}});
 
  });
@@ -17,7 +17,7 @@ async function mount(page){
  await expect(page.locator('#decisionMenu')).toBeVisible();
  await expect(page.locator('#categoryTitle')).toHaveText('Calidad');
 }
-for(const viewport of [{width:1920,height:1080},{width:1366,height:768},{width:1280,height:720},{width:1024,height:768},{width:768,height:1024},{width:390,height:844},{width:360,height:800}])test(`decisiones adaptables ${viewport.width}×${viewport.height}`,async({page})=>{
+for(const viewport of [{width:1920,height:1080},{width:1366,height:768},{width:1280,height:720},{width:1024,height:768},{width:768,height:1024},{width:430,height:932},{width:390,height:844},{width:360,height:800}])test(`decisiones adaptables ${viewport.width}×${viewport.height}`,async({page})=>{
  await page.setViewportSize(viewport);const errors=[];page.on('pageerror',e=>errors.push(e.message));await mount(page);
  const headerLayout=await page.evaluate(()=>({headerBottom:document.querySelector('#decisionTopbar').getBoundingClientRect().bottom,tabsTop:document.querySelector('#decisionTabs').getBoundingClientRect().top}));
  expect(headerLayout.tabsTop).toBeGreaterThanOrEqual(headerLayout.headerBottom-1);

@@ -3,7 +3,7 @@ import express from 'express';
 let server, base;
 test.beforeAll(async()=>{server=await new Promise(resolve=>{const s=express().use(express.static('public')).listen(0,'127.0.0.1',()=>resolve(s))});base=`http://127.0.0.1:${server.address().port}`});
 test.afterAll(async()=>new Promise(resolve=>server.close(resolve)));
-for(const viewport of [{width:1366,height:768},{width:390,height:844}])test(`resultados adaptables ${viewport.width}×${viewport.height}`,async({page})=>{
+for(const viewport of [{width:360,height:800},{width:390,height:844},{width:430,height:932},{width:768,height:1024},{width:1366,height:768}])test(`resultados adaptables ${viewport.width}×${viewport.height}`,async({page})=>{
   await page.setViewportSize(viewport);
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+'/index.html');

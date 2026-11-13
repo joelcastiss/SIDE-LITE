@@ -121,3 +121,26 @@ button:disabled { opacity: .55; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
 .lite-event-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:16px}.lite-event-list label{display:flex;align-items:center;gap:8px}.lite-event-list input{width:auto;min-height:auto}
+/* La lista de notas puede contener cualquier número de empresas. */
+#podiumPreview { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; justify-content: stretch; min-height: 0; padding: 0; gap: 12px; }
+#podiumPreview > .value-row { min-width: 0; align-items: end; }
+#podiumPreview label, #sidePodium p { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 820px) {
+  /* El menú completo sigue disponible sin cubrir el contenido al desplazarse. */
+  .sidebar { position: static; }
+  .section-head { gap: 12px; }
+  .section-head > *, .card-title > * { min-width: 0; max-width: 100%; }
+  body .lite-event-picker { max-height: calc(100dvh - 24px); overflow-y: auto; }
+  .lite-event-picker-controls > * { min-height: 44px; }
+  .podium-dialog { max-height: calc(100dvh - 24px); }
+  .podium-place { height: auto !important; min-height: 120px; overflow-wrap: anywhere; }
+  .podium-place.first { min-height: 190px; }
+  .podium-place.second { min-height: 150px; }
+}
+@media (max-width: 600px) {
+  #podiumPreview > .value-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  #podiumPreview > .value-row button, .podium-actions button { width: 100%; min-height: 44px; }
+  .lite-event-picker-controls input { flex-basis: 100%; }
+  .lite-event-picker-controls button { flex: 1 1 140px; }
+  .game-qr-dialog { overflow-y: auto; max-height: calc(100dvh - 24px); }
+}
