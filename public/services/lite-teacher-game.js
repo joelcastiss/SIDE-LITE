@@ -37,8 +37,6 @@
     if ($('configReadySummary') && !gameId) $('configReadySummary').textContent = count + ' ciclos de 2 minutos cada uno.';
     return true;
   }
-  $('cycles')?.addEventListener('input', event => syncCycleCount(event.currentTarget.value));
-  $('cycles')?.addEventListener('change', event => syncCycleCount(event.currentTarget.value));
   syncCycleCount($('cycles')?.value);
   // Official games assign each company a server-generated capital.
   $('capitalModeRandom').checked = true;
@@ -355,6 +353,7 @@
   for (const type of ['input', 'change']) document.addEventListener(type, event => {
     if (!event.target.closest('#tab-configuracion') || event.target.closest('.events-config-summary') || markets.contains(event.target)) return;
     event.stopImmediatePropagation();
+    if (event.target.id === 'cycles') syncCycleCount(event.target.value);
     if (event.target.name === 'capitalMode') {
       const fixed = event.target.value === 'fixed';
       $('fixedCapitalFields')?.classList.toggle('hidden', !fixed);
