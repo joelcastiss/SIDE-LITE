@@ -3,6 +3,7 @@ import express from 'express';
 let server,base;
 test.beforeAll(async()=>{server=await new Promise(resolve=>{const s=express().use('/SIDE-LITE',express.static('.')).listen(0,'127.0.0.1',()=>resolve(s))});base=`http://127.0.0.1:${server.address().port}`});
 test.afterAll(async()=>new Promise(resolve=>server.close(resolve)));
+test.afterEach(async({context})=>{for(const page of context.pages())await page.unrouteAll({behavior:'wait'});await context.unrouteAll({behavior:'wait'});});
 for(const width of [1440,390]) test(`recuperación docente aislada ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:844}); let offline=true, gameOffline=false, reads=0;
  await page.route('https://joelcastiss.github.io/**',async route=>{const u=new URL(route.request().url());await route.fulfill({response:await route.fetch({url:base+u.pathname+u.search})})});
