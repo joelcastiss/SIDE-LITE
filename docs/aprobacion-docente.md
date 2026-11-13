@@ -2,7 +2,7 @@
 
 El registro de una cuenta no concede permisos docentes. Un administrador debe verificar la identidad y aprobar expresamente el acceso. La autorización se vincula al UUID de Auth y al correo confirmado; una cuenta anónima, bloqueada, sin correo confirmado o con una autorización revocada no obtiene permisos docentes. Un correo institucional por sí solo no acredita la condición de docente.
 
-El proyecto consultado tiene cero autorizaciones activas. La institución debe identificar y aprobar al docente que realizará la prueba; no debe activarse una autorización anterior sin comprobar su origen.
+La migración `20261113025642_independent_teacher_authorization` conserva las autorizaciones activas anteriores y registra las que no tienen aprobador en `side_lite_private.teacher_grants_pending_review`. Al aplicarla se verificaron nueve autorizaciones activas y nueve pendientes de revisión. La institución debe revisar su origen por un canal independiente; el registro pendiente no equivale a una aprobación y no revoca el acceso automáticamente.
 
 Tras la verificación institucional, un operador autorizado de la base registra el UUID de la persona docente, su correo y el UUID de un administrador distinto en `side_lite_private.lite_teacher_grants`. El administrador debe existir en Auth; su UUID identifica al aprobador, pero por sí solo no demuestra su autoridad institucional. La nueva restricción rechaza concesiones activas sin atribución y la autoaprobación. La aplicación y sus roles de ejecución no pueden conceder ni revocar este permiso.
 
@@ -27,6 +27,6 @@ returning user_id, approved_email, granted_by, granted_at;
 
 4. El operador verifica la fila y conserva en el expediente institucional la referencia de la decisión y el resultado. Una autorización revocada no se reactiva mediante este procedimiento: exige una nueva decisión y un procedimiento administrativo explícito. Para revocar, registra primero la decisión institucional y actualiza `revoked_at` para ese UUID. La tabla conserva el aprobador original y el momento de revocación, pero no registra por sí sola quién revocó; ese dato debe conservarse en el expediente institucional.
 
-La restricción se aplicó y verificó en el proyecto SIDE-LITE mediante la migración `20261110170146_teacher_grant_attribution`. Aplicarla no autoriza a ningún docente; cada concesión requiere una decisión administrativa independiente.
+La restricción se aplicó y verificó en el proyecto SIDE-LITE mediante la migración `20261113025642_independent_teacher_authorization`. Cada nueva concesión requiere una decisión administrativa independiente.
 
-En una instalación nueva deben aplicarse todas las migraciones en orden. La migración histórica de acceso automático queda anulada por las posteriores 20261110062128 y 20261110063546; no debe detenerse la instalación antes de aplicarlas.
+En una instalación nueva deben aplicarse todas las migraciones en orden. La migración histórica `20261110193520_automatic_institutional_teacher` reintrodujo el acceso automático; la migración `20261113025642` lo desactiva. No debe detenerse la instalación antes de aplicar esta última.
