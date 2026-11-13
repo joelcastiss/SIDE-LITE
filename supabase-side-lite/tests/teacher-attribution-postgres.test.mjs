@@ -15,7 +15,7 @@ test('teacher access requires an attributed grant even for auto-confirmed email'
     const existing=randomUUID(), newcomer=randomUUID(), administrator=randomUUID(), session=randomUUID();
     await db.query("insert into auth.users(id,email,email_confirmed_at,is_anonymous) values($1,$2,now(),false)",[existing,`${existing}@upch.pe`]);
     assert.equal((await db.query('select 1 from side_lite_private.lite_teacher_grants where user_id=$1 and revoked_at is null',[existing])).rowCount,1);
-    await db.query(await readFile('docs/propuestas/autorizacion-docente.sql','utf8'));
+    await db.query(await readFile('supabase/migrations/20261113025642_independent_teacher_authorization.sql','utf8'));
     assert.equal((await db.query('select 1 from side_lite_private.lite_teacher_grants where user_id=$1 and revoked_at is null',[existing])).rowCount,1);
     assert.equal((await db.query('select 1 from side_lite_private.teacher_grants_pending_review where user_id=$1',[existing])).rowCount,1);
     await db.query('update side_lite_private.lite_teacher_grants set lock_guard=lock_guard where user_id=$1',[existing]);

@@ -17,6 +17,10 @@ try {
   if (state.schema_exists || state.objects_exist || state.roles_exist) throw Error('Se requiere un clúster vacío; no se modificó nada.');
   await db.query(await readFile('supabase-side-lite/tests/postgres-auth-bootstrap.sql', 'utf8'));
   for (const file of (await readdir('supabase/migrations')).filter(x => /^\d+_[a-z0-9_]+\.sql$/.test(x)).sort()) {
+    if (file === '20261113025642_independent_teacher_authorization.sql') {
+      const upgrade = spawnSync(process.execPath, ['--test', 'supabase-side-lite/tests/teacher-attribution-postgres.test.mjs'], {stdio:'inherit', env:process.env});
+      if (upgrade.error || upgrade.status !== 0) throw upgrade.error || Error('Teacher authorization upgrade failed');
+    }
     // The plain PostgreSQL fixture has no pg_cron; the full CLI stack tests it.
     if (file === '20261111222502_side_lite_enable_sql_cron.sql') continue;
     if (file === '20261112044948_restrict_teacher_signup_domain.sql') {

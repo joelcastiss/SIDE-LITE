@@ -25,8 +25,11 @@ insert into auth.sessions(id,user_id) select id,id from auth.users where id in (
 do $$ begin
  if (select count(*) from public.lite_profiles where id in ('00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005')) <> 5 then raise exception 'automatic profile creation failed'; end if;
  if exists (select 1 from public.lite_profiles where id in ('00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005') and display_name <> 'Estudiante') then raise exception 'invalid metadata fallback failed'; end if;
- if (select count(*) from side_lite_private.lite_teacher_grants where user_id in ('00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-000000000003','00000000-0000-0000-0000-000000000004','00000000-0000-0000-0000-000000000005')) <> 1 or not exists (select 1 from side_lite_private.lite_teacher_grants where user_id='00000000-0000-0000-0000-000000000003' and revoked_at is null) then raise exception 'institutional teacher grant incorrect'; end if;
 end $$;
+-- Explicit approval also makes this fixture valid before and after the upgrade.
+insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by)
+values ('00000000-0000-0000-0000-000000000003','teacher@upch.pe','00000000-0000-0000-0000-000000000004')
+on conflict (user_id) do update set granted_by=excluded.granted_by;
 -- BYPASSRLS does not imply table write privileges: the runtime can verify a
 -- grant, but cannot promote or revoke teachers even with its server credential.
 set local role service_role;
