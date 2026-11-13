@@ -1,0 +1,59 @@
+// Real browser + real Auth/Edge/database; only runs against the named disposable stack.
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+import {readFile} from 'node:fs/promises';
+import {resolve,extname,sep} from 'node:path';
+import {chromium,expect as baseExpect} from '@playwright/test';
+const expect=baseExpect.configure({timeout:30000});
+import {createClient} from '@supabase/supabase-js';
+if(process.env.GUEST_TEST_DISPOSABLE!=='YES'||!process.env.GUEST_TEST_ANON_KEY)throw Error('Se requiere stack local desechable y clave local.');
+const validation=process.env.SIDE_TEST_STACK==='validation';
+const project='side-lite-codex-results-20261112',apiPort='59521',mailPort='59524',dbPort='59522',base=`http://127.0.0.1:${apiPort}`,origin='http://127.0.0.1:4178',mail=`http://127.0.0.1:${mailPort}`,key=process.env.GUEST_TEST_ANON_KEY;
+for(const [service,internal,port] of [['kong','8000/tcp',apiPort],['inbucket','8025/tcp',mailPort],['db','5432/tcp',dbPort]]){const name=`supabase_${service}_${project}`,r=spawnSync('docker',['inspect','--format','{{.State.Running}}',name],{encoding:'utf8'}),m=spawnSync('docker',['port',name,internal],{encoding:'utf8'});if(r.stdout.trim()!=='true'||!m.stdout.trim().split(/\r?\n/).every(s=>s.endsWith(':'+port)))throw Error('Destino local inesperado.');}
+const mobile=process.env.GUEST_TEST_MOBILE==='YES',email=`guest-ui-${randomUUID()}@upch.pe`,password=`B-${randomUUID()}!`,adminId=randomUUID(),teacherSdk=createClient(base,key,{auth:{persistSession:false,autoRefreshToken:false}}),root=resolve('public'),games=[],users=[];
+const browser=await chromium.launch({headless:true,args:['--disable-features=LocalNetworkAccessChecks']}),contexts=[];
+function sql(query){const r=spawnSync('docker',['exec',`supabase_db_${project}`,'psql','-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-tAc',query],{encoding:'utf8'});if(r.status!==0)throw Error('SQL de prueba local: '+r.stderr);return r.stdout.trim()}
+async function createContext(){const context=await browser.newContext(mobile?{viewport:{width:390,height:844},isMobile:true,hasTouch:true}:{viewport:{width:1440,height:900}});contexts.push(context);await context.route(origin+'/**',async route=>{const url=new URL(route.request().url()),path=resolve(root,'.'+url.pathname.replace(/^\/$/,'/index.html'));if(!path.startsWith(root+sep))return route.abort();try{let body=await readFile(path);if(path.endsWith('supabase-client.js')||path.endsWith('supabase-session.js')||path.endsWith('lite-game-service.js')||path.endsWith('config.js')){let text=body.toString().replaceAll('https://hwwwoblfpsqqrkxvclag.supabase.co',base).replaceAll('sb_publishable_52fukw__BaCel-Igx5e0vg_RgsvhxiN',key);text=text.replace("projectUrl.protocol !== 'https:' || projectUrl.hostname !== 'hwwwoblfpsqqrkxvclag.supabase.co' || projectUrl.port",`projectUrl.origin !== '${base}'`);body=Buffer.from(text)}const contentType={'.js':'text/javascript','.html':'text/html','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.ttf':'font/ttf'}[extname(path)]||'application/octet-stream';await route.fulfill({status:200,contentType,body})}catch{await route.fulfill({status:404})}});const page=await context.newPage();page.setDefaultTimeout(25000);return {context,page}}
+async function begin(person){await person.page.goto(origin+'/?auth=supabase');await person.page.locator('#startBtn').click()}
+
+try{
+ sql(`insert into auth.users(id,email,email_confirmed_at) values('${adminId}','admin-${adminId}@upch.pe',now())`);users.push(adminId);
+ let x=await teacherSdk.auth.signUp({email,password,options:{data:{display_name:'Profesora Prueba'}}});if(x.error)throw x.error;users.push(x.data.user.id);let message;for(let i=0;i<40&&!message;i++){const r=await fetch(mail+'/api/v1/messages');if(r.ok)message=(await r.json()).messages.find(m=>m.To?.some(v=>v.Address===email));if(!message)await new Promise(r=>setTimeout(r,400))}assert.ok(message);const detail=await(await fetch(mail+'/api/v1/message/'+encodeURIComponent(message.ID))).json(),match=detail.HTML.match(/https?:\/\/[^\s"<>\\]+\/auth\/v1\/verify\?[^\s"<>\\]+/);assert.ok(match);const link=new URL(match[0].replaceAll('&amp;','&'));assert.equal(link.origin,base);await fetch(link,{redirect:'manual'});sql(`insert into side_lite_private.lite_teacher_grants(user_id,approved_email,granted_by) select id,email,'${adminId}'::uuid from auth.users where email='${email}' on conflict (user_id) do nothing`);
+ const teacher=await createContext(),b=await createContext();let a=await createContext();await begin(teacher);await teacher.page.locator('[data-profile=teacher]').click();await teacher.page.locator('#loginEmail').fill(email);await teacher.page.locator('#loginPassword').fill(password);await teacher.page.locator('#loginForm button').click();await expect(teacher.page.locator('#startGame')).toBeVisible();
+ await teacher.page.locator('#gameName').fill('Prueba invitados actual');await teacher.page.locator('#cycles').fill('3');const creating=teacher.page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/api/games'));await teacher.page.locator('#startGame').click();const response=await creating;assert.equal(response.status(),201);const game=await response.json();games.push(game.id);
+ for(const [person,name] of [[a,'Empresa Aurora'],[b,'Empresa Bahia']]){await begin(person);await person.page.locator('[data-profile=student]').click();await person.page.locator('#gameCode').fill(game.code);await person.page.locator('#companyLegalName').fill(name);await person.page.locator('#companyBrandName').fill('Marca '+name);console.log('CODIGO',game.code, 'INVALIDOS',await person.page.locator('#studentForm').evaluate(f=>[...f.elements].filter(x=>!x.checkValidity()).map(x=>[x.id,x.validationMessage])));const joining=person.page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/api/join'));await person.page.locator('#studentForm button').click();const joined=await joining;assert.equal(joined.status(),201);await expect(person.page.locator('#studentLobby')).toBeVisible();const session=await person.page.evaluate(async()=>{const r=await window.SIDE.SupabaseClient.getStudent().auth.getSession();return r.data.session});users.push(session.user.id)}
+ const saved=await a.page.evaluate(id=>localStorage.getItem('side-lite-guest-'+id),game.id);assert.ok(saved);
+ await expect(teacher.page.locator('body')).toContainText('Empresa Aurora',{timeout:30000});
+ await expect(teacher.page.locator('body')).toContainText('Empresa Bahia',{timeout:30000});
+ await a.page.reload();await expect(a.page.locator('#studentLobby')).toBeVisible({timeout:30000});
+ await expect(a.page.locator('#liteRecoveryDetails code')).toHaveText(JSON.parse(saved).secret);
+ const replacement=await createContext();await begin(replacement);await replacement.page.locator('[data-profile=student]').click();
+ await replacement.page.locator('#studentModal details summary').click();
+ await replacement.page.locator('#liteRecoveryForm [name=code]').fill(game.code);
+ await replacement.page.locator('#liteRecoveryForm [name=secret]').fill(JSON.parse(saved).secret);
+ await replacement.page.locator('#liteRecoveryForm button').click();await expect(replacement.page.locator('#studentLobby')).toBeVisible({timeout:30000});
+ const replacementSession=await replacement.page.evaluate(async()=>(await window.SIDE.SupabaseClient.getStudent().auth.getSession()).data.session);users.push(replacementSession.user.id);
+ assert.equal(sql(`select count(*) from public.lite_companies where game_id='${game.id}'`),'2');
+ await a.page.close();a=replacement;
+ console.log('PASS: recarga automÃ¡tica y recuperaciÃ³n desde otro navegador sin duplicar empresa.');
+ for(let cycle=1;cycle<=3;cycle++){
+  await expect(teacher.page.locator('#startTimer')).toBeEnabled();const starting=teacher.page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/start'));await teacher.page.locator('#startTimer').click();assert.equal((await starting).status(),201);
+  for(const [person,quality,quantity,price,marketing] of [[a,'basic','10','120','200'],[b,'standard','8','150','400']]){
+   await expect(person.page.locator('#enterDecisionsBtn')).toBeEnabled();await person.page.locator('#enterDecisionsBtn').click()
+   if(await person.page.getByRole('button',{name:'Saltar'}).isVisible()) await person.page.getByRole('button',{name:'Saltar'}).click(); await person.page.locator('[data-cat=quality]').click(); await person.page.locator(`[role=radio][data-value=${quality}]`).click();
+   for(const [field,value] of [['quantity',quantity],['price',price],['marketingAmount',marketing]]){await person.page.locator(`[data-cat=${field}]`).click();await person.page.locator(`[name=${field}]`).fill(value)}
+   const sent=person.page.waitForResponse(r=>r.request().method()==='PUT'&&r.url().endsWith('/decision'));await person.page.locator('#sendDecisionSection').click();assert.equal((await sent).status(),200); await person.page.locator('#exitDecisions').click();
+  }
+  sql(`update public.lite_cycles set ends_at=clock_timestamp() where game_id='${game.id}' and number=${cycle} and status='open'`); sql('call side_lite_private.side_cron_sweep()');
+  let closed=false;for(let i=0;i<45;i++){if(sql(`select status from public.lite_cycles where game_id='${game.id}' and number=${cycle}`)==='closed'){closed=true;break}await new Promise(r=>setTimeout(r,1000))}assert.ok(closed,'cierre de ciclo');
+  assert.equal(sql(`select count(*) from public.lite_results r join public.lite_cycles c on c.id=r.cycle_id where c.game_id='${game.id}' and c.number=${cycle}`),'2');
+  for(const [person,name] of [[a,'Empresa Aurora'],[b,'Empresa Bahia']])for(let previous=1;previous<=cycle;previous++){
+   const profit=Number(sql(`select r.result->>'profit' from public.lite_results r join public.lite_cycles c on c.id=r.cycle_id join public.lite_companies co on co.id=r.company_id where c.game_id='${game.id}' and c.number=${previous} and co.name='${name}'`));
+   const amount='S/ '+new Intl.NumberFormat('es-PE',{maximumFractionDigits:2}).format(profit);
+   const section=person.page.locator('#studentFinancialDetail .lite-cycle-result').filter({has:person.page.getByRole('heading',{name:`Ciclo ${previous}`,exact:true})});
+   await expect(section).toBeVisible();await expect(section.locator('.lite-result-card').filter({hasText:'Utilidad o pérdida'}).locator('strong')).toHaveText(amount);console.log(`${name}, ciclo ${previous}: utilidad o pérdida ${amount}`);
+  }
+  console.log(`PASS: cierre ${cycle}, ambos estudiantes muestran ciclos 1 a ${cycle}`);
+ }
+}finally{await Promise.allSettled(contexts.map(c=>c.close()));await browser.close();await teacherSdk.auth.signOut().catch(()=>{});for(const id of games)if(/^[a-f0-9-]{36}$/.test(id))sql(`delete from public.lite_results where game_id='${id}'; delete from public.lite_decisions where game_id='${id}'; delete from public.lite_games where id='${id}'`);for(const id of users.reverse())if(/^[a-f0-9-]{36}$/.test(id))sql(`delete from side_lite_private.lite_teacher_grants where user_id='${id}';delete from public.lite_profiles where id='${id}';delete from auth.users where id='${id}'`)}
