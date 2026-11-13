@@ -34,7 +34,7 @@ for (const viewport of [{width:1280,height:800},{width:390,height:844}]) {
   await expect(page.locator('#registerMessage')).toContainText('@upch.pe');
   expect(await page.evaluate(()=>localStorage.getItem('test-user'))).toBeNull();
   await page.locator('#registerEmail').fill('ana.ficticia@upch.pe');
-  for(const [mode,expected] of [['error','Registro rechazado'],['empty','No se pudo confirmar el registro'],['confirmation','No se pudo iniciar la sesión']]){
+  for(const [mode,expected] of [['error','Registro rechazado'],['empty','No se pudo confirmar el registro'],['confirmation','Solicitud recibida']]){
    await page.evaluate(value=>localStorage.setItem('test-signup-mode',value),mode);
    await page.locator('#registerForm button[type=submit]').click();
    await expect(page.locator('#registerMessage')).toContainText(expected);
@@ -44,14 +44,11 @@ for (const viewport of [{width:1280,height:800},{width:390,height:844}]) {
   await page.locator('#registerName').fill('Ana');await page.locator('#registerLastName').fill('Prueba');
   await page.locator('#registerEmail').fill('ana.ficticia@upch.pe');await page.locator('#registerPassword').fill('password-prueba-123');
   await page.locator('#registerForm button[type=submit]').click();
-  await expect(page).toHaveURL(/docente\.html/);
-  expect(identityCalls).toBeGreaterThan(0);
+  await expect(page.locator('#registerMessage')).toContainText('pendiente de aprobación');
+  expect(await page.evaluate(()=>localStorage.getItem('test-session'))).toBeNull();
   const user=await page.evaluate(()=>JSON.parse(localStorage.getItem('test-user')));
   expect(user.user_metadata).toMatchObject({display_name:'Ana Prueba',nombre:'Ana',apellido:'Prueba'});
   expect(user.user_metadata).not.toHaveProperty('curso');
-  await page.locator('#teacherLogout').click();
-  await expect(page).toHaveURL(/index\.html/);
-  await page.locator('#teacherLoginModal [data-switch=register]').click();
   await page.locator('#registerName').fill('Ana');await page.locator('#registerLastName').fill('Prueba');
   await page.locator('#registerEmail').fill('ana.ficticia@upch.pe');await page.locator('#registerPassword').fill('password-prueba-123');
   await page.locator('#registerForm button[type=submit]').click();
