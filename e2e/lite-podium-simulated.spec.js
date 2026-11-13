@@ -12,12 +12,13 @@ for (const viewport of [{width:1366,height:768},{width:390,height:844}]) test(`p
  await page.route('https://hwwwoblfpsqqrkxvclag.supabase.co/**',route=>{
   const req=route.request(),path=new URL(req.url()).pathname.split('/api')[1],headers={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,PUT,OPTIONS','access-control-allow-headers':'authorization,apikey,content-type'};
   if(req.method()==='OPTIONS')return route.fulfill({status:204,headers});
-  let json={};if(path==='/me')json={id:'t1',display_name:'Docente',role:'teacher'};else if(path==='/catalog')json=[];else if(path==='/games'&&req.method()==='POST'){created=true;json=game}else if(path==='/games')json=created?[game]:[];else if(path==='/games/game1/podium')json={companies:[{id:'co1',name:'Empresa A',grade}],finished:true};else if(path==='/games/game1/grades/co1'){grade=req.postDataJSON().grade;json={}}else if(path==='/games/game1')json={isTeacher:true,game,companies:[{id:'co1',name:'Empresa A',cash:30000}],decisions:[],cycles:[],results:[],ranking:[{name:'Empresa A',returnPercent:1}]};
+  let json={};if(path==='/me')json={id:'t1',display_name:'Docente',role:'teacher'};else if(path==='/catalog')json=[];else if(path==='/games'&&req.method()==='POST'){created=true;json=game}else if(path==='/games')json=created?[game]:[];else if(path==='/games/game1/podium')json={companies:[{id:'co1',name:'Empresa A',grade}],finished:true};else if(path==='/games/game1/grades/co1'){grade=req.postDataJSON().grade;json={}}else if(path==='/games/game1')json={isTeacher:true,game,companies:[{id:'co1',name:'Empresa A',cash:30000}],decisions:[],cycles:[],results:[],ranking:[{name:'Empresa A',returnPercent:9.85}]};
   return route.fulfill({status:200,headers,json});
  });
  await page.goto('https://joelcastiss.github.io/SIDE-LITE/public/docente.html');
  await page.locator('#gameName').fill('Podio');await page.locator('#startGame').click();
  await page.locator('[data-tab=podio]').click();
+ await expect(page.locator('#sidePodium')).toContainText('9.9 %');
  const input=page.getByLabel('Nota de Empresa A');await expect(input).toBeVisible();await input.fill('19');
  await page.waitForTimeout(6500);await expect(input).toHaveValue('19');
  await page.locator('#podiumPreview').getByRole('button',{name:'Guardar nota'}).click();

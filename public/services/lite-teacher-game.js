@@ -263,7 +263,7 @@
     preview.replaceChildren();
     if (suggestion) {
       suggestion.replaceChildren();
-      for (const item of snapshot.ranking || []) { const row = document.createElement('p'); row.textContent = item.name + ' · ' + Number(item.returnPercent).toFixed(1) + ' % de rentabilidad'; suggestion.append(row); }
+      for (const item of snapshot.ranking || []) { const row = document.createElement('p'); row.textContent = item.name + ' · ' + new Intl.NumberFormat('es-PE', {minimumFractionDigits:1, maximumFractionDigits:1}).format(Number(item.returnPercent)) + ' % de rentabilidad'; suggestion.append(row); }
     }
     for (const company of podium.companies || []) {
       const row = document.createElement('div'); row.className = 'value-row';
