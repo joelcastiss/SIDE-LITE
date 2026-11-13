@@ -1,4 +1,6 @@
 import {reportApiError} from './error-reporting.js';
+import {rankCompanies} from './podium-ranking.js';
+export {rankCompanies} from './podium-ranking.js';
 // Private podium routes. The browser never queries private tables directly.
 import express from 'express';
 import {createIdentityMiddleware} from './identity.js';
@@ -19,10 +21,7 @@ async function authorize(c,identity,gameId,requireTeacher=false){
  return {game,isTeacher};
 }
 function validId(value){if(!UUID.test(value||''))throw fail(400,'Identificador inválido.');return value}
-export function rankCompanies(companies){
- const sorted=[...companies].sort((a,b)=>Number(b.grade)-Number(a.grade)||a.name.localeCompare(b.name,'es')||a.id.localeCompare(b.id));
- return sorted.map((x,i)=>({position:i && Number(x.grade)===Number(sorted[i-1].grade)?sorted.findIndex(y=>Number(y.grade)===Number(x.grade))+1:i+1,companyId:x.id,name:x.name,grade:Number(x.grade)}));
-}
+
 export function createPodiumRouter({pool,verifyToken}={}){
  if(!pool?.connect||!pool?.query||typeof verifyToken!=='function')throw new TypeError('Faltan dependencias seguras.');
  const router=express.Router();router.use(express.json({limit:'16kb',strict:true}));router.use('/api',createIdentityMiddleware({pool,verifyToken}));

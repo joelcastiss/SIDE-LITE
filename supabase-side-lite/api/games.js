@@ -129,8 +129,17 @@ export function createGamesApp({pool, verifyToken, limitJoin} = {}) {
         const ranking=rank(allCompanies.map(x=>({...x,initialCapital:x.initial_capital,
           inventoryValue:x.inventory.reduce((sum,b)=>sum+b.quantity*b.unitCost,0)})))
           .map(x=>({id:x.id,name:x.name,returnPercent:x.returnPercent,...(isTeacher?{cash:x.cash}:{})}));
+        let finalPodium = null;
+        if (false && current?.status === 'closed' && current.number === game.cycle_count) { // Disabled until the migration and end-to-end flow are verified.
+          const {rows:[published]} = await c.query('select ranking,published_at from side_lite_private.final_podium where game_id=$1',[game.id]);
+          if (published) {
+            const {rows:grades} = await c.query('select company_id,grade from side_lite_private.teacher_grades where game_id=$1',[game.id]);
+            const byCompany = new Map(grades.map(row => [row.company_id, Number(row.grade)]));
+            finalPodium = {publishedAt:published.published_at, ranking:published.ranking.map((row,index)=>({...row,position:index+1,grade:byCompany.get(row.companyId) ?? null}))};
+          }
+        }
         const companies=isTeacher?allCompanies:allCompanies.map(x=>x.id===ownCompany?.id?x:{id:x.id,name:x.name,store:x.store});
-        return {game,company:ownCompany?companies.find(x=>x.id===ownCompany.id):null,isTeacher,companies,cycles,decisions,ownDecision,results,ranking,marketMode:marketConfig?.assignment_mode || null,districts:isTeacher?districts:[]};
+        return {finalPodium,game,company:ownCompany?companies.find(x=>x.id===ownCompany.id):null,isTeacher,companies,cycles,decisions,ownDecision,results,ranking,marketMode:marketConfig?.assignment_mode || null,districts:isTeacher?districts:[]};
       });
       return res.json(result);
     } catch(e) { return next(e); }
