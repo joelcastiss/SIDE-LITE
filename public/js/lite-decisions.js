@@ -249,13 +249,6 @@
       const statement=$('studentIncomeStatement');
       if(statement){statement.replaceChildren();const heading=document.createElement('strong');heading.textContent='ESTADO DE RESULTADOS';statement.append(heading);
         const line=document.createElement('span');line.textContent=last ? `Ingresos ${money(last.revenue)} · costo de ventas ${money(last.costOfSales)} · marketing ${money(last.marketing)} · utilidad ${money(last.profit)}` : 'Aún no hay resultados oficiales.';statement.append(line);}
-      if (cycle?.status === 'open' && cycle.event_id && global.SideEventFlash && waiting.classList.contains('hidden')) {
-        const news = global.SIDELiteEvents.describe(cycle.event_id);
-        global.SideEventFlash.show({partida:gameId, ciclo:cycle.id || cycle.number, id:cycle.event_id,
-          titulo:news.name === 'Evento no disponible' ? 'Noticia del mercado' : news.name,
-          texto:news.description+' '+news.effect, tono:news.classification.toLowerCase(),
-          host:() => !$('decisionMenu')?.classList.contains('hidden') ? $('decisionFormScroll') : $('studentLobby')?.querySelector('.lobby-content')});
-      }
       write('studentNewsList',global.SIDELiteEvents.text(cycle?.event_id));
       write('studentEventImpactText',last ? global.SIDELiteEvents.text(last.event || data.cycles?.find(c=>c.id===ownResults.at(-1)?.cycle_id)?.event_id,last) : 'Los resultados oficiales se muestran después del cierre del ciclo.');
       const history=$('studentCycleHistory'); if(history)history.replaceChildren();
@@ -270,6 +263,14 @@
           showScreen('decisionMenu');
           select(selected);
         }
+      }
+      if (cycle?.status === 'open' && cycle.event_id && global.SideEventFlash &&
+          (!$('decisionMenu')?.classList.contains('hidden') || waiting.classList.contains('hidden'))) {
+        const news = global.SIDELiteEvents.describe(cycle.event_id);
+        global.SideEventFlash.show({partida:gameId, ciclo:cycle.id || cycle.number, id:cycle.event_id,
+          titulo:news.name === 'Evento no disponible' ? 'Noticia del mercado' : news.name,
+          texto:news.description+' '+news.effect, tono:news.classification.toLowerCase(),
+          host:() => !$('decisionMenu')?.classList.contains('hidden') ? $('decisionFormScroll') : $('studentLobby')?.querySelector('.lobby-content')});
       }
     }
     async function refresh() {

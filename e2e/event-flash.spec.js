@@ -9,8 +9,8 @@ for (const viewport of [{width:1280,height:800},{width:390,height:844}]) {
  test(`aviso del ciclo: cola, persistencia y controles ${viewport.width}`, async ({page}) => {
   await page.setViewportSize(viewport);
   await page.goto(base+'/index.html', {waitUntil:'domcontentloaded'});
-  await page.clock.install();
-  await page.clock.pauseAt(Date.now());
+  await page.clock.install({time: new Date('2026-01-01T00:00:00Z')});
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:10Z'));
   await page.evaluate(() => {
     document.querySelectorAll('#app > .screen').forEach(el => el.classList.add('hidden'));
     document.querySelector('#decisionMenu').classList.remove('hidden');
