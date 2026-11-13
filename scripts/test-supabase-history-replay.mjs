@@ -21,6 +21,10 @@ try {
       const upgrade = spawnSync(process.execPath, ['--test', 'supabase-side-lite/tests/teacher-attribution-postgres.test.mjs'], {stdio:'inherit', env:process.env});
       if (upgrade.error || upgrade.status !== 0) throw upgrade.error || Error('Teacher authorization upgrade failed');
     }
+    if (file === '20261113042357_restore_independent_teacher_approval.sql') {
+      const upgrade = spawnSync(process.execPath, ['--test', 'supabase-side-lite/tests/restore-teacher-approval-postgres.test.mjs'], {stdio:'inherit', env:process.env});
+      if (upgrade.error || upgrade.status !== 0) throw upgrade.error || Error('Teacher approval restoration failed');
+    }
     // The plain PostgreSQL fixture has no pg_cron; the full CLI stack tests it.
     if (file === '20261111222502_side_lite_enable_sql_cron.sql') continue;
     if (file === '20261112044948_restrict_teacher_signup_domain.sql') {
@@ -30,6 +34,10 @@ try {
     // Exercise the LF checkout used by Linux CI even when developing on Windows.
     await db.query((await readFile(`supabase/migrations/${file}`, 'utf8')).replace(/\r\n/g, '\n'));
     console.log(`OK ${file}`);
+    if (file === '20261113035244_automatic_teacher_test_access.sql') {
+      await db.query(await readFile('supabase-side-lite/tests/automatic-teacher.sql','utf8'));
+      console.log('OK historical automatic-teacher.sql');
+    }
   }
   await db.query("update auth.users set email=email where id='78000000-0000-4000-8000-000000000001'");
   const existing = await db.query("select 1 from auth.users where id='78000000-0000-4000-8000-000000000001'");
@@ -52,8 +60,6 @@ try {
   }
   const {rows: [result]} = await db.query("select to_regclass('side_lite_private.migration_replay_marker') is null as cleaned");
   if (!result.cleaned) throw Error('El marcador temporal de reconstrucción no se eliminó.');
-  await db.query(await readFile('supabase-side-lite/tests/automatic-teacher.sql','utf8'));
-  console.log('OK automatic-teacher.sql');
 } finally { await db.end(); }
 const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', 'supabase-side-lite/tests/games-postgres.test.mjs', 'supabase-side-lite/tests/markets-postgres.test.mjs', 'supabase-side-lite/tests/district-multicycle-postgres.test.mjs', 'supabase-side-lite/tests/join-limiter-postgres.test.mjs', 'supabase-side-lite/tests/multicycle-postgres.test.mjs', 'supabase-side-lite/tests/podium-postgres.test.mjs', 'supabase-side-lite/tests/manual-close-postgres.test.mjs'], {stdio: 'inherit', env: process.env});
 if (result.error) throw result.error;
